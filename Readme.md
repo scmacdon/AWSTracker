@@ -103,7 +103,7 @@ Also, add the following Spring Boot **dependency** elements inside the **depende
         <scope>runtime</scope>
     </dependency>
     
-**Note** - Add this element to the POM file to ensure you are using Java 1.8: **j&lt;java.version&gt;1.8&gt;java.versionj&lt;
+**Note** - Ensure you are using Java 1.8 (shown below).
   
 At this point, you **pom.xml** file resembles the following file. 
 
@@ -116,7 +116,13 @@ At this point, you **pom.xml** file resembles the following file.
     <groupId>aws-spring</groupId>
     <artifactId>AWSItemTracker</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+    </properties>
+    
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
