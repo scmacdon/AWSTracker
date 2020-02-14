@@ -165,7 +165,7 @@ Create a Java package in the **main/java** folder named **com.aws**.
 
 ![AWS Tracking Application](images/track6.png)
 
-All of the remaining Java files go into subpackages of this package. The following illustration shows these subpackages:
+The Java files go into these subpackages:
 
 ![AWS Tracking Application](images/track7.png)
 
