@@ -41,11 +41,21 @@ The following illustration shows you the structure of the Java project that you 
 To follow along with the document, you require the following:
 
 + An AWS Account.
-+ A Java IDE (for this example, IntelliJ is used).
++ A Java IDE (for this development document, the IntelliJ IDE is used).
 + Java 1.8 SDK and Maven.
 
 **Cost to Complete**: The AWS Services included in this document are included in the AWS Free Tier.
 
 **Note**: Please be sure to terminate all of the resources created during this document to ensure that you are no longer charged.
 
-## Create an IntelliJ Project named AWSBlog
+## Section 1 - Create an IntelliJ Project named AWSItemTracker
+
+The first to create the AWS Tracking application is to create a new IntelliJ project named **AESItemTracker**. Perform these steps:
+
+1. From within the IntelliJ IDE, click **File**, **New**, **Project**. 
+2. In the **New Project** dialog, select **Maven**. 
+3. Click **Next**
+4. In the **GroupId** field, enter **spring-aws**. 
+5. In the **ArtifactId** field, enter **AWSItemTracker**. 
+6. Click **Next**.
+7. Click **Finish**. 
