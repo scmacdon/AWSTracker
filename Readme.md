@@ -1,7 +1,13 @@
 #  Creating an AWS Tracking Application using Spring Boot and AWS Services
 
-You can develop a fully functioning item tracking application by using AWS Services, for example, Amazon Relational Database Service (RDS), Amazon Simple Email Service (SES), DynamoDB, Amazon S3, and AWS Elastic Beanstalk) and Spring Boot APIs. This application uses AWS Java APIs to insert and track data items and Spring Boot APIs to build a model, view and controllers. In addition, this appliation uses both MySQL and DynamoDB to persist data.  To query or persist data from the MySQL table, you can use the Java JDBC API. 
+You can develop an AWS web application that tracks and reports on items by using these AWS Services: 
 
-The AWS Tracking application is a secure web application that requires a user to log into the application. This application uses Spring Boot Security. For more information, see https://www.tutorialspoint.com/spring_boot/spring_boot_securing_web_applications.htm. 
++ Amazon Relational Database Service (RDS)
++ Amazon Simple Email Service (SES)
++ Amazon DynamoDB
++ Amazon S3
++ AWS Elastic Beanstalk
+
+In addition, the AWS Tracking application uses Spring Boot APIs to build a model, views and controllers. The AWS Tracking application is a secure web application that uses Spring Boot Security and requires a user to log into the application. plication uses Spring Boot Security. For more information, see https://www.tutorialspoint.com/spring_boot/spring_boot_securing_web_applications.htm. 
 
 ![AWS Tracking Application](images/track1.png)
