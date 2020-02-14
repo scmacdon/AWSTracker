@@ -158,3 +158,20 @@ At this point, you **pom.xml** file resembles the following file.
     </dependency>
     </dependencies>
   </project>
+
+## Section 3 - Setup the Java packages in your project
+
+Create a Java package in the **main/java** folder named **com.aws**. 
+
+![AWS Tracking Application](images/track6.png)
+
+All of the remaining Java files go into subpackages of this package. The following illustration shows these subpackages:
+
+![AWS Tracking Application](images/track7.png)
+
+The following list describes these packages:
+
++ entities - contains Java files that represent the model
++ jdbc - contains Java files that use the JDBC API to interact with the RDS database
++ services - contains Java files that invoke AWS Services. For example, the **com.amazonaws.services.simpleemail.AmazonSimpleEmailService** is used within a Java file in this package.
++ springboot.springsecurity - contains all of the Java files required for Spring Security. 
