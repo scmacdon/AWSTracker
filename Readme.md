@@ -59,3 +59,9 @@ The first to create the AWS Tracking application is to create a new IntelliJ pro
 5. In the **ArtifactId** field, enter **AWSItemTracker**. 
 6. Click **Next**.
 7. Click **Finish**. 
+
+## Section 2 - Add the Spring POM Dependencies to your project
+
+At this point, you have a new project named **AWSItemTracker**, as shown in this illustration. 
+
+![AWS Tracking Application](images/track5.png)
