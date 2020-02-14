@@ -28,6 +28,10 @@ The following illustration shows the new item section of the application.
 
 This development document guides you through creating the AWS Tracker application. Once the application is developed, this document teaches you how to deploy it to the AWS Elastic Beanstalk.
 
+The following illustration shows you the structure of the Java project that you create by following this development document.
+
+![AWS Tracking Application](images/track3.png)
+
 To follow along with the document, you require the following:
 
 + An AWS Account.
