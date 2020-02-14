@@ -1,4 +1,4 @@
-#  Creating an AWS Tracking Application using Spring Boot and AWS Services
+#  Creating a Secure AWS Tracking Application using Spring Boot and AWS Services
 
 You can develop an AWS web application that tracks and reports on items by using these Amazon Web Services: 
 
