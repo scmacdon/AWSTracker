@@ -171,7 +171,7 @@ All of the remaining Java files go into subpackages of this package. The followi
 
 The following list describes these packages:
 
-+ entities - contains Java files that represent the model
-+ jdbc - contains Java files that use the JDBC API to interact with the RDS database
-+ services - contains Java files that invoke AWS Services. For example, the **com.amazonaws.services.simpleemail.AmazonSimpleEmailService** is used within a Java file in this package.
-+ springboot.springsecurity - contains all of the Java files required for Spring Security. 
++ **entities** - contains Java files that represent the model. In this example, the model class is named **WorkItem**. 
++ **jdbc** - contains Java files that use the JDBC API to interact with the RDS database
++ **services** - contains Java files that invoke AWS Services. For example, the **com.amazonaws.services.simpleemail.AmazonSimpleEmailService** is used within a Java file in this package.
++ **springboot.springsecurity** - contains all of the Java files required for Spring Security. 
