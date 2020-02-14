@@ -103,7 +103,7 @@ Also, add the following Spring Boot **dependency** elements inside the **depende
         <scope>runtime</scope>
     </dependency>
   
-At this point, you pom.xml file resembles the following file. 
+At this point, you **pom.xml** file resembles the following file. 
 
     <?xml version="1.0" encoding="UTF-8"?>
     <project xmlns="http://maven.apache.org/POM/4.0.0"
