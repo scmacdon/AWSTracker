@@ -8,7 +8,7 @@ You can develop an AWS web application that tracks and reports on items by using
 + Amazon S3
 + AWS Elastic Beanstalk
 
-In addition, the AWS Tracking application uses Spring Boot APIs to build a model, views and controllers. The AWS Tracking application is a secure web application that uses Spring Boot Security and requires a user to log into the application. For more information, see https://www.tutorialspoint.com/spring_boot/spring_boot_securing_web_applications.htm. 
+In addition, the AWS Tracking application uses Spring Boot APIs to build a model, views, and controllers. The AWS Tracking application is a secure web application that uses Spring Boot Security and requires a user to log into the application. For more information, see https://www.tutorialspoint.com/spring_boot/spring_boot_securing_web_applications.htm. 
 
 The following illustration shows the login page. 
 
