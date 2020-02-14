@@ -102,6 +102,8 @@ Also, add the following Spring Boot **dependency** elements inside the **depende
         <artifactId>spring-boot-devtools</artifactId>
         <scope>runtime</scope>
     </dependency>
+    
+**Note** - Add this element to the POM file to ensure you are using Java 1.8: **j&lt;java.version&gt;1.8&gt;java.versionj&lt;
   
 At this point, you **pom.xml** file resembles the following file. 
 
