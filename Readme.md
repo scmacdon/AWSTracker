@@ -50,7 +50,7 @@ To follow along with the document, you require the following:
 
 ## Section 1 - Create an IntelliJ Project named AWSItemTracker
 
-The first to create the AWS Tracking application is to create a new IntelliJ project named **AESItemTracker**. Perform these steps:
+Create a new IntelliJ project named **AESItemTracker** by performing these steps:
 
 1. From within the IntelliJ IDE, click **File**, **New**, **Project**. 
 2. In the **New Project** dialog, select **Maven**. 
@@ -65,3 +65,14 @@ The first to create the AWS Tracking application is to create a new IntelliJ pro
 At this point, you have a new project named **AWSItemTracker**, as shown in this illustration. 
 
 ![AWS Tracking Application](images/track5.png)
+
+Inside the **<project>** element in the **pom.xml** add the **spring-boot-starter-parent** dependency:
+  
+<code>
+ <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.4.RELEASE</version>
+        <relativePath /> <!-- lookup parent from repository -->
+    </parent>
+  </code>
