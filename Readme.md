@@ -68,11 +68,10 @@ At this point, you have a new project named **AWSItemTracker**, as shown in this
 
 Inside the **<project>** element in the **pom.xml** add the **spring-boot-starter-parent** dependency:
   
-<code>
- <parent>
+     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.4.RELEASE</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-  </code>
+  
