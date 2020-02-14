@@ -48,7 +48,7 @@ To follow along with the document, you require the following:
 
 **Note**: Please be sure to terminate all of the resources created during this document to ensure that you are no longer charged.
 
-## Section 1 - Create an IntelliJ Project named AWSItemTracker
+## Section 1 - Create an IntelliJ project named AWSItemTracker
 
 Create a new IntelliJ project named **AESItemTracker** by performing these steps:
 
@@ -60,7 +60,7 @@ Create a new IntelliJ project named **AESItemTracker** by performing these steps
 6. Click **Next**.
 7. Click **Finish**. 
 
-## Section 2 - Add the Spring POM Dependencies to your project
+## Section 2 - Add the Spring POM dependencies to your project
 
 At this point, you have a new project named **AWSItemTracker**, as shown in this illustration. 
 
