@@ -44,8 +44,6 @@ To follow along with the document, you require the following:
 + A Java IDE (for this example, IntelliJ is used).
 + Java 1.8 SDK and Maven.
 
-The following illustration shows the project that is created.
-
 **Cost to Complete**: The AWS Services included in this document are included in the AWS Free Tier.
 
 **Note**: Please be sure to terminate all of the resources created during this document to ensure that you are no longer charged.
