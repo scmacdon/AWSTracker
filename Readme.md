@@ -26,6 +26,10 @@ The following illustration shows the new item section of the application.
 
 ![AWS Tracking Application](images/track2.png)
 
+A user can retrive either active or archive items, as shown in this illustration. 
+
+![AWS Tracking Application](images/track2.png)
+
 This development document guides you through creating the AWS Tracker application. Once the application is developed, this document teaches you how to deploy it to the AWS Elastic Beanstalk.
 
 The following illustration shows you the structure of the Java project that you create by following this development document.
