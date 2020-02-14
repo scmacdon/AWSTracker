@@ -26,9 +26,11 @@ The following illustration shows the new item section of the application.
 
 ![AWS Tracking Application](images/track2.png)
 
-A user can retrive either active or archive items, as shown in this illustration. 
+A user can retrive either active or archive items by clicking the **Get Data** button. A data set is retrieved from an AWS RDS database and displayed in the web application, as shown in this illustration. 
 
 ![AWS Tracking Application](images/track4.png)
+
+Finally, the user can select the email recipient from the dropdown field and click the **Send Report** button. A result of active items is retrieved from the database and placed into an Excel docuument that is dynamically created by the application. Then the application uses AWS SES to email the document to the selected email recipient.
 
 This development document guides you through creating the AWS Tracker application. Once the application is developed, this document teaches you how to deploy it to the AWS Elastic Beanstalk.
 
