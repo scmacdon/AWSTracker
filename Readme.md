@@ -112,7 +112,7 @@ Also, add the following Spring Boot **dependency** elements inside the **depende
         <scope>runtime</scope>
     </dependency>
     
-**Note** - Ensure you are using Java 1.8 (shown below).
+**Note** - Ensure that you are using Java 1.8 (shown below).
   
 At this point, you **pom.xml** file resembles the following file. 
 
@@ -182,5 +182,17 @@ The following list describes these packages:
 
 + **entities** - contains Java files that represent the model. In this example, the model class is named **WorkItem**. 
 + **jdbc** - contains Java files that use the JDBC API to interact with the RDS database.
-+ **services** - contains Java files that invoke AWS Services. For example, the **com.amazonaws.services.simpleemail.AmazonSimpleEmailService** is used within a Java file to send email messages.
++ **services** - contains Java files that invoke AWS Services. For example, the  **com.amazonaws.services.simpleemail.AmazonSimpleEmailService** is used within a Java file to send email messages.
 + **springboot.springsecurity** - contains all of the Java files required for Spring Security. 
+
+## Section 4 - Create the Java logic for a secure web application
+
+Create Spring Security application logic that secures the web application with a login form that requires a user to provide credentials. In this application, user credenital are stored in a relational database located in the AWS Cloud (the RDS instance is created in a later section). 
+
+### Create User and Roles classes
+
+Create a new Java package named: 
+
+    com.aws.springboot.springsecurity.model
+
+
