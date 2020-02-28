@@ -45,7 +45,7 @@ This development document guides you through creating the AWS Tracker applicatio
 
 The following illustration shows you the structure of the Java project that you create by following this development document.
 
-![AWS Tracking Application](images/track3.png)
+![AWS Tracking Application](images/newtrack3.png)
 
 To follow along with the document, you require the following:
 
