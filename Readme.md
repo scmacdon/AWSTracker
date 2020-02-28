@@ -21,7 +21,7 @@ Like most applications, this application uses a model. For the purpose of this d
 
 The following illustration shows the login page. 
 
-![AWS Tracking Application](images/track1.png)
+![AWS Tracking Application](images/newtrack1.png)
 
 After a user logs into the system, they can perform these operations: 
 
