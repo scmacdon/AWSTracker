@@ -197,12 +197,12 @@ Create a new Java package named:
 
     com.aws.springboot.springsecurity.model
 
-The new step is to create two classes in thie package:
+The new step is to create two classes in this package:
 
 + **User** 
 + **Roles**
 
-To create the User and Roles classes: 
+To create the **User** and **Roles** classes: 
 
 1. Create the **com.aws.springboot.springsecurity.model** package. 
 2. Create the **User** class in this package. 
