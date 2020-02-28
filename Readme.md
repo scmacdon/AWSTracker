@@ -202,7 +202,14 @@ The new step is to create two classes in thie package:
 + **User** 
 + **Roles**
 
-Copy the code from the **User** class located in this Github repository and paste it into the User class located in your project. 
+To create the User and Roles classes: 
+
+1. Create the **com.aws.springboot.springsecurity.model** package. 
+2. Create the **User** class in this package. 
+3. Copy the code from the **User** class located in this Github repository and paste it into this class in your project.
+4. Create the **Roles** class in this package.
+5. Copy the code from the **Roles** class located in this Github repository and paste it into this class in your project.
+
 
 
 
