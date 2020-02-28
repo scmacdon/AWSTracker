@@ -195,11 +195,7 @@ Create Spring Security application logic that secures the web application with a
 
 ### Create the Spring Security classes
 
-Create a new Java package named: 
-
-    com.aws.securingweb
-    
-The new step is to create these classes in this package:
+Create a new Java package named **com.aws.securingweb**. Next, create these classes in this package:
 
 + **SecuringWebApplication** 
 + **WebSecurityConfig**
