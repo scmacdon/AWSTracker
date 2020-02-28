@@ -176,7 +176,7 @@ Create a Java package in the **main/java** folder named **com.aws**.
 
 The Java files go into these subpackages:
 
-![AWS Tracking Application](images/newtrack7.png)
+![AWS Tracking Application](images/newtrack7_1.png)
 
 The following list describes these packages:
 
