@@ -210,6 +210,18 @@ To create the **SecuringWebApplication** and **WebSecurityConfig** classes:
 4. Create the **WebSecurityConfig** class in this package.
 5. Copy the code from the **WebSecurityConfig** class located in this Github repository and paste it into this class in your project.
 
+### Create the main controller class
+
+Within the **com.aws.securingweb** package, create the controller class named **MainController**. This class is responsible for handling the HTTP Requests. For example, if a GET operation is made by the view, the MainController handles this request and returns a data set that is displayed in the view. 
+
+**NOTE**: In this application, AJAX request are made to invoke controller methods. The syntax of the AJAX request are shown later in this document. 
+
+To create the **MainController** class: 
+
+1. In the **com.aws.securingweb** package, create the **MainController** class. 
+2. Copy the code from the **MainController** class located in this Github repository and paste it into this class in your project.
+
+
 
 
 
