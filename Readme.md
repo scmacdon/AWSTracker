@@ -47,6 +47,8 @@ The following illustration shows you the structure of the Java project that you 
 
 ![AWS Tracking Application](images/newtrack3_1.png)
 
+**Note**: All of the Java code required to complete this document is located in this Github repository. You can copy the code from the classes and paste it into your project when instructed to do so in this document. 
+
 To follow along with the document, you require the following:
 
 + An AWS Account.
