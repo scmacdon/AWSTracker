@@ -53,7 +53,8 @@ To follow along with the document, you require the following:
 
 + An AWS Account.
 + A Java IDE (for this development document, the IntelliJ IDE is used).
-+ Java 1.8 SDK and Maven.
++ Java 1.8 JDK 
++ Maven 3.6 or higher.
 
 **Cost to Complete**: The AWS Services included in this document are included in the AWS Free Tier.
 
