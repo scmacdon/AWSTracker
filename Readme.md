@@ -187,12 +187,22 @@ The following list describes these packages:
 
 ## Section 4 - Create the Java logic for a secure web application
 
-Create Spring Security application logic that secures the web application with a login form that requires a user to provide credentials. In this application, user credenital are stored in a relational database located in the AWS Cloud (the RDS instance is created in a later section). 
+Create Spring Security application logic that secures the web application with a login form that requires a user to provide credentials. In this application, user credenital are stored in a relational database located in the AWS Cloud (the RDS instance is created in a later section).
+
+**NOTE** - For more information about Spring Security, see https://spring.io/guides/gs/securing-web/. 
 
 ### Create User and Roles classes
 
 Create a new Java package named: 
 
     com.aws.springboot.springsecurity.model
+
+The new step is to create two classes in thie package:
+
++ **User** 
++ **Roles**
+
+Copy the code from the **User** class located in this Github repository and paste it into the User class located in your project. 
+
 
 
