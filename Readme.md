@@ -293,7 +293,7 @@ Within the **com.aws.securingweb** package, create the controller class named **
 To create the **MainController** class: 
 
 1. In the **com.aws.securingweb** package, create the **MainController** class. 
-2. Copy the code from the **MainController** class located in this Github repository and paste it into this class in your project.
+2. Copy the code from the **MainController** class and paste it into this class in your project.
 
 The following Java code represents the **MainController** class. 
 
@@ -445,7 +445,86 @@ The following Java code represents the **MainController** class.
       }
     }
 
+## Create the WorkItem class
+
+Create a new Java package named **com.aws.entities**. Next, create a class, that represents the model, named **WorkItem**. To create the **MainController** class: 
+
+1. In the **com.aws.entities** package, create the **WorkItem** class. 
+2. Copy the code from the **WorkItem** class and paste it into this class in your project.
+
+The following Java code represents the **MainController** class. 
+
+    package com.aws.entities;
+
+    public class WorkItem {
+
+      private String id;
+      private String name;
+      private String guide ;
+      private String date;
+      private String description;
+      private String status;
 
 
+      public void SetId (String id)
+      {
+        this.id = id;
+      }
 
+      public String getId()
+      {
+        return this.id;
+      }
+
+      public void SetStatus (String status)
+      {
+        this.status = status;
+      }
+
+      public String getStatus()
+      {
+        return this.status;
+      }
+
+      public void SetDescription (String description)
+      {
+        this.description = description;
+      }
+
+      public String getDescription()
+      {
+        return this.description;
+      }
+
+
+      public void SetDate (String date)
+      {
+        this.date = date;
+      }
+
+      public String getDate()
+      {
+        return this.date;
+      }
+
+      public void SetName (String name)
+      {
+        this.name = name;
+      }
+
+      public String getName()
+      {
+        return this.name;
+      }
+
+      public void SetGuide (String guide)
+      {
+        this.guide = guide;
+      }
+
+      public String getGuide()
+      {
+        return this.guide;
+      }
+    }
 
