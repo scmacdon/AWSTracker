@@ -23,7 +23,7 @@ The following illustration shows the login page.
 
 ![AWS Tracking Application](images/newtrack1.png)
 
-After a user logs into the system, they can perform these operations: 
+After a user logs into the system, they can perform these tasks: 
 
 + Enter a new item into the system
 + View all active items
@@ -39,9 +39,7 @@ A user can retrive either active or archive items by clicking the **Get Data** b
 
 ![AWS Tracking Application](images/track4.png)
 
-Finally, the user can select the email recipient from the **Select Manager** dropdown field and click the **Send Report** button. All active items are placed into a data set and used to dynamically create an Excel document by using the **jxl.write.WritableWorkbook** API. Then the application uses Amazon SES to email the document to the selected email recipient.
-
-In this development document, the database is MySQL located in the AWS Cloud. It contains a table named work that contains these fields:
+The database is MySQL and contains a table named **work** that contains these fields:
 
 + **idwork** - A VARCHAR(45) value that represents the PK. 
 + **date** - a Date value that specifies the data the item was added
@@ -54,6 +52,8 @@ In this development document, the database is MySQL located in the AWS Cloud. It
 The following illustration shows the **work** table. 
 
 ![AWS Tracking Application](images/trackMySQL.png)
+
+Finally, the user can select the email recipient from the **Select Manager** dropdown field and click the **Send Report** button. All active items are placed into a data set and used to dynamically create an Excel document by using the **jxl.write.WritableWorkbook** API. Then the application uses Amazon SES to email the document to the selected email recipient.
 
 This development document guides you through creating the *AWS Tracker* application. Once the application is developed, this document teaches you how to deploy it to the AWS Elastic Beanstalk.
 
