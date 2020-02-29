@@ -279,8 +279,10 @@ The following Java code represents the **WebSecurityConfig** class.
                         .build();
 
         return new InMemoryUserDetailsManager(user);
+     }
     }
-}
+    
+ **Note** - In this example, the user credentials ot log into the application is user/password.  
 
 ### Create the main controller class
 
