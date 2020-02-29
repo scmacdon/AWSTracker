@@ -41,6 +41,20 @@ A user can retrive either active or archive items by clicking the **Get Data** b
 
 Finally, the user can select the email recipient from the **Select Manager** dropdown field and click the **Send Report** button. All active items are placed into a data set and used to dynamically create an Excel document by using the **jxl.write.WritableWorkbook** API. Then the application uses Amazon SES to email the document to the selected email recipient.
 
+In this development document, the database is MySQL located in the AWS Cloud. It contains a table named work that contains these fields:
+
++ **idwork** - A VARCHAR(45) value that represents the PK. 
++ **date** - a Date value that specifies the data the item was added
++ **description** - a VARCHAR(300) that describes the item 
++ **guide** - a VARCHAR(45) value that represents the deliverable being worked on
++ **status** - a  VARCHAR(300) value that describes describes the status
++ **username** - a VARCHAR(45) value that represents the user whom entered the item 
++ **archive** - a TINYINT(4)value that represents whether this is an active or archive item 
+
+The following illustration shows the **work** table. 
+
+![AWS Tracking Application](images/trackMySQL.png)
+
 This development document guides you through creating the *AWS Tracker* application. Once the application is developed, this document teaches you how to deploy it to the AWS Elastic Beanstalk.
 
 The following illustration shows you the structure of the Java project that you create by following this development document.
