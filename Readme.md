@@ -211,7 +211,7 @@ To create the **SecuringWebApplication** and **WebSecurityConfig** classes:
 
 ### Create the main controller class
 
-Within the **com.aws.securingweb** package, create the controller class named **MainController**. This class is responsible for handling the HTTP Requests. For example, if a GET operation is made by the view, the MainController handles this request and returns a data set that is displayed in the view. 
+Within the **com.aws.securingweb** package, create the controller class named **MainController**. This class is responsible for handling the HTTP Requests. For example, if a GET operation is made by the view, the **MainController** handles this request and returns a data set that is displayed in the view. In this example, the data set is obtained from the MySQL database located in the AWS Cloud. 
 
 **NOTE**: In this application, AJAX request are made to invoke controller methods. The syntax of the AJAX request are shown later in this document. 
 
