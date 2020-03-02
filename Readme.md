@@ -1764,31 +1764,30 @@ The following HTML code represents the index.html file.
             </div>
             <div class="divider-custom-line"></div>
         </div>
+          <!-- Masthead Subheading -->
+          <p class="masthead-subheading font-weight-light mb-0">A Custom tool created by the Amazon SDK Doc Team</p>
 
-        <!-- Masthead Subheading -->
-        <p class="masthead-subheading font-weight-light mb-0">A Custom tool created by the Amazon SDK Doc Team</p>
+          </div>
+        </header>
 
-        </div>
-      </header>
+        <!-- Portfolio Section -->
+        <section class="page-section portfolio" id="portfolio">
+          <div class="container">
 
-    <!-- Portfolio Section -->
-    <section class="page-section portfolio" id="portfolio">
-      <div class="container">
+           <!-- Portfolio Section Heading -->
+            <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Retrieve Items</h2>
 
-        <!-- Portfolio Section Heading -->
-        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Retrieve Items</h2>
-
-        <!-- Icon Divider -->
-        <div class="divider-custom">
-            <div class="divider-custom-line"></div>
-            <div class="divider-custom-icon">
+            <!-- Icon Divider -->
+            <div class="divider-custom">
+              <div class="divider-custom-line"></div>
+              <div class="divider-custom-icon">
                 <i class="fas fa-star"></i>
-            </div>
-            <div class="divider-custom-line"></div>
-        </div>
+              </div>
+              <div class="divider-custom-line"></div>
+          </div>
 
-        <!-- Portfolio Grid Items -->
-        <div class="row">
+          <!-- Portfolio Grid Items -->
+          <div class="row">
 
             <table id="myTable" class="display" style="width:100%">
                 <thead>
@@ -1826,9 +1825,8 @@ The following HTML code represents the index.html file.
             </table>
            </div>
 
-
-        <div class="container">
-            <!-- Or let Bootstrap automatically handle the layout -->
+            <div class="container">
+              <!-- Or let Bootstrap automatically handle the layout -->
             <div class="row">
                 <div class="col-sm" style="background-color:white;">
                     <button type="submit" class="btn btn-success" id="GetButton">Get Data</button>
@@ -1858,8 +1856,8 @@ The following HTML code represents the index.html file.
             </div>
         </div>
 
-        <!-- Portfolio Item 2 -->
-        <div class="col-md-6 col-lg-4">
+          <!-- Portfolio Item 2 -->
+          <div class="col-md-6 col-lg-4">
             <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal2">
                 <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                     <div class="portfolio-item-caption-content text-center text-white">
@@ -1867,11 +1865,11 @@ The following HTML code represents the index.html file.
                     </div>
                 </div>
                 <img class="img-fluid" src="img/portfolio/cake.png" alt="">
-            </div>
-        </div>
+              </div>
+          </div>
 
-        <!-- Portfolio Item 3 -->
-        <div class="col-md-6 col-lg-4">
+           <!-- Portfolio Item 3 -->
+            <div class="col-md-6 col-lg-4">
             <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal3">
                 <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                     <div class="portfolio-item-caption-content text-center text-white">
@@ -1880,10 +1878,10 @@ The following HTML code represents the index.html file.
                 </div>
                 <img class="img-fluid" src="img/portfolio/circus.png" alt="">
             </div>
-        </div>
+          </div>
 
-        <!-- Portfolio Item 4 -->
-        <div class="col-md-6 col-lg-4">
+          <!-- Portfolio Item 4 -->
+          <div class="col-md-6 col-lg-4">
             <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal4">
                 <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                     <div class="portfolio-item-caption-content text-center text-white">
@@ -1892,10 +1890,10 @@ The following HTML code represents the index.html file.
                 </div>
                 <img class="img-fluid" src="img/portfolio/game.png" alt="">
             </div>
-        </div>
+          </div>
 
-        <!-- Portfolio Item 5 -->
-        <div class="col-md-6 col-lg-4">
+          <!-- Portfolio Item 5 -->
+          <div class="col-md-6 col-lg-4">
             <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal5">
                 <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                     <div class="portfolio-item-caption-content text-center text-white">
@@ -1903,10 +1901,10 @@ The following HTML code represents the index.html file.
                     </div>
                 </div>
             </div>
-        </div>
+          </div>
 
-        <!-- Portfolio Item 6 -->
-        <div class="col-md-6 col-lg-4">
+          <!-- Portfolio Item 6 -->
+          <div class="col-md-6 col-lg-4">
             <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal6">
                 <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                     <div class="portfolio-item-caption-content text-center text-white">
@@ -1916,30 +1914,30 @@ The following HTML code represents the index.html file.
             </div>
         </div>
 
-    </div>
-    <!-- /.row -->
+        </div>
+        <!-- /.row -->
 
-    </div>
-    </section>
+        </div>
+        </section>
 
-    <!-- MODIFY ITEM Section -->
-    <section class="page-section bg-primary text-white mb-0" id="aboutmodify">
-      <div class="container">
+        <!-- MODIFY ITEM Section -->
+        <section class="page-section bg-primary text-white mb-0" id="aboutmodify">
+          <div class="container">
 
-        <!-- About Section Heading -->
-        <h2 class="page-section-heading text-center text-uppercase text-white">Modify Item</h2>
+          <!-- About Section Heading -->
+          <h2 class="page-section-heading text-center text-uppercase text-white">Modify Item</h2>
 
-        <!-- Icon Divider -->
-        <div class="divider-custom divider-light">
+          <!-- Icon Divider -->
+          <div class="divider-custom divider-light">
             <div class="divider-custom-line"></div>
             <div class="divider-custom-icon">
                 <i class="fas fa-star"></i>
             </div>
             <div class="divider-custom-line"></div>
-        </div>
+          </div>
 
-        <!-- About Section Content -->
-        <div class="row">
+          <!-- About Section Content -->
+          <div class="row">
             <div class="col-lg-4 ml-auto">
                 <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional SASS stylesheets for easy customization.</p>
             </div>
@@ -1948,19 +1946,18 @@ The following HTML code represents the index.html file.
             </div>
         </div>
 
-        <!-- About Section Button -->
-        <div class="text-center mt-4">
+          <!-- About Section Button -->
+          <div class="text-center mt-4">
             <a class="btn btn-xl btn-outline-light" href="https://startbootstrap.com/themes/freelancer/">
                 <i class="fas fa-download mr-2"></i>
                 Free Download!
             </a>
-        </div>
+          </div>
+      </div>
+      </section>
 
-    </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="page-section" id="modify">
+      <!-- Contact Section -->
+      <section class="page-section" id="modify">
       <div class="container">
 
         <!-- Contact Section Heading -->
@@ -1975,8 +1972,8 @@ The following HTML code represents the index.html file.
             <div class="divider-custom-line"></div>
         </div>
 
-        <!-- Contact Section Form -->
-        <div class="row">
+          <!-- Contact Section Form -->
+          <div class="row">
             <div class="col-lg-8 mx-auto">
                 <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
                 <form name="sentMessage" id="modifyform" novalidate="novalidate">
@@ -2018,12 +2015,12 @@ The following HTML code represents the index.html file.
             </div>
         </div>
 
-    </div>
-    </section>
+        </div>
+        </section>
 
-    <!-- About Section -->
-    <section class="page-section bg-primary text-white mb-0" id="about">
-      <div class="container">
+       <!-- About Section -->
+        <section class="page-section bg-primary text-white mb-0" id="about">
+        <div class="container">
 
         <!-- About Section Heading -->
         <h2 class="page-section-heading text-center text-uppercase text-white">About</h2>
@@ -2035,32 +2032,32 @@ The following HTML code represents the index.html file.
                 <i class="fas fa-star"></i>
             </div>
             <div class="divider-custom-line"></div>
-        </div>
+          </div>
 
-        <!-- About Section Content -->
-        <div class="row">
+          <!-- About Section Content -->
+          <div class="row">
             <div class="col-lg-4 ml-auto">
                 <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional SASS stylesheets for easy customization.</p>
             </div>
             <div class="col-lg-4 mr-auto">
                 <p class="lead">You can create your own custom avatar for the masthead, change the icon in the dividers, and add your email address to the contact form to make it fully functional!</p>
             </div>
-        </div>
+          </div>
 
-        <!-- About Section Button -->
-        <div class="text-center mt-4">
+          <!-- About Section Button -->
+          <div class="text-center mt-4">
             <a class="btn btn-xl btn-outline-light" href="https://startbootstrap.com/themes/freelancer/">
                 <i class="fas fa-download mr-2"></i>
                 Free Download!
             </a>
         </div>
 
-    </div>
-    </section>
+        </div>
+        </section>
 
-    <!-- Contact Section -->
-    <section class="page-section" id="contact">
-    <div class="container">
+        <!-- Contact Section -->
+        <section class="page-section" id="contact">
+        <div class="container">
 
         <!-- Contact Section Heading -->
         <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Work Item</h2>
@@ -2114,35 +2111,32 @@ The following HTML code represents the index.html file.
                     </div>
                 </form>
             </div>
-        </div>
+           </div>
+          </div>
+        </section>
 
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer text-center">
-    <div class="container">
+      <!-- Footer -->
+      <footer class="footer text-center">
+      <div class="container">
         <div class="row">
 
             <!-- Footer Location -->
             <div class="col-lg-4 mb-5 mb-lg-0">
                 <h4 class="text-uppercase mb-4">AWS Tracker</h4>
              </div>
-
-
         </div>
     </div>
-    </footer>
+      </footer>
 
-    <!-- Copyright Section -->
-    <section class="copyright py-4 text-center text-white">
-    <div class="container">
+      <!-- Copyright Section -->
+      <section class="copyright py-4 text-center text-white">
+      <div class="container">
         <small>Copyright &copy; Your Website 2019</small>
-    </div>
-    </section>
+      </div>
+      </section>
 
-    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
-    <div class="scroll-to-top d-lg-none position-fixed ">
+        <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <   div class="scroll-to-top d-lg-none position-fixed ">
       <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
         <i class="fa fa-chevron-up"></i>
       </a>
