@@ -741,7 +741,7 @@ The following Java code represents the **InjectWorkService** class.
 
 #### RetrieveItems class
 
-The following Java code represents the **RetrieveItems** class.
+The following Java code represents the **RetrieveItems** class. In the following Java code, notice that an **EnvironmentVariableCredentialsProvider** is used. The reason is because this code is deployed to the AWS Elastic Beanstalk. As a result, you need to use a credential provider that can be used on this platform. You can setup environment variables on the AWS Elastic Beanstalk to reflect your AWS credentials. 
 
     package com.aws.jdbc;
 
@@ -1004,10 +1004,10 @@ The following Java code represents the **RetrieveItems** class.
 
             while (rs.next())
             {
-                //For each employee record-- create an Employee instance
+                // For each tem - create an item instance
                 item = new WorkItem();
 
-                //Populate Employee object with data from MySQL
+                // Populate Employee object with data from MySQL
                 item.SetId(rs.getString(1));
                 item.SetName(rs.getString(2));
                 item.SetDate(rs.getDate(3).toString().trim());
@@ -1015,7 +1015,7 @@ The following Java code represents the **RetrieveItems** class.
                 item.SetGuide(rs.getString(5));
                 item.SetStatus(rs.getString(6));
 
-                //Push the Employee Object to the list
+                // Push the item object to the list
                 itemList.add(item);
             }
 
