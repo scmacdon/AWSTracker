@@ -1569,3 +1569,4 @@ At this point, you have created all of the Java files required for the AWS *Trac
 The following illustration shows these files. 
 
 
+![AWS Tracking Application](images/resources.png)
