@@ -148,7 +148,7 @@ Also, add the following Spring Boot **dependency** elements inside the **depende
     
 **Note** - Ensure that you are using Java 1.8 (shown below).
   
-At this point, you **pom.xml** file resembles the following file. 
+At this point, the **pom.xml** file resembles the following file. 
 
     <?xml version="1.0" encoding="UTF-8"?>
     <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -225,7 +225,7 @@ Create Spring Security application logic that secures the web application with a
 
 **NOTE** - For more information about Spring Security, see https://spring.io/guides/gs/securing-web/. 
 
-### Section 5 - Create the Spring Security classes
+## Section 5 - Create the Spring Security classes
 
 Create a new Java package named **com.aws.securingweb**. Next, create these classes in this package:
 
@@ -253,7 +253,6 @@ The following Java code represents the **SecuringWebApplication** class.
         SpringApplication.run(SecuringWebApplication.class, args);
      }
     }
-
 
 #### WebSecurityConfig class 
 The following Java code represents the **WebSecurityConfig** class.
@@ -315,7 +314,7 @@ The following Java code represents the **WebSecurityConfig** class.
    
  **Note** - In this example, the user credentials to log into the application are user/password.  
 
-### Section 6 -  Create the main controller class
+## Section 6 -  Create the main controller class
 
 Within the **com.aws.securingweb** package, create the controller class named **MainController**. This class is responsible for handling the HTTP Requests. For example, if a GET operation is made by the view, the **MainController** handles this request and returns a data set that is displayed in the view. In this example, the data set is obtained from the MySQL database located in the AWS Cloud. 
 
