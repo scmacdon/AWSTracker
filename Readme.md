@@ -1685,7 +1685,7 @@ The following HTML code represents the index.html file.
     <!DOCTYPE html>
     <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
-    <head>
+      <head>
       <meta charset="utf-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -1743,8 +1743,8 @@ The following HTML code represents the index.html file.
 
             </ul>
         </div>
-    </div>
-</nav>
+     </div>
+    </nav>
 
     <!-- Masthead -->
     <header class="masthead bg-primary text-white text-center">
