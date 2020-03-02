@@ -207,7 +207,7 @@ Create Spring Security application logic that secures the web application with a
 
 **NOTE** - For more information about Spring Security, see https://spring.io/guides/gs/securing-web/. 
 
-### Create the Spring Security classes
+### Section 5 - Create the Spring Security classes
 
 Create a new Java package named **com.aws.securingweb**. Next, create these classes in this package:
 
@@ -217,11 +217,10 @@ Create a new Java package named **com.aws.securingweb**. Next, create these clas
 To create the **SecuringWebApplication** and **WebSecurityConfig** classes: 
 
 1. Create the **com.aws.securingweb** package. 
-2. Create the **SecuringWebApplication** class in this package. 
-3. Copy the code from the **SecuringWebApplication** class and paste it into this class in your project.
-4. Create the **WebSecurityConfig** class in this package.
-5. Copy the code from the **WebSecurityConfig** class and paste it into this class in your project.
+2. Create the **SecuringWebApplication** class in this package and paste the code into it.
+3. Create the **WebSecurityConfig** class in this package and paste the code into it.
 
+#### SecuringWebApplication class 
 The following Java code represents the **SecuringWebApplication** class.
 
     package com.aws.securingweb;
@@ -234,10 +233,11 @@ The following Java code represents the **SecuringWebApplication** class.
 
     public static void main(String[] args) throws Throwable {
         SpringApplication.run(SecuringWebApplication.class, args);
+     }
     }
 
-}
 
+#### WebSecurityConfig class 
 The following Java code represents the **WebSecurityConfig** class.
 
     package com.aws.securingweb;
@@ -297,7 +297,7 @@ The following Java code represents the **WebSecurityConfig** class.
     
  **Note** - In this example, the user credentials ot log into the application is user/password.  
 
-### Create the main controller class
+### Section 6 -  Create the main controller class
 
 Within the **com.aws.securingweb** package, create the controller class named **MainController**. This class is responsible for handling the HTTP Requests. For example, if a GET operation is made by the view, the **MainController** handles this request and returns a data set that is displayed in the view. In this example, the data set is obtained from the MySQL database located in the AWS Cloud. 
 
@@ -458,7 +458,7 @@ The following Java code represents the **MainController** class.
       }
     }
 
-## Create the WorkItem class
+## Section 7 - Create the WorkItem class
 
 Create a new Java package named **com.aws.entities**. Next, create a class, that represents the model named **WorkItem**. To create the **WorkItem** class: 
 
@@ -542,7 +542,7 @@ The following Java code represents the **MainController** class.
       }
     }
 
-## Create the JDBC Classes
+## Section 8 - Create the JDBC Classes
 
 Create a new Java package named **com.aws.jdbc**. Next, create these Java classes required to perform database operations:
 
@@ -1195,7 +1195,7 @@ The following Java code represents the **RetrieveItems** class.
       }
     }
 
-## Create the Service classes
+## Section 9 - Create the Service classes
 
 The service classes contain Java application logic that make use of AWS Services. In this section, you create these classes: 
 
@@ -1559,7 +1559,7 @@ The **WriteExcel** class is responsible for dynamically creating an Excel report
       }
     }
     
-## Create the HTML files
+## Section 10 - Create the HTML files
 
 At this point, you have created all of the Java files required for the AWS *Tracking Application*. Under the resource folder, create a template folder and then create the following HTML files:
 
@@ -1670,5 +1670,482 @@ The following HTML code represents the login form.
       </div>
     </form>
 
+    </body>
+    </html>
+#### Index HTML file
+
+The following HTML code represents the index HTML file. This file represents the application's view and displays all of the data that the application uses. This view is broken into three sections: 
+
++ A section that displays all of the items. 
++ A section that lets you modify an item. 
++ A section that lets you enter an item. 
+
+The following HTML code represents the index.html file.
+
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+    <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link rel="stylesheet" href="../public/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+      <link rel="stylesheet" href="../public/css/freelancer.min.css" th:href="@{/css/freelancer.min.css}" />
+      <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
+      <link rel="stylesheet" href="../public/css/all.min.css" th:href="@{/css/all.min.css}" />
+      <link rel="stylesheet" href="../public/css/loading.css" th:href="@{/css/loading.css}" />
+      <link rel="stylesheet" th:href="|http://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css|"/>
+      <link rel="stylesheet" th:href="|https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.1/dist/messagebox.min.css|"/>
+      <link rel="stylesheet" th:href="|https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|"/>
+      <link rel="stylesheet" th:href="|https://fonts.googleapis.com/css?family=Montserrat:400,700|"/>
+
+      <script src="../public/js/jquery.1.10.2.min.js" th:src="@{/js/jquery.1.10.2.min.js}"></script>
+      <script src="../public/js/contact_me.js" th:src="@{/js/contact_me.js}"></script>
+      <script src="../public/js/jquery.loading.js" th:src="@{/js/jquery.loading.js}"></script>
+      <script src="../public/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+      <script th:src="|http://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js|"></script>
+      <script th:src="|https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.1/dist/messagebox.min.js|"></script>
+      <script src="../public/js/jquery.easing.min.js" th:src="@{/js/jquery.easing.min.js}"></script>
+      <script src="../public/js/jqBootstrapValidation.js" th:src="@{/js/jqBootstrapValidation.js}"></script>
+      <title>AWS Work Tracker</title>
+    </head>
+
+    <body id="page-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">Welcome <span sec:authentication="principal.username">User</span>        </a>
+        <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Retrieve Items</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#modify">Modify Items</a>
+                </li>
+
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Enter Item</a>
+                </li>
+
+                <form id="logoutForm" th:action="@{/logout}" method="post">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" onclick="document.forms['logoutForm'].submit()">Logout</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <!-- Masthead -->
+    <header class="masthead bg-primary text-white text-center">
+      <div class="container d-flex align-items-center flex-column">
+
+        <!-- Masthead Avatar Image -->
+        <img src="../public/img/aws-press-release.png" th:src="@{/img/aws-press-release.png}">
+        <!-- Masthead Heading -->
+        <h1 class="masthead-heading text-uppercase mb-0">Track your AWS work</h1>
+
+
+        <!-- Icon Divider -->
+        <div class="divider-custom divider-light">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="divider-custom-line"></div>
+        </div>
+
+        <!-- Masthead Subheading -->
+        <p class="masthead-subheading font-weight-light mb-0">A Custom tool created by the Amazon SDK Doc Team</p>
+
+        </div>
+      </header>
+
+    <!-- Portfolio Section -->
+    <section class="page-section portfolio" id="portfolio">
+      <div class="container">
+
+        <!-- Portfolio Section Heading -->
+        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Retrieve Items</h2>
+
+        <!-- Icon Divider -->
+        <div class="divider-custom">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="divider-custom-line"></div>
+        </div>
+
+        <!-- Portfolio Grid Items -->
+        <div class="row">
+
+            <table id="myTable" class="display" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Writer</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Guide</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>No Data</td>
+                    <td>No Data</td>
+                    <td>No Data </td>
+                    <td>No Data</td>
+                    <td>No Data</td>
+                    <td>No Data</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th>Id</th>
+                    <th>Writer</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Guide</th>
+                    <th>Status</th>
+                </tr>
+
+                </tfoot>
+                <div id="success3"></div>
+            </table>
+           </div>
+
+
+        <div class="container">
+            <!-- Or let Bootstrap automatically handle the layout -->
+            <div class="row">
+                <div class="col-sm" style="background-color:white;">
+                    <button type="submit" class="btn btn-success" id="GetButton">Get Data</button>
+                </div>
+                <div class="col-sm" style="background-color:white;">
+                    <h5>Data Type</h5>
+                    <div class="radio">
+                        <label><input type="radio" name="optradio" value="active" checked>Active Data</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" name="optradio" value="archive">Archive Data</label>
+                    </div>
+
+                </div>
+
+                <div class="col-sm" style="background-color:white;">
+                    <label for="sel1">Select Manager (select one):</label>
+                    <select class="form-control" id="sel1">
+                        <option>No Manager</option>
+                        <option>pccornel@amazon.com</option>
+                    </select>
+                </div>
+
+                <div class="col-sm" style="background-color:white;">
+                    <button type="submit" class="btn btn-success" id="GetReport">Send Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Item 2 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal2">
+                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                    <div class="portfolio-item-caption-content text-center text-white">
+                        <i class="fas fa-plus fa-3x"></i>
+                    </div>
+                </div>
+                <img class="img-fluid" src="img/portfolio/cake.png" alt="">
+            </div>
+        </div>
+
+        <!-- Portfolio Item 3 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal3">
+                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                    <div class="portfolio-item-caption-content text-center text-white">
+                        <i class="fas fa-plus fa-3x"></i>
+                    </div>
+                </div>
+                <img class="img-fluid" src="img/portfolio/circus.png" alt="">
+            </div>
+        </div>
+
+        <!-- Portfolio Item 4 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal4">
+                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                    <div class="portfolio-item-caption-content text-center text-white">
+                        <i class="fas fa-plus fa-3x"></i>
+                    </div>
+                </div>
+                <img class="img-fluid" src="img/portfolio/game.png" alt="">
+            </div>
+        </div>
+
+        <!-- Portfolio Item 5 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal5">
+                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                    <div class="portfolio-item-caption-content text-center text-white">
+                        <i class="fas fa-plus fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Item 6 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal6">
+                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                    <div class="portfolio-item-caption-content text-center text-white">
+                        <i class="fas fa-plus fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+    </div>
+    </section>
+
+    <!-- MODIFY ITEM Section -->
+    <section class="page-section bg-primary text-white mb-0" id="aboutmodify">
+      <div class="container">
+
+        <!-- About Section Heading -->
+        <h2 class="page-section-heading text-center text-uppercase text-white">Modify Item</h2>
+
+        <!-- Icon Divider -->
+        <div class="divider-custom divider-light">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="divider-custom-line"></div>
+        </div>
+
+        <!-- About Section Content -->
+        <div class="row">
+            <div class="col-lg-4 ml-auto">
+                <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional SASS stylesheets for easy customization.</p>
+            </div>
+            <div class="col-lg-4 mr-auto">
+                <p class="lead">You can create your own custom avatar for the masthead, change the icon in the dividers, and add your email address to the contact form to make it fully functional!</p>
+            </div>
+        </div>
+
+        <!-- About Section Button -->
+        <div class="text-center mt-4">
+            <a class="btn btn-xl btn-outline-light" href="https://startbootstrap.com/themes/freelancer/">
+                <i class="fas fa-download mr-2"></i>
+                Free Download!
+            </a>
+        </div>
+
+    </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="page-section" id="modify">
+      <div class="container">
+
+        <!-- Contact Section Heading -->
+        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Modify Item</h2>
+
+        <!-- Icon Divider -->
+        <div class="divider-custom">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="divider-custom-line"></div>
+        </div>
+
+        <!-- Contact Section Form -->
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
+                <form name="sentMessage" id="modifyform" novalidate="novalidate">
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>Writer</label>
+                            <input class="form-control" id="modify-id" type="text" placeholder="Item ID" required="required" data-validation-required-message="Please enter Item Id.">
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>Description</label>
+                            <textarea class="form-control" id="new-description" rows="5" placeholder="Description" required="required" data-validation-required-message="Please enter a description."></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>Status</label>
+                            <textarea class="form-control" id="new-status" rows="5" placeholder="Status" required="required" data-validation-required-message="Please enter the status."></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <br>
+                    <div id="success2"></div>
+                    <div class="row">
+                        <div class="col-sm-6" style="background-color:white;">
+                            <button type="submit" class="btn btn-primary btn-xl" id="ModifyButton">Modify Item</button>
+                        </div>
+                        <div class="col-sm-6" style="background-color:white;">
+                            <button type="submit" class="btn btn-primary btn-xl" id="GetArchive">Archive</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="page-section bg-primary text-white mb-0" id="about">
+      <div class="container">
+
+        <!-- About Section Heading -->
+        <h2 class="page-section-heading text-center text-uppercase text-white">About</h2>
+
+        <!-- Icon Divider -->
+        <div class="divider-custom divider-light">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="divider-custom-line"></div>
+        </div>
+
+        <!-- About Section Content -->
+        <div class="row">
+            <div class="col-lg-4 ml-auto">
+                <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional SASS stylesheets for easy customization.</p>
+            </div>
+            <div class="col-lg-4 mr-auto">
+                <p class="lead">You can create your own custom avatar for the masthead, change the icon in the dividers, and add your email address to the contact form to make it fully functional!</p>
+            </div>
+        </div>
+
+        <!-- About Section Button -->
+        <div class="text-center mt-4">
+            <a class="btn btn-xl btn-outline-light" href="https://startbootstrap.com/themes/freelancer/">
+                <i class="fas fa-download mr-2"></i>
+                Free Download!
+            </a>
+        </div>
+
+    </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="page-section" id="contact">
+    <div class="container">
+
+        <!-- Contact Section Heading -->
+        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Work Item</h2>
+
+        <!-- Icon Divider -->
+        <div class="divider-custom">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="divider-custom-line"></div>
+        </div>
+
+        <!-- Contact Section Form -->
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
+                <form name="sentMessage" id="contactForm" novalidate="novalidate">
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>Guide</label>
+                            <input class="form-control" id="guide" type="guide" placeholder="AWS Guide/AWS API" required="required" data-validation-required-message="Please enter the AWS Guide.">
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>Date</label>
+                            <input class="form-control" id="date" type="date" placeholder="Date" required="required" data-validation-required-message="Please enter the date.">
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>Description</label>
+                            <textarea class="form-control" id="description" rows="5" placeholder="Description" required="required" data-validation-required-message="Please enter a description."></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>Status</label>
+                            <textarea class="form-control" id="status" rows="5" placeholder="Status" required="required" data-validation-required-message="Please enter the status."></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
+                    <br>
+                    <div id="success"></div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-xl" id="SendButton">Create Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+    <div class="container">
+        <div class="row">
+
+            <!-- Footer Location -->
+            <div class="col-lg-4 mb-5 mb-lg-0">
+                <h4 class="text-uppercase mb-4">AWS Tracker</h4>
+             </div>
+
+
+        </div>
+    </div>
+    </footer>
+
+    <!-- Copyright Section -->
+    <section class="copyright py-4 text-center text-white">
+    <div class="container">
+        <small>Copyright &copy; Your Website 2019</small>
+    </div>
+    </section>
+
+    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <div class="scroll-to-top d-lg-none position-fixed ">
+      <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
+        <i class="fa fa-chevron-up"></i>
+      </a>
+    </div>
     </body>
     </html>
