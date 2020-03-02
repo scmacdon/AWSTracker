@@ -79,7 +79,6 @@ This document contains the following sections:
 + Add the Spring POM dependencies to your project	
 + Setup the Java packages in your project
 + Create the Java logic for a secure web application
-+ Create the Spring Security classes
 + Create the main controller class
 + Create the WorkItem class
 + Create the JDBC Classes
@@ -225,7 +224,7 @@ Create Spring Security application logic that secures the web application with a
 
 **NOTE** - For more information about Spring Security, see https://spring.io/guides/gs/securing-web/. 
 
-## Section 5 - Create the Spring Security classes
+### Create the Spring Security classes
 
 Create a new Java package named **com.aws.securingweb**. Next, create these classes in this package:
 
@@ -314,7 +313,7 @@ The following Java code represents the **WebSecurityConfig** class.
    
  **Note** - In this example, the user credentials to log into the application are user/password.  
 
-## Section 6 -  Create the main controller class
+## Section 5 -  Create the main controller class
 
 Within the **com.aws.securingweb** package, create the controller class named **MainController**. This class is responsible for handling the HTTP Requests. For example, if a GET operation is made by the view, the **MainController** handles this request and returns a data set that is displayed in the view. In this example, the data set is obtained from the MySQL database located in the AWS Cloud. 
 
@@ -475,7 +474,7 @@ The following Java code represents the **MainController** class.
       }
     }
 
-## Section 7 - Create the WorkItem class
+## Section 6 - Create the WorkItem class
 
 Create a new Java package named **com.aws.entities**. Next, create a class that represents the model named **WorkItem**. To create the **WorkItem** class: 
 
@@ -559,7 +558,7 @@ The following Java code represents the **MainController** class.
       }
     }
 
-## Section 8 - Create the JDBC Classes
+## Section 7 - Create the JDBC Classes
 
 Create a new Java package named **com.aws.jdbc**. Next, create these Java classes required to perform database operations:
 
@@ -1210,7 +1209,7 @@ The following Java code represents the **RetrieveItems** class.
       }
     }
 
-## Section 9 - Create the Service classes
+## Section 8 - Create the Service classes
 
 The service classes contain Java application logic that make use of AWS Services. In this section, you create these classes: 
 
@@ -1574,7 +1573,7 @@ The **WriteExcel** class is responsible for dynamically creating an Excel report
       }
     }
     
-## Section 10 - Create the HTML files
+## Section 9 - Create the HTML files
 
 At this point, you have created all of the Java files required for the AWS *Tracking Application*. Under the resource folder, create a template folder and then create the following HTML files:
 
@@ -2159,11 +2158,11 @@ The following HTML code represents the index.html file.
     </body>
     </html>
     
-## Section 11 - Create a Script file that performs AJAX requests 
+## Section 10 - Create a Script file that performs AJAX requests 
 
 Talk about how to setup the Script file that defines AJAX requests
 
-## Section 12 - Setup the RDS instance 
+## Section 11 - Setup the RDS instance 
 
 In this step, you create an Amazon RDS MySQL DB instance that maintains the data used by the *AWS Tracker* application. To setup a MySQL DB instance:
 
@@ -2214,12 +2213,12 @@ Remove other security groups, such as the default security group, by choosing th
 
 14. In the Connectivity & security section, view the Endpoint and Port of the DB instance.
 
-## Section 13 - Create a JAR file for the AWS Tracker application 
+## Section 12 - Create a JAR file for the AWS Tracker application 
 
 Talk about how to package up the applicaton into a JAR file
 
 
-## Section 14 - Deploy the application to the AWS Elastic Beanstalk
+## Section 13 - Deploy the application to the AWS Elastic Beanstalk
 
 Sign in to the AWS Management Console, and then open the Elastic Beanstalk console. An application is the top-level container in Elastic Beanstalk that contains one or more application environments (for example prod, qa, and dev or prod-web, prod-worker, qa-web, qa-worker).
 
