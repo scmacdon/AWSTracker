@@ -2221,5 +2221,20 @@ Talk about how to package up the applicaton into a JAR file
 
 ## Section 14 - Deploy the application to the AWS Elastic Beanstalk
 
-Talk about how to deploy the JAR file onto the AWS Elastic Beanstalk
+Sign in to the AWS Management Console, and then open the Elastic Beanstalk console. An application is the top-level container in Elastic Beanstalk that contains one or more application environments (for example prod, qa, and dev or prod-web, prod-worker, qa-web, qa-worker).
+
+If this is your first time accessing this service, you will see a *Welcome to AWS Elastic Beanstalk* page. Otherwise, you’ll land on the Elastic Beanstalk dashboard, which lists all of your applications.
+
+![AWS Tracking Application](images/SpringBean.png)
+
+Top deploy the AWS Tracker application to the AWS Elastic Beanstalk:
+
+1. Choose **Create New Application**. This opens a wizard that creates your application and launches an appropriate environment.
+2. In the *Create New Application* dialog, enter the following values: 
++ **Application Name** - AWSItemTracker
++ **Description** - A description for the application. 
+
+![AWS Tracking Application](images/NewApp.png)
+
+
 
