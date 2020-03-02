@@ -2227,7 +2227,7 @@ If this is your first time accessing this service, you will see a *Welcome to AW
 
 ![AWS Tracking Application](images/SpringBean.png)
 
-Top deploy the AWS Tracker application to the AWS Elastic Beanstalk:
+To deploy the *AWS Tracker* application to the AWS Elastic Beanstalk:
 
 1. Choose **Create New Application**. This opens a wizard that creates your application and launches an appropriate environment.
 2. In the *Create New Application* dialog, enter the following values: 
