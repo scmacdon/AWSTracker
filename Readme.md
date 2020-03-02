@@ -1,6 +1,6 @@
 #  Creating a Secure AWS Tracking Application using Spring Boot and AWS Services
 
-You can develop an AWS web application that tracks and reports on work items by using these Amazon Web Services: 
+You can develop an Amazon Web Serice(AWS) application that tracks and reports on work items by using these Amazon Web Services: 
 
 + Amazon Relational Database Service (RDS)
 + Amazon Simple Email Service (SES)
