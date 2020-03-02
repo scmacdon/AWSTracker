@@ -34,7 +34,7 @@ The following illustration shows the new item section of the application.
 
 ![AWS Tracking Application](images/track2.png)
 
-A user can retrive either active or archive items by clicking the **Get Data** button. A data set is retrieved from an AWS RDS database and displayed in the web application, as shown in this illustration. 
+A user can retrieve either *active* or *archive* items by clicking the **Get Data** button. A data set is retrieved from an AWS RDS database and displayed in the web application, as shown in this illustration. 
 
 ![AWS Tracking Application](images/track4.png)
 
@@ -79,7 +79,7 @@ Create a new IntelliJ project named **AESItemTracker** by performing these steps
 
 1. From within the IntelliJ IDE, click **File**, **New**, **Project**. 
 2. In the **New Project** dialog, select **Maven**. 
-3. Click **Next**
+3. Click **Next**.
 4. In the **GroupId** field, enter **spring-aws**. 
 5. In the **ArtifactId** field, enter **AWSItemTracker**. 
 6. Click **Next**.
