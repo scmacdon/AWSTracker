@@ -73,6 +73,24 @@ To follow along with the document, you require the following:
 
 **Note**: Please be sure to terminate all of the resources created during this document to ensure that you are no longer charged.
 
+This document contains the following sections: 
+
++ Create an IntelliJ project named AWSItemTracker
++ Add the Spring POM dependencies to your project	
++ Setup the Java packages in your project
++ Create the Java logic for a secure web application
++ Create the Spring Security classes
++ Create the main controller class
++ Create the WorkItem class
++ Create the JDBC Classes
++ Create the Service classes
++ Create the HTML files
++ Create a Script file that performs AJAX requests 
++ Create a JAR file for the AWS Tracker application 
++ Setup the RDS instance 
++ Deploy the application to the AWS Elastic Beanstalk
+
+
 ## Section 1 - Create an IntelliJ project named AWSItemTracker
 
 Create a new IntelliJ project named **AESItemTracker** by performing these steps:
@@ -294,8 +312,8 @@ The following Java code represents the **WebSecurityConfig** class.
         return new InMemoryUserDetailsManager(user);
      }
     }
-    
- **Note** - In this example, the user credentials ot log into the application is user/password.  
+   
+ **Note** - In this example, the user credentials to log into the application are user/password.  
 
 ### Section 6 -  Create the main controller class
 
@@ -460,12 +478,12 @@ The following Java code represents the **MainController** class.
 
 ## Section 7 - Create the WorkItem class
 
-Create a new Java package named **com.aws.entities**. Next, create a class, that represents the model named **WorkItem**. To create the **WorkItem** class: 
+Create a new Java package named **com.aws.entities**. Next, create a class that represents the model named **WorkItem**. To create the **WorkItem** class: 
 
 1. In the **com.aws.entities** package, create the **WorkItem** class. 
 2. Copy the code from the **WorkItem** class and paste it into this class in your project.
 
-#### MainController** class
+#### MainController class
 The following Java code represents the **MainController** class. 
 
     package com.aws.entities;
@@ -546,19 +564,17 @@ The following Java code represents the **MainController** class.
 
 Create a new Java package named **com.aws.jdbc**. Next, create these Java classes required to perform database operations:
 
-+ **ConnectionHelper** - creates a connection to the RDS MySQL. 
-+ **InjectWorkService** - injects items into MySQL
-+ **RetrieveItems** - retrieves items from MySQL
++ **ConnectionHelper** - creates a connection to the RDS MySQL instance. 
++ **InjectWorkService** - injects items into the MySQL instance. 
++ **RetrieveItems** - retrieves items from the MySQL instance. 
 
 To create the JDBC classes: 
 
 1. Create the **com.aws.jdbc** package. 
-2. Create the **ConnectionHelper** class in this package.  
-3. Copy the code from the **ConnectionHelper** class and paste it into this class in your project.
-4. Create the **InjectWorkService** class in this package.
-5. Copy the code from the **InjectWorkService** class and paste it into this class in your project.
-6. Create the **RetrieveItems** class in this package.
-7. Copy the code from the **RetrieveItems** class and paste it into this class in your project.
+2. Create the **ConnectionHelper** class in this package and paste the Java code into the class.  
+3. Create the **InjectWorkService** class in this package and paste the Java code into the class.
+4. Create the **RetrieveItems** class in this package and paste the Java code into the class.
+
 
 #### ConnectionHelper class
 
@@ -2143,3 +2159,9 @@ The following HTML code represents the index.html file.
     </div>
     </body>
     </html>
+    
+## Section 11 - Create a Script file that performs AJAX requests 
+
+## Section 12 - Create a JAR file for the AWS Tracker application 
+
+
