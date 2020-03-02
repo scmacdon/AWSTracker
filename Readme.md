@@ -2162,6 +2162,19 @@ The following HTML code represents the index.html file.
     
 ## Section 11 - Create a Script file that performs AJAX requests 
 
-## Section 12 - Create a JAR file for the AWS Tracker application 
+Talk about how to setup the Script file that defines AJAX requests
 
+## Section 12 - Setup the RDS instance 
+
+Talk about how to setup an configure the RDS database
+
+
+## Section 13 - Create a JAR file for the AWS Tracker application 
+
+Talk about how to package up the applicaton into a JAR file
+
+
+## Section 14 - Deploy the application to the AWS Elastic Beanstalk
+
+Talk about how to deploy the JAR file onto the AWS Elastic Beanstalk
 
