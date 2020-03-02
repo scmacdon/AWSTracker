@@ -465,6 +465,7 @@ Create a new Java package named **com.aws.entities**. Next, create a class, that
 1. In the **com.aws.entities** package, create the **WorkItem** class. 
 2. Copy the code from the **WorkItem** class and paste it into this class in your project.
 
+#### MainController** class
 The following Java code represents the **MainController** class. 
 
     package com.aws.entities;
@@ -549,4 +550,60 @@ Create a new Java package named **com.aws.jdbc**. Next, create these Java classe
 + **InjectWorkService** - injects items into MySQL
 + **RetrieveItems** - retrieves items from MySQL
 
+1. Create the **com.aws.jdbc** package. 
+2. Create the **ConnectionHelper** class in this package.  
+3. Copy the code from the **ConnectionHelper** class and paste it into this class in your project.
+4. Create the **InjectWorkService** class in this package.
+5. Copy the code from the **InjectWorkService** class and paste it into this class in your project.
+6. Create the **RetrieveItems** class in this package.
+7. Copy the code from the **RetrieveItems** class and paste it into this class in your project.
+
+#### ConnectionHelper class
+
+The following Java code represents the **ConnectionHelper** class.
+
+    package com.aws.jdbc;
+
+    import java.sql.Connection;
+    import java.sql.DriverManager;
+    import java.sql.SQLException;
+
+    public class ConnectionHelper
+    {
+      private String url;
+
+      private static ConnectionHelper instance;
+      private ConnectionHelper()
+      {
+          url = "jdbc:mysql://localhost:3306/mydb";
+      }
+    
+      public static Connection getConnection() throws SQLException {
+        if (instance == null) {
+
+
+            instance = new ConnectionHelper();
+        }
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            return DriverManager.getConnection(instance.url, "root","root");
+        }
+        catch (Exception e) {
+            e.getStackTrace();
+        }
+        return null;
+      }
+    
+      public static void close(Connection connection)
+      {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+      }
+    }
 
