@@ -606,4 +606,6 @@ The following Java code represents the **ConnectionHelper** class.
         }
       }
     }
+    
+**NOTE** - Notice the **URL** value is *localhost;3306*. This value is modified later after the RDS instance is created.     
 
