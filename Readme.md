@@ -460,7 +460,7 @@ The following Java code represents the **MainController** class.
 
 ## Create the WorkItem class
 
-Create a new Java package named **com.aws.entities**. Next, create a class, that represents the model, named **WorkItem**. To create the **MainController** class: 
+Create a new Java package named **com.aws.entities**. Next, create a class, that represents the model named **WorkItem**. To create the **WorkItem** class: 
 
 1. In the **com.aws.entities** package, create the **WorkItem** class. 
 2. Copy the code from the **WorkItem** class and paste it into this class in your project.
@@ -540,4 +540,13 @@ The following Java code represents the **MainController** class.
         return this.guide;
       }
     }
+
+## Create the JDBC Classes
+
+Create a new Java package named **com.aws.jdbc**. Next, create these Java classes required to perform database operations:
+
++ **ConnectionHelper** - creates a connection to the RDS MySQL. 
++ **InjectWorkService** - injects items into MySQL
++ **RetrieveItems** - retrieves items from MySQL
+
 
