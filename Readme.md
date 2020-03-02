@@ -2172,7 +2172,7 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 3. In the navigation pane, choose **Databases**.
 4. Choose **Create database**.
 5. On the **Create database** page, make sure that the **Standard Create** option is chosen, and then choose MySQL.
-![AWS Tracking Application](images/trackMySQL.png)
+![AWS Tracking Application](images/trackerSQL.png)
 
 6. In the Templates section, choose Dev/Test.
 
