@@ -90,7 +90,7 @@ This document contains the following sections:
 + Deploy the application to the AWS Elastic Beanstalk
 
 
-## Section 1 - Create an IntelliJ project named AWSItemTracker
+## Create an IntelliJ project named AWSItemTracker
 
 Create a new IntelliJ project named **AWSItemTracker** by performing these steps:
 
@@ -102,7 +102,7 @@ Create a new IntelliJ project named **AWSItemTracker** by performing these steps
 6. Click **Next**.
 7. Click **Finish**. 
 
-## Section 2 - Add the Spring POM dependencies to your project
+## Add the Spring POM dependencies to your project
 
 At this point, you have a new project named **AWSItemTracker**, as shown in this illustration. 
 
@@ -201,7 +201,7 @@ At this point, the **pom.xml** file resembles the following file.
     </dependencies>
   </project>
 
-## Section 3 - Setup the Java packages in your project
+## Setup the Java packages in your project
 
 Create a Java package in the **main/java** folder named **com.aws**. 
 
@@ -218,7 +218,7 @@ The following list describes these packages:
 + **services** - contains Java files that invoke AWS Services. For example, the  **com.amazonaws.services.simpleemail.AmazonSimpleEmailService** is used within a Java file to send email messages.
 + **securingweb** - contains all of the Java files required for Spring Security. 
 
-## Section 4 - Create the Java logic for a secure web application
+## Create the Java logic for a secure web application
 
 Create Spring Security application logic that secures the web application with a login form that requires a user to provide credentials. In this application, a Java class sets up an in-memory user store that contains a single user (the user name is **user** and the password is **password**.)
 
@@ -313,7 +313,7 @@ The following Java code represents the **WebSecurityConfig** class.
    
  **Note** - In this example, the user credentials to log into the application are user/password.  
 
-## Section 5 -  Create the main controller class
+## Create the main controller class
 
 Within the **com.aws.securingweb** package, create the controller class named **MainController**. This class is responsible for handling the HTTP Requests. For example, if a GET operation is made by the view, the **MainController** handles this request and returns a data set that is displayed in the view. In this example, the data set is obtained from the MySQL database located in the AWS Cloud. 
 
@@ -474,7 +474,7 @@ The following Java code represents the **MainController** class.
       }
     }
 
-## Section 6 - Create the WorkItem class
+## Create the WorkItem class
 
 Create a new Java package named **com.aws.entities**. Next, create a class that represents the model named **WorkItem**. To create the **WorkItem** class: 
 
@@ -558,7 +558,7 @@ The following Java code represents the **MainController** class.
       }
     }
 
-## Section 7 - Create the JDBC Classes
+## Create the JDBC Classes
 
 Create a new Java package named **com.aws.jdbc**. Next, create these Java classes required to perform database operations:
 
@@ -1209,7 +1209,7 @@ The following Java code represents the **RetrieveItems** class. In the following
       }
     }
 
-## Section 8 - Create the Service classes
+## Create the Service classes
 
 The service classes contain Java application logic that make use of AWS Services. In this section, you create these classes: 
 
@@ -1573,7 +1573,7 @@ The **WriteExcel** class is responsible for dynamically creating an Excel report
       }
     }
     
-## Section 9 - Create the HTML files
+## Create the HTML files
 
 At this point, you have created all of the Java files required for the AWS *Tracking Application*. Under the resource folder, create a template folder and then create the following HTML files:
 
@@ -2158,11 +2158,11 @@ The following HTML code represents the index.html file.
     </body>
     </html>
     
-## Section 10 - Create a Script file that performs AJAX requests 
+## Create a Script file that performs AJAX requests 
 
 Talk about how to setup the Script file that defines AJAX requests
 
-## Section 11 - Setup the RDS instance 
+## Setup the RDS instance 
 
 In this step, you create an Amazon RDS MySQL DB instance that maintains the data used by the *AWS Tracker* application. To setup a MySQL DB instance:
 
@@ -2213,12 +2213,12 @@ Remove other security groups, such as the default security group, by choosing th
 
 14. In the Connectivity & security section, view the Endpoint and Port of the DB instance.
 
-## Section 12 - Create a JAR file for the AWS Tracker application 
+## Create a JAR file for the AWS Tracker application 
 
 Talk about how to package up the applicaton into a JAR file
 
 
-## Section 13 - Deploy the application to the AWS Elastic Beanstalk
+## Deploy the application to the AWS Elastic Beanstalk
 
 Sign in to the AWS Management Console, and then open the Elastic Beanstalk console. An application is the top-level container in Elastic Beanstalk that contains one or more application environments (for example prod, qa, and dev or prod-web, prod-worker, qa-web, qa-worker).
 
