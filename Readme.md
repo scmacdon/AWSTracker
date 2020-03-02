@@ -4,7 +4,6 @@ You can develop an AWS web application that tracks and reports on work items by 
 
 + Amazon Relational Database Service (RDS)
 + Amazon Simple Email Service (SES)
-+ Amazon DynamoDB
 + Amazon S3
 + AWS Elastic Beanstalk
 
@@ -61,7 +60,7 @@ The following illustration shows you the structure of the Java project that you 
 
 ![AWS Tracking Application](images/newtrack3_1.png)
 
-**Note**: All of the Java code required to complete this document is located in this Github repository. You can copy the code from the classes and paste it into your project when instructed to do so in this document. 
+**Note**: All of the Java code required to complete this document is located in this Github repository. 
 
 To follow along with the document, you require the following:
 
