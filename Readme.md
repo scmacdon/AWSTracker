@@ -1558,3 +1558,14 @@ The **WriteExcel** class is responsible for dynamically creating an Excel report
         return count;
       }
     }
+    
+## Create the HTML files
+
+At this point, you have created all of the Java files required for the AWS *Tracking Application*. Under the resource folder, create a template folder and then create the following HTML files:
+
++ **login.html**
++ **index.html**
+
+The following illustration shows these files. 
+
+
