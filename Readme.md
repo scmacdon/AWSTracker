@@ -2196,8 +2196,8 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 + **DB instance identifier** – awstracker
 + **Master username** – root
 + **Auto generate a password** – Disable the option
-+ **Master password** – rootaws.
-+ **Confirm password** – rootaws. 
++ **Master password** – rootaws1.
++ **Confirm password** – rootaws1. 
 
 ![AWS Tracking Application](images/trackSettings.png)
 
@@ -2210,22 +2210,21 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 
 10. In the Connectivity section, open Additional connectivity configuration and set these values:
 
-+ **Virtual Private Cloud (VPC)** – Choose an existing VPC with both public and private subnets, such as the tutorial-vpc (vpc-identifier) created in Create a VPC with Private and Public Subnets
++ **Virtual Private Cloud (VPC)** – Choose the default.
 
-**Note** - The VPC must have subnets in different Availability Zones.
++ **Subnet group** – Choose the default.
 
-+ **Subnet group** – The DB subnet group for the VPC, such as the tutorial-db-subnet-group created in Create a DB Subnet Group
++ **Publicly accessible** – Yes
 
-+ **Publicly accessible** – No
-+ **VPC security groups** – Choose an existing VPC security group that is configured for private access, such as the tutorial-db-securitygroup created in Create a VPC Security Group for a Private DB Instance.
-Remove other security groups, such as the default security group, by choosing the X associated with each.
++ **VPC security groups** – Choose an existing VPC security group that is configured for access.
 
 + **Availability zone** – No Preference
+
 + **Database port** – 3306
 
 11. Open the Additional configuration section, and enter sample for Initial database name. Keep the default settings for the other options.
 
-12. To create your Amazon RDS MySQL DB instance, choose Create database. Your new DB instance appears in the Databases list with the status Creating.
+12. To create your Amazon RDS MySQL DB instance, choose **Create database**. Your new DB instance appears in the Databases list with the status **Creating**.
 
 13. Wait for the Status of your new DB instance to show as Available. Then choose the DB instance name to show its details.
 
