@@ -92,7 +92,7 @@ This document contains the following sections:
 
 ## Create an IntelliJ project named AWSItemTracker
 
-Create a new IntelliJ project named **AWSItemTracker**.
+**Create a new IntelliJ project named AWSItemTracker**
 
 1. From within the IntelliJ IDE, click **File**, **New**, **Project**. 
 2. In the **New Project** dialog, select **Maven**. 
