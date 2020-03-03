@@ -2184,7 +2184,7 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 2. In the upper-right corner of the AWS Management Console, choose the AWS Region in which you want to create the DB instance. This example uses the US West (Oregon) Region.
 3. In the navigation pane, choose **Databases**.
 4. Choose **Create database**.
-![AWS Tracking Application](images/trackerCreateDB.png)
+![AWS Tracking Application](images/trackCreateDB.png)
 
 5. On the **Create database** page, make sure that the **Standard Create** option is chosen, and then choose MySQL.
 ![AWS Tracking Application](images/trackerSQL.png)
