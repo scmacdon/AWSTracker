@@ -2199,6 +2199,8 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 + **Master password** – rootaws.
 + **Confirm password** – rootaws. 
 
+![AWS Tracking Application](images/trackSettings.png)
+
 8. In the DB instance size section, set these values:
 
 + **DB instance performance type** – Burstable
