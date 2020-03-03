@@ -2196,8 +2196,8 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 + **DB instance identifier** – awstracker
 + **Master username** – root
 + **Auto generate a password** – Disable the option
-+ **Master password** – rootaws1.
-+ **Confirm password** – rootaws1. 
++ **Master password** – root1234.
++ **Confirm password** – root1234. 
 
 ![AWS Tracking Application](images/trackSettings.png)
 
@@ -2228,7 +2228,19 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 
 13. Wait for the Status of your new DB instance to show as Available. Then choose the DB instance name to show its details.
 
-14. In the Connectivity & security section, view the Endpoint and Port of the DB instance.
+**Note** - If you have issues connecting to the database from a client such as MySQL Workbench, then set the correct inbound rules for the security group. For information about setting up Security Group Inbound Rules, see *Controlling Access with Security Groups* at https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html. 
+
+#### Obtain the Endpoint
+
+In the Connectivity & security section, view the Endpoint and Port of the DB instance.
+
+![AWS Tracking Application](images/trackEndpoint.png)
+
+Next, you have to modify the **ConnectionHelper** class by updating the **url** value with the endpoint of the database. Also, update this line of code with the correct user name and password. 
+
+     Class.forName("com.mysql.jdbc.Driver").newInstance();
+            return DriverManager.getConnection(instance.url, "root","root1234");
+
 
 ## Create a JAR file for the AWS Tracker application 
 
@@ -2251,6 +2263,10 @@ To deploy the *AWS Tracker* application to the AWS Elastic Beanstalk:
 + **Description** - A description for the application. 
 
 ![AWS Tracking Application](images/NewApp.png)
+
+
+
+
 
 
 
