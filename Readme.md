@@ -322,6 +322,7 @@ Within the **com.aws.securingweb** package, create the controller class named **
 
 
 #### MainController class
+
 The following Java code represents the **MainController** class. 
 
     package com.aws.securingweb;
@@ -1222,14 +1223,6 @@ The service classes contain Java application logic that make use of AWS Services
 + **S3Service** - uses the Simple Storage Service to store archive data in a S3 bucket 
 + **WriteExcel** - uses the Java Excel API to dynamically create a report (this does not use AWS Java APIs) 
 
-To create the JDBC classes: 
-
-1. Create the **com.aws.services** package. 
-2. Create the **SendMessages** class in this package and add the Java code to it. .  
-3. Create the **S3Service** class in this package and add the Java code to it.
-4. Create the **WriteExcel** class in this package and add the Java code to it.
-
-
 #### SendMessage class 
 The **SendMessage** class uses the SMS Java API to send an email message with an attachment (the Excel document) to an email recipient. The following Java code reprents the **SendMessage** class.
 
@@ -1578,6 +1571,13 @@ The **WriteExcel** class is responsible for dynamically creating an Excel report
       }
     }
     
+#### Create the Service classes: 
+
+1. Create the **com.aws.services** package. 
+2. Create the **SendMessages** class in this package and add the Java code to it. .  
+3. Create the **S3Service** class in this package and add the Java code to it.
+4. Create the **WriteExcel** class in this package and add the Java code to it.
+
 ## Create the HTML files
 
 At this point, you have created all of the Java files required for the AWS *Tracking Application*. Under the resource folder, create a template folder and then create the following HTML files:
@@ -1691,6 +1691,7 @@ The following HTML code represents the login form.
 
     </body>
     </html>
+
 #### Index HTML file
 
 The following HTML code represents the index HTML file. This file represents the application's view and displays all of the data that the application uses. This view is broken into three sections: 
@@ -2163,6 +2164,12 @@ The following HTML code represents the index.html file.
     </body>
     </html>
     
+#### Create the HTML files 
+
+1. In the **resources** folder, create a new folder named **templates**. 
+2. In the **templates** folder, create the **login.html** file and paste the HTML code into this file. 
+3. In the **templates** folder, create the **index.html** file and paste the HTML code into this file. .  
+
 ## Create a Script file that performs AJAX requests 
 
 Talk about how to setup the Script file that defines AJAX requests
