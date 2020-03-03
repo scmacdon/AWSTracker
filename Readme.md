@@ -2241,6 +2241,12 @@ Next, you have to modify the **ConnectionHelper** class by updating the **url** 
      Class.forName("com.mysql.jdbc.Driver").newInstance();
             return DriverManager.getConnection(instance.url, "root","root1234");
 
+#### Create the Database schema and table
+
+You can use MySQL Workbench to connect to the RDS MySQL instance and create a database schema and the work table. To connect to the database, open the MySQL Workbench connect to database view. 
+
+
+
 
 ## Create a JAR file for the AWS Tracker application 
 
