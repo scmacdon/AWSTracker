@@ -231,12 +231,6 @@ Create a new Java package named **com.aws.securingweb**. Next, create these clas
 + **SecuringWebApplication** 
 + **WebSecurityConfig**
 
-To create the **SecuringWebApplication** and **WebSecurityConfig** classes: 
-
-1. Create the **com.aws.securingweb** package. 
-2. Create the **SecuringWebApplication** class in this package and paste the code into it.
-3. Create the **WebSecurityConfig** class in this package and paste the code into it.
-
 #### SecuringWebApplication class 
 The following Java code represents the **SecuringWebApplication** class.
 
@@ -312,6 +306,13 @@ The following Java code represents the **WebSecurityConfig** class.
     }
    
  **Note** - In this example, the user credentials to log into the application are user/password.  
+ 
+#### Create the SecuringWebApplication and WebSecurityConfig classes 
+
+1. Create the **com.aws.securingweb** package. 
+2. Create the **SecuringWebApplication** class in this package and paste the code into it.
+3. Create the **WebSecurityConfig** class in this package and paste the code into it.
+
 
 ## Create the main controller class
 
@@ -319,11 +320,8 @@ Within the **com.aws.securingweb** package, create the controller class named **
 
 **NOTE**: In this application, AJAX request are made to invoke controller methods. The syntax of the AJAX request are shown later in this document. 
 
-To create the **MainController** class: 
 
-1. In the **com.aws.securingweb** package, create the **MainController** class. 
-2. Copy the code from the **MainController** class and paste it into this class in your project.
-
+#### MainController class
 The following Java code represents the **MainController** class. 
 
     package com.aws.securingweb;
@@ -474,15 +472,17 @@ The following Java code represents the **MainController** class.
       }
     }
 
+#### Create the MainController class: 
+
+1. In the **com.aws.securingweb** package, create the **MainController** class. 
+2. Copy the code from the **MainController** class and paste it into this class in your project.
+
 ## Create the WorkItem class
 
 Create a new Java package named **com.aws.entities**. Next, create a class that represents the model named **WorkItem**. To create the **WorkItem** class: 
 
-1. In the **com.aws.entities** package, create the **WorkItem** class. 
-2. Copy the code from the **WorkItem** class and paste it into this class in your project.
-
-#### MainController class
-The following Java code represents the **MainController** class. 
+#### WorkItem class
+The following Java code represents the **WorkItem** class. 
 
     package com.aws.entities;
 
@@ -558,6 +558,11 @@ The following Java code represents the **MainController** class.
       }
     }
 
+#### Create the WorkItem class
+1. In the **com.aws.entities** package, create the **WorkItem** class. 
+2. Copy the code from the **WorkItem** class and paste it into this class in your project.
+
+
 ## Create the JDBC Classes
 
 Create a new Java package named **com.aws.jdbc**. Next, create these Java classes required to perform database operations:
@@ -565,13 +570,6 @@ Create a new Java package named **com.aws.jdbc**. Next, create these Java classe
 + **ConnectionHelper** - creates a connection to the RDS MySQL instance. 
 + **InjectWorkService** - injects items into the MySQL instance. 
 + **RetrieveItems** - retrieves items from the MySQL instance. 
-
-To create the JDBC classes: 
-
-1. Create the **com.aws.jdbc** package. 
-2. Create the **ConnectionHelper** class in this package and paste the Java code into the class.  
-3. Create the **InjectWorkService** class in this package and paste the Java code into the class.
-4. Create the **RetrieveItems** class in this package and paste the Java code into the class.
 
 
 #### ConnectionHelper class
@@ -1208,6 +1206,13 @@ The following Java code represents the **RetrieveItems** class. In the following
         return null;
       }
     }
+
+#### Create the JDBC classes 
+
+1. Create the **com.aws.jdbc** package. 
+2. Create the **ConnectionHelper** class in this package and paste the Java code into the class.  
+3. Create the **InjectWorkService** class in this package and paste the Java code into the class.
+4. Create the **RetrieveItems** class in this package and paste the Java code into the class.
 
 ## Create the Service classes
 
