@@ -2238,17 +2238,50 @@ In the Connectivity & security section, view the Endpoint and Port of the DB ins
 
 ![AWS Tracking Application](images/trackEndpoint.png)
 
-Next, you have to modify the **ConnectionHelper** class by updating the **url** value with the endpoint of the database. Also, update this line of code with the correct user name and password. 
+Next, you have to modify the **ConnectionHelper** class by updating the **url** value with the endpoint of the database. 
+      
+      url = "jdbc:mysql://awstracker.<url to rds>.amazonaws.com/awstracker";
+
+In the previous line of code, notice **awstracker**. This is the database schema. In addition, update this line of code with the correct user name and password. 
 
      Class.forName("com.mysql.jdbc.Driver").newInstance();
             return DriverManager.getConnection(instance.url, "root","root1234");
 
 #### Create the Database schema and table
 
-You can use MySQL Workbench to connect to the RDS MySQL instance and create a database schema and the work table. To connect to the database, open the MySQL Workbench connect to database view. 
+You can use MySQL Workbench to connect to the RDS MySQL instance and create a database schema and the work table. To connect to the database, open the MySQL Workbench and connect to database. 
 
+![AWS Tracking Application](images/trackMySQLWB.png)
 
+Create a new schema named **awstracker** by using this SQL command.
 
+    CREATE SCHEMA awstracker;
+    
+In the **awstracker** schema, create a table named **work** by using this SQL command:
+
+    CREATE TABLE work(
+        idwork VARCHAR(45) PRIMARY KEY,
+        date Date,
+        description VARCHAR(400),
+        guide VARCHAR(45),
+        status VARCHAR(400),
+        username VARCHAR(45),
+        archive BOOLEAN
+    )  ENGINE=INNODB;
+
+Once done, you will see a new table in your database. 
+
+![AWS Tracking Application](images/trackTable.png)
+
+Enter a new record into this table by using these values: 
+
++ **idwork** - 4ea93f34-a45a-481e-bdc6-26c003bb93fc
++ **date** - 2020-01-20
++ **description** - Need to test all examples 
++ **guide** - AWS Devloper Guide
++ **status** - Tested all of the Amazon S3 examples
++ **username** - user
++ **archive** - 0
 
 ## Create a JAR file for the AWS Tracker application 
 
