@@ -24,10 +24,10 @@ The following illustration shows the login page.
 
 After a user logs into the system, they can perform these tasks: 
 
-+ Enter a new item into the system
-+ View all active items
++ Enter a new item into the system.
++ View all active items.
 + View archived items that have been completed. 
-+ Modify active items
++ Modify active items.
 + Send a report to an email recipient. 
 
 The following illustration shows the new item section of the application. 
