@@ -41,10 +41,10 @@ A user can retrieve either *active* or *archive* items by clicking the **Get Dat
 The database is MySQL and contains a table named **work** that contains these fields:
 
 + **idwork** - A VARCHAR(45) value that represents the PK. 
-+ **date** - a Date value that specifies the data the item was added
-+ **description** - a VARCHAR(300) that describes the item 
++ **date** - a Date value that specifies the date the item was created
++ **description** - a VARCHAR(400) that describes the item 
 + **guide** - a VARCHAR(45) value that represents the deliverable being worked on
-+ **status** - a  VARCHAR(300) value that describes describes the status
++ **status** - a  VARCHAR(400) value that describes describes the status
 + **username** - a VARCHAR(45) value that represents the user whom entered the item 
 + **archive** - a TINYINT(4)value that represents whether this is an active or archive item 
 
