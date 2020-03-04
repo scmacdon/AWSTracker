@@ -50,7 +50,7 @@ The database is MySQL and contains a table named **work** that contains these fi
 
 The following illustration shows the **work** table. 
 
-![AWS Tracking Application](images/trackMySQL.png)
+![AWS Tracking Application](images/trackMySQL2.png)
 
 Finally, the user can select the email recipient from the **Select Manager** dropdown field and click the **Send Report** button. All active items are placed into a data set and used to dynamically create an Excel document by using the **jxl.write.WritableWorkbook** API. Then the application uses Amazon SES to email the document to the selected email recipient. The following illustration shows an example of a report. 
 
