@@ -2307,6 +2307,8 @@ To deploy the *AWS Tracker* application to the AWS Elastic Beanstalk:
 
 ![AWS Tracking Application](images/NewApp.png)
 
+NOTE - To change the port that Spring Boot listens on, add a new environment variable, SERVER_PORT, with the value 5000.
+
 
 
 
