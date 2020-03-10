@@ -37,10 +37,6 @@ public class SendMessages {
     // This address must be verified with Amazon SES.
     private String SENDER = "scmacdon@amazon.com";
 
-    // Replace recipient@example.com with a "To" address. If your account
-    // is still in the sandbox, this address must be verified.
-    private String RECIPIENT = "scmacdon@amazon.com";
-
     // Specify a configuration set. If you do not want to use a configuration
     // set, comment the following variable, and the
     // ConfigurationSetName=CONFIGURATION_SET argument below.
@@ -57,13 +53,13 @@ public class SendMessages {
     private String BODY_HTML = "<html>" + "<head></head>" + "<body>" + "<h1>Hello!</h1>"
             + "<p>Please see the attached file for a weekly update.</p>" + "</body>" + "</html>";
 
-    public void SendReport(InputStream is ) throws IOException {
+    public void SendReport(InputStream is, String emailAddress ) throws IOException {
 
         //Convert the InputStream to a byte[]
         byte[] fileContent = IOUtils.toByteArray(is);
 
         try {
-            send(fileContent);
+            send(fileContent,emailAddress);
         }
         catch (Exception e)
         {
@@ -71,7 +67,7 @@ public class SendMessages {
         }
     }
 
-    public void send(byte[] attachment) throws AddressException, MessagingException, IOException {
+    public void send(byte[] attachment, String emailAddress) throws AddressException, MessagingException, IOException {
 
         MimeMessage message = null;
         try {
@@ -83,7 +79,7 @@ public class SendMessages {
             // Add subject, from and to lines.
             message.setSubject(SUBJECT, "UTF-8");
             message.setFrom(new InternetAddress(SENDER));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(RECIPIENT));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailAddress));
 
             // Create a multipart/alternative child container.
             MimeMultipart msg_body = new MimeMultipart("alternative");
@@ -136,7 +132,7 @@ public class SendMessages {
             // Instantiate an Amazon SES client, which will make the service
             // call with the supplied AWS credentials.
             AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-                    .withRegion(Regions.DEFAULT_REGION)
+                    .withRegion(Regions.US_EAST_1)
                     .withCredentials(new EnvironmentVariableCredentialsProvider())
                     .build();
 
