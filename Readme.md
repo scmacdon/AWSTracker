@@ -1380,11 +1380,9 @@ The following Java code reprents the **SendMessage** class.
             RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
 
             SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
-            // .withConfigurationSetName(CONFIGURATION_SET);
-
             client.sendRawEmail(rawEmailRequest);
             System.out.println("Email sent!");
-            // Display an error if something goes wrong.
+           
         } catch (Exception ex) {
             System.out.println("Email Failed");
             System.err.println("Error message: " + ex.getMessage());
