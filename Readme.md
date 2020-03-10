@@ -1226,7 +1226,11 @@ The service classes contain Java application logic that make use of AWS Services
 + **WriteExcel** - uses the Java Excel API to dynamically create a report (this does not use AWS Java APIs) 
 
 #### SendMessage class 
-The **SendMessage** class uses the SMS Java API to send an email message with an attachment (the Excel document) to an email recipient. The following Java code reprents the **SendMessage** class.
+The **SendMessage** class uses the SMS Java API to send an email message with an attachment (the Excel document) to an email recipient. 
+
+**NOTE** - An email address that you send an email message to must be whitelisted. For information, see https://docs.aws.amazon.com/ses/latest/DeveloperGuide//verify-email-addresses-procedure.html.
+
+The following Java code reprents the **SendMessage** class.
 
     package com.aws.services;
 
