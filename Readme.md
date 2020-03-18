@@ -199,9 +199,9 @@ At this point, the **pom.xml** file resembles the following file.
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-devtools</artifactId>
         <scope>runtime</scope>
-    </dependency>
-    </dependencies>
-  </project>
+       </dependency>
+       </dependencies>
+     </project>
 
 ## Setup the Java packages in your project
 
