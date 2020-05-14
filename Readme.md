@@ -31,7 +31,7 @@ After a user logs into the system, they can perform these tasks:
 
 The following illustration shows the new item section of the application. 
 
-![AWS Tracking Application](images/track2.png)
+![AWS Tracking Application](images/AWT1.png)
 
 A user can retrieve either *active* or *archive* items by clicking the **Get Data** button. A data set is retrieved from an AWS RDS database and displayed in the web application, as shown in this illustration. 
 
