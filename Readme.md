@@ -2277,7 +2277,349 @@ The following HTML code represents the layout HTML file that represents the appl
 
 ## Create a Script file that performs AJAX requests 
 
-Talk about how to setup the Script file that defines AJAX requests
+Both the add and items views use script files to communicate with the Spring controllers. You have to ensure that these files are part of your project; otherwise, your application does not work. Add these two JS files to your project under resources\public\js.
++ **items.js**
++ **contact_me.js**
+
+Both files contain application that sends a request to the Spring MainController. In addition, these files handle the response and set the data in the view. 
+
+#### items.js file
+
+The following JavaScript code represents the items.js that is used in the **item.html** view. 
+
+	$(function() {
+
+    	$( "#dialogtemplate2" ).dialog();
+
+    	$('#myTable').DataTable( {
+         scrollY:        "500px",
+         scrollX:        true,
+         scrollCollapse: true,
+         paging:         true,
+         columnDefs: [
+            { width: 200, targets: 0 }
+        ],
+        fixedColumns: true
+    } );
+
+    var table = $('#myTable').DataTable();
+    $('#myTable tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+
+
+    //Disable the reportbutton
+    $('#reportbutton').prop("disabled",true);
+    $('#reportbutton').css("color", "#0d010d");
+
+     });
+
+
+    function modItem()
+    {
+
+    var id = $('#id').val();
+    var description = $('#description').val();
+    var status = $('#status').val();
+
+    if (id == "")
+        {
+            alert("Please select an item from the table");
+            return;
+        }
+
+    if (description.length > 350)
+        {
+            alert("Description has too many characters");
+            return;
+        }
+
+    //var status = $("textarea#status").val();
+    if (status.length > 350)
+        {
+            alert("Status has too many characters");
+            return;
+        }
+
+        //invokes the getMyForms POST operation
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", loadMods, false);
+        xhr.open("POST", "../changewi", true);   //buildFormit -- a Spring MVC controller
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+        xhr.send("id=" + id + "&description=" + description+ "&status=" + status);
+    }
+
+
+     //Handler for the uploadSave call
+     //This will populate the Data Table widget
+     function loadMods(event) {
+
+    var msg = event.target.responseText;
+    alert("You have successfully modfied item "+msg)
+
+    $('#id').val("");
+    $('#description').val("");
+    $('#status').val("");
+
+    //Refresh the grid
+    GetItems();
+     }
+
+    //populate the table with work items
+    function GetItems() {
+    
+    var xhr = new XMLHttpRequest();
+    var type="active";
+    xhr.addEventListener("load", loadItems, false);
+    xhr.open("POST", "../retrieve", true);   //buildFormit -- a Spring MVC controller
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+    xhr.send("type=" + type);
+    }
+
+    //Handler for the GetItems call
+    //This will populate the Data Table widget
+    function loadItems(event) {
+
+    // Enable the reportbutton
+    $('#reportbutton').prop("disabled",false);
+    $('#reportbutton').css("color", "#FFFFFF");
+
+    //Refresh the URL for Form Preview
+    var xml = event.target.responseText;
+    var oTable = $('#myTable').dataTable();
+    oTable.fnClearTable(true);
+
+    $(xml).find('Item').each(function () {
+
+        var $field = $(this);
+        var id = $field.find('Id').text();
+        var name = $field.find('Name').text();
+        var guide = $field.find('Guide').text();
+        var date = $field.find('Date').text();
+        var description = $field.find('Description').text();
+        var status = $field.find('Status').text();
+
+        //Set the new data
+        oTable.fnAddData( [
+            id,
+            name,
+            guide,
+            date,
+            description,
+            status,,]
+        );
+    });
+
+    document.getElementById("info3").innerHTML = "Active Items";
+    }
+
+
+    function ModifyItem() {
+      
+    var table = $('#myTable').DataTable();
+    var myId="";
+    var arr = [];
+    $.each(table.rows('.selected').data(), function() {
+
+        var value = this[0];
+        myId = value;
+    });
+
+    if (myId == "")
+    {
+        alert("You need to select a row");
+        return;
+    }
+
+    //Need to check its not an Archive item
+    var h3Val =  document.getElementById("info3").innerHTML;
+    if (h3Val=="Archive Items")
+    {
+        alert("You cannot modify an Archived item");
+        return;
+    }
+
+
+    // Post to modify
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", onModifyLoad, false);
+    xhr.open("POST", "../modify", true);   //buildFormit -- a Spring MVC controller
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");//necessary
+    xhr.send("id=" + myId);
+     }
+
+
+     //Handler for the ModifyItem call
+     function onModifyLoad(event) {
+
+     var xml = event.target.responseText;
+     $(xml).find('Item').each(function () {
+
+        var $field = $(this);
+        var id = $field.find('Id').text();
+        var description = $field.find('Description').text();
+        var status = $field.find('Status').text();
+
+        //Set the fields
+        $('#id').val(id);
+        $('#description').val(description);
+        $('#status').val(status);
+
+    });
+    }
+
+
+    function Report() {
+
+        var email = $('#manager option:selected').text();
+
+        // Post to report
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", onReport, false);
+        xhr.open("POST", "../report", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+        xhr.send("email=" + email);
+    }
+
+	function onReport(event) {
+         var data = event.target.responseText;
+         alert(data);
+     }
+
+
+	function GetArcItems()
+	{
+    
+    	var xhr = new XMLHttpRequest();
+   	var type="archive";
+    
+    	xhr.addEventListener("load", loadArcItems, false);
+    	xhr.open("POST", "../retrieve", true);   //buildFormit -- a Spring MVC controller
+    	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+    	xhr.send("type=" + type);
+	}
+
+	//Handler for the Report call
+	function loadArcItems(event) {
+
+    	// Enable the reportbutton
+    	$('#reportbutton').prop("disabled",true);
+    	$('#reportbutton').css("color", "#0d010d");
+
+    	//Refresh the URL for Form Preview
+    	var xml = event.target.responseText;
+    	var oTable = $('#myTable').dataTable();
+    	oTable.fnClearTable(true);
+
+    	$(xml).find('Item').each(function () {
+
+        	var $field = $(this);
+        	var id = $field.find('Id').text();
+        	var name = $field.find('Name').text();
+        	var guide = $field.find('Guide').text();
+        	var date = $field.find('Date').text();
+        	var description = $field.find('Description').text();
+        	var status = $field.find('Status').text();
+
+        	//Set the new data
+        	oTable.fnAddData( [
+            		id,
+            		name,
+            		guide,
+            		date,
+            		description,
+            		status,,]
+        		);
+    		});
+
+    		document.getElementById("info3").innerHTML = "Archive Items";
+
+		}
+
+	function archiveItem()
+	{
+    	var table = $('#myTable').DataTable();
+    	var myId="";
+    	var arr = [];
+    	$.each(table.rows('.selected').data(), function() {
+
+        	var value = this[0];
+        	myId = value;
+    	});
+
+    	if (myId == "")
+    	 {
+         alert("You need to select a row");
+         return;
+      	}
+
+    	// Post to modify
+    	var xhr = new XMLHttpRequest();
+    	xhr.addEventListener("load", onArch, false);
+    	xhr.open("POST", "../archive", true);   //buildFormit -- a Spring MVC controller
+    	xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");//necessary
+    	xhr.send("id=" + myId);
+	}
+
+
+	//Handler for the uploadSave call
+	function onArch(event) {
+
+    	var xml = event.target.responseText;
+    	alert("Item "+xml +" is achived now");
+    	//Refresh the grid
+    	GetItems();
+	}
+
+ #### contact_me.js file
+
+The following JavaScript code represents the contact_me.js that is used in the **add.html** view. 
+
+	$(function() {
+
+	    $("#SendButton" ).click(function($e) {
+
+            var guide = $('#guide').val();
+            var description = $('#description').val();
+            var status = $('#status').val();
+
+            if (description.length > 350)
+       	    {
+            alert("Description has too many characters");
+            return;
+            }
+
+          if (status.length > 350)
+        {
+            alert("Status has too many characters");
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", loadNewItems, false);
+        xhr.open("POST", "../add", true);   
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+        xhr.send("guide=" + guide + "&description=" + description+ "&status=" + status);
+    } );// END of the Send button click
+
+    //Handler for the uploadSave call
+    //This will populate the Data Table widget
+    function loadNewItems(event) {
+
+        var msg = event.target.responseText;
+        alert("You have successfully added item "+msg)
+
+    	}
+
+   	});
+
+**NOTE**: There are other JS and CSS files located in the Github repository that you must add to your project. Ensure all of the files under resources are included in your project. 
 
 ## Setup the RDS instance 
 
@@ -2333,7 +2675,7 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 
 13. Wait for the Status of your new DB instance to show as Available. Then choose the DB instance name to show its details.
 
-**Note** - If you have issues connecting to the database from a client such as MySQL Workbench, then set the correct inbound rules for the security group. For information about setting up Security Group Inbound Rules, see *Controlling Access with Security Groups* at https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html. 
+**Note**: If you have issues connecting to the database from a client such as MySQL Workbench, then set the correct inbound rules for the security group. For information about setting up Security Group Inbound Rules, see *Controlling Access with Security Groups* at https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html. 
 
 #### Obtain the Endpoint
 
@@ -2388,8 +2730,13 @@ Enter a new record into this table by using these values:
 
 ## Create a JAR file for the AWS Tracker application 
 
-Talk about how to package up the applicaton into a JAR file
+Package up the project into a JAR file that you can deploy to Elastic Beanstalk by using the following Maven command.
 
+	mvn package
+	
+The JAR is located in the target folder, as shown in the following figure.
+
+![AWS Tracking Application](images/AWT5png.png)
 
 ## Deploy the application to the AWS Elastic Beanstalk
 
@@ -2401,14 +2748,46 @@ If this is your first time accessing this service, you will see a *Welcome to AW
 
 To deploy the *AWS Tracker* application to the AWS Elastic Beanstalk:
 
-1. Choose **Create New Application**. This opens a wizard that creates your application and launches an appropriate environment.
-2. In the *Create New Application* dialog, enter the following values: 
-+ **Application Name** - AWSItemTracker
-+ **Description** - A description for the application. 
+1. Open the Elastic Beanstalk console at https://console.aws.amazon.com/elasticbeanstalk/home. 
+2. Choose **Create New Application**. This opens a wizard that creates your application and launches an appropriate environment.
+3. In the **Create New Application** dialog box, enter the following values. 
+   + **Application Name** - Greeting
+   + **Description** - A description for the application 
 
-![AWS Tracking Application](images/NewApp.png)
+![AWS Tracking Application](images/greet10.png)
 
-NOTE - To change the port that Spring Boot listens on, add a new environment variable, SERVER_PORT, with the value 5000.
+4. Choose **Create one now**.
+5. Choose **Web server environment**, and then choose **Select**.
+6. In **Preconfigured platform**, choose **Java**. 
+7. In **Upload your code**, browse to the JAR that you created. 
+8. Choose **Create Environment**. You'll see the application being created. 
+
+![AWS Tracking Application](images/greet11.png)
+
+9. Once done, you will see the application state the Health is **Ok**.  
+
+![AWS Tracking Application](images/greet13.png)
+
+10. To change the port that Spring Boot listens on, add an environment variable named **SERVER_PORT**, with the value 5000.
+11. Add a variable named **AWS_ACCESS_KEY_ID**, and then specify your access key value. 
+12. Add a variable named **AWS_SECRET_ACCESS_KEY**, and then specify your secret key value.
+
+**NOTE:** If you don't know how to set variables, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-softwaresettings.html.
+
+13. Once the variables are configured, you'll see the URL for accessing the application. 
+
+![AWS Tracking Application](images/greet14.png)
+
+To access the application, open your browser and use the following syntax.
+
+**URL/greeting**
+
+You need **/greeting** at the end of the URL so that a request is made to the /greeting controller in the **GreetingController** class. When you enter the full URL (including **/greeting**) into a browser, you see the form. 
+
+![AWS Blog Application](images/greet15.png)
+
+**Note:** The final task that you have to perform is to add the **bootstrap.min.css** file to the **resources\public\css** folder. This is the CSS file for the Spring Form. 
+
 
 
 
