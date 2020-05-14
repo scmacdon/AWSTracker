@@ -37,7 +37,7 @@ The following illustration shows the new item section of the application.
 
 ![AWS Tracking Application](images/AWT1.png)
 
-A user can retrieve either *active* or *archive* items. For example, a user can click the **Get Active Items** button to get a result set of active items. A data set is retrieved from an Amazon RDS database and displayed in the web application, as shown in this illustration. 
+A user can retrieve either *active* or *archive* items. For example, a user can click the **Get Active Items** button to get a data set that is retrieved from an Amazon RDS database and displayed in the web application, as shown in this illustration. 
 
 ![AWS Tracking Application](images/AWT2.png)
 
