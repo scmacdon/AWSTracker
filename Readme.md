@@ -116,11 +116,11 @@ Inside the **project** element in the **pom.xml** file, add the **spring-boot-st
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.4.RELEASE</version>
         <relativePath /> <!-- lookup parent from repository -->
-    </parent>
+      </parent>
     
 Also, add the following Spring Boot **dependency** elements inside the **dependencies** element.
 
-    <dependency>
+    		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
@@ -153,7 +153,7 @@ In addition, you need to add this AWS API dependencies.
 At this point, the **pom.xml** file resembles the following file. 
 
     <?xml version="1.0" encoding="UTF-8"?>
-``<project xmlns="http://maven.apache.org/POM/4.0.0"
+    <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -254,7 +254,7 @@ At this point, the **pom.xml** file resembles the following file.
             </plugin>
         </plugins>
      </build>
-   </project>
+    </project>
 
 ## Setup the Java packages in your project
 
