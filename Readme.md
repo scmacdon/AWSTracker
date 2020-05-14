@@ -140,7 +140,7 @@ Also, add the following Spring Boot **dependency** elements inside the **depende
 			</exclusions>
 		  </dependency>
       
-In addition, you need to add this AWS API dependencies. 
+In addition, you need to add this AWS API dependency. 
 
    	<dependency>
             <groupId>com.amazonaws</groupId>
