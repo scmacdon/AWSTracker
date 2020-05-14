@@ -35,7 +35,7 @@ The following illustration shows the new item section of the application.
 
 A user can retrieve either *active* or *archive* items. For example, a user can click the **Get Active Items** button to get a result set of active items. A data set is retrieved from an Amazon RDS database and displayed in the web application, as shown in this illustration. 
 
-![AWS Tracking Application](images/track4.png)
+![AWS Tracking Application](images/AWT2.png)
 
 The database is MySQL and contains a table named **work** that contains these fields:
 
