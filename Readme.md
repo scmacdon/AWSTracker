@@ -21,7 +21,11 @@ The following illustration shows the login page.
 
 ![AWS Tracking Application](images/newtrack1.png)
 
-After a user logs into the system, they can perform these tasks: 
+After a user logs into the system, the home view is displayed.
+
+![AWS Tracking Application](images/AWT4.png)
+
+The user can click a menu option and perform these tasks: 
 
 + Enter a new item into the system.
 + View all active items.
