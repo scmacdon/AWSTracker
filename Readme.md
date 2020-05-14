@@ -147,9 +147,9 @@ In addition, you need to add this dependency (required for Java version 2 of the
             <version>2.10.41</version>
         </dependency>
     
-**Note** - Ensure that you are using Java 1.8 (shown below).
+**Note**: Ensure that you are using Java 1.8 (shown below).
   
-At this point, the **pom.xml** file resembles the following file. 
+Ensure that the **pom.xml** file resembles the following file. 
 
      <?xml version="1.0" encoding="UTF-8"?>
      <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -671,7 +671,7 @@ The following Java code represents the **MainController** class.
 
 ## Create the WorkItem class
 
-Create a new Java package named **com.aws.entities**. Next, create a class that represents the model named **WorkItem**. To create the **WorkItem** class: 
+Create a new Java package named **com.aws.entities**. Next, create a class, named **WorkItem**, that represents the application model.  
 
 #### WorkItem class
 The following Java code represents the **WorkItem** class. 
@@ -781,7 +781,7 @@ The following Java code represents the **ConnectionHelper** class.
       private static ConnectionHelper instance;
       private ConnectionHelper()
       {
-          url = "jdbc:mysql://localhost:3306/mydb";
+          url = "jdbc:mysql://localhost:3306/mydb"; // Replace with your RDS instance URL
       }
     
       public static Connection getConnection() throws SQLException {
@@ -793,7 +793,7 @@ The following Java code represents the **ConnectionHelper** class.
         try {
 
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            return DriverManager.getConnection(instance.url, "root","root");
+            return DriverManager.getConnection(instance.url, "root","root"); // Replace with your RDS user name and password
         }
         catch (Exception e) {
             e.getStackTrace();
@@ -813,7 +813,7 @@ The following Java code represents the **ConnectionHelper** class.
       }
     }
     
-**NOTE** - Notice the **URL** value is *localhost:3306*. This value is modified later after the RDS instance is created. This is how the *AWS Tracker* application communicates with the RDS MySQL instance.  
+**NOTE**: Notice the **URL** value is *localhost:3306*. This value is modified later after the RDS instance is created. This is how the *AWS Tracker* application communicates with the RDS MySQL instance. You must also ensure that you specify the user name and password for your RDS instance. 
 
 #### InjectWorkService class
 
@@ -823,17 +823,16 @@ The following Java code represents the **InjectWorkService** class.
 
     import java.sql.Connection;
     import java.sql.PreparedStatement;
-    import java.sql.ResultSet;
-    import java.sql.Statement;
     import java.text.SimpleDateFormat;
-    import java.util.ArrayList ;
+    import java.time.LocalDateTime;
+    import java.time.format.DateTimeFormatter;
     import java.util.Date;
     import java.util.UUID;
     import com.aws.entities.WorkItem;
     import org.springframework.stereotype.Component;
 
-    @Component
-    public class InjectWorkService {
+      @Component
+      public class InjectWorkService {
 
     //Inject a new submission
     public String modifySubmission(String id, String desc, String status)
@@ -848,14 +847,6 @@ The following Java code represents the **InjectWorkService** class.
             //  PreparedStatement pstmt = null;
             PreparedStatement ps = null;
 
-            //Date conversion
-            // Date date1 = new SimpleDateFormat("yyyy/mm/dd").parse(date);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date1 = new Date();
-            java.sql.Date sqlStartDate = new java.sql.Date(date1.getTime());
-
-            //Inject a new Formstr template into the system
-            //  String insert = "INSERT INTO work (idwork, writer,date,description, guide, status) VALUES(?,?, ?,?,?,?);";
 
             String query = "update work set description = ?, status = ? where idwork = '" +id +"'";
 
@@ -890,7 +881,6 @@ The following Java code represents the **InjectWorkService** class.
 
             //Convert rev to int
             String name = item.getName();
-            String date  = item.getDate();
             String guide = item.getGuide();
             String description = item.getDescription();
             String status = item.getStatus();
@@ -903,15 +893,18 @@ The following Java code represents the **InjectWorkService** class.
             // Date date1 = new SimpleDateFormat("yyyy/mm/dd").parse(date);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-            Date date1 = dateFormat.parse(date);
-            java.sql.Date sqlStartDate = new java.sql.Date(date1.getTime());
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            String sDate1 =   dtf.format(now);
+            Date date1 = new SimpleDateFormat("yyyy/MM/dd").parse(sDate1);
+            java.sql.Date sqlDate = new java.sql.Date( date1.getTime());
 
             //Inject a new Formstr template into the system
             String insert = "INSERT INTO work (idwork, username,date,description, guide, status, archive) VALUES(?,?, ?,?,?,?,?);";
             ps = c.prepareStatement(insert);
             ps.setString(1, workId);
             ps.setString(2, name);
-            ps.setDate(3, sqlStartDate);
+            ps.setDate(3, sqlDate);
             ps.setString(4, description);
             ps.setString(5, guide );
             ps.setString(6, status );
@@ -926,12 +919,12 @@ The following Java code represents the **InjectWorkService** class.
             ConnectionHelper.close(c);
         }
         return null;
-      }
     }
+   }
 
 #### RetrieveItems class
 
-The following Java code represents the **RetrieveItems** class. In the following Java code, notice that an **EnvironmentVariableCredentialsProvider** is used. The reason is because this code is deployed to the AWS Elastic Beanstalk. As a result, you need to use a credential provider that can be used on this platform. You can setup environment variables on the AWS Elastic Beanstalk to reflect your AWS credentials. 
+The following Java code represents the **RetrieveItems** class. 
 
     package com.aws.jdbc;
 
@@ -1055,7 +1048,6 @@ The following Java code represents the **RetrieveItems** class. In the following
     }
 
     //Retrieve an item based on an ID and return a WorkItem
-    //Retrieves an item based on the ID
     public WorkItem GetWorkItembyId(String id ) {
 
         Connection c = null;
@@ -1410,65 +1402,49 @@ The following Java code represents the **RetrieveItems** class. In the following
 
 The service classes contain Java application logic that make use of AWS Services. In this section, you create these classes: 
 
-+ **SendMessages** - uses the Amazon Simple Mail Service (SMS) to send email messages
-+ **S3Service** - uses the Simple Storage Service to store archive data in a S3 bucket 
++ **SendMessages** - uses the Amazon Simple Email Service (Amazon SES) to send email messages
 + **WriteExcel** - uses the Java Excel API to dynamically create a report (this does not use AWS Java APIs) 
 
 #### SendMessage class 
-The **SendMessage** class uses the SMS Java API to send an email message with an attachment (the Excel document) to an email recipient. 
+The **SendMessage** class uses the SES Java V2 API to send an email message with an attachment (the Excel document) to an email recipient. 
 
-**NOTE** - An email address that you send an email message to must be whitelisted. For information, see https://docs.aws.amazon.com/ses/latest/DeveloperGuide//verify-email-addresses-procedure.html.
+**NOTE**: An email address that you send an email message to must be whitelisted. For information, see https://docs.aws.amazon.com/ses/latest/DeveloperGuide//verify-email-addresses-procedure.html.
 
-The following Java code reprents the **SendMessage** class.
+The following Java code reprents the **SendMessage** class. In the following Java code, notice that an **EnvironmentVariableCredentialsProvider** is used. The reason is because this code is deployed to the AWS Elastic Beanstalk. As a result, you need to use a credential provider that can be used on this platform. You can setup environment variables on the AWS Elastic Beanstalk to reflect your AWS credentials. 
 
     package com.aws.services;
 
+    import org.apache.commons.io.IOUtils;
+    import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+    import software.amazon.awssdk.regions.Region;
+    import software.amazon.awssdk.services.ses.SesClient;
+    import javax.activation.DataHandler;
+    import javax.activation.DataSource;
     import javax.mail.Message;
     import javax.mail.MessagingException;
     import javax.mail.Session;
     import javax.mail.internet.AddressException;
     import javax.mail.internet.InternetAddress;
-    import javax.mail.internet.MimeBodyPart;
     import javax.mail.internet.MimeMessage;
     import javax.mail.internet.MimeMultipart;
-    import javax.mail.internet.MimeUtility;
-    import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
-    import com.amazonaws.regions.Regions;
-    import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-    import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
-    import com.amazonaws.services.simpleemail.model.RawMessage;
-    import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
-    import javax.activation.DataHandler;
-    import javax.activation.DataSource;
+    import javax.mail.internet.MimeBodyPart;
     import javax.mail.util.ByteArrayDataSource;
-    import org.springframework.stereotype.Service;
-    import org.springframework.stereotype.Component;
     import java.io.ByteArrayOutputStream;
     import java.io.IOException;
     import java.io.InputStream;
     import java.nio.ByteBuffer;
     import java.util.Properties;
-    import org.apache.commons.io.IOUtils;
+    import software.amazon.awssdk.core.SdkBytes;
+    import software.amazon.awssdk.services.ses.model.SendRawEmailRequest;
+    import software.amazon.awssdk.services.ses.model.RawMessage;
+    import software.amazon.awssdk.services.ses.model.SesException;
 
-    @Component("SendMessages")
     public class SendMessages {
 
-    // Replace sender@example.com with your "From" address.
-    // This address must be verified with Amazon SES.
     private String SENDER = "scmacdon@amazon.com";
-
-    // Replace recipient@example.com with a "To" address. If your account
-    // is still in the sandbox, this address must be verified.
-    private String RECIPIENT = "scmacdon@amazon.com";
-
-    // Specify a configuration set. If you do not want to use a configuration
-    // set, comment the following variable, and the
-    // ConfigurationSetName=CONFIGURATION_SET argument below.
-    //private static String CONFIGURATION_SET = "ConfigSet";
 
     // The subject line for the email.
     private String SUBJECT = "Weekly AWS Status Report";
-
 
     // The email body for recipients with non-HTML email clients.
     private String BODY_TEXT = "Hello,\r\n" + "Please see the attached file for a weekly update.";
@@ -1477,21 +1453,21 @@ The following Java code reprents the **SendMessage** class.
     private String BODY_HTML = "<html>" + "<head></head>" + "<body>" + "<h1>Hello!</h1>"
             + "<p>Please see the attached file for a weekly update.</p>" + "</body>" + "</html>";
 
-    public void SendReport(InputStream is ) throws IOException {
+    public void SendReport(InputStream is, String emailAddress ) throws IOException {
 
         //Convert the InputStream to a byte[]
         byte[] fileContent = IOUtils.toByteArray(is);
 
         try {
-            send(fileContent);
+            send(fileContent,emailAddress);
         }
         catch (Exception e)
         {
             e.getStackTrace();
         }
-    }
+      }
 
-    public void send(byte[] attachment) throws AddressException, MessagingException, IOException {
+    public void send(byte[] attachment, String emailAddress) throws AddressException, MessagingException, IOException {
 
         MimeMessage message = null;
         try {
@@ -1503,7 +1479,7 @@ The following Java code reprents the **SendMessage** class.
             // Add subject, from and to lines.
             message.setSubject(SUBJECT, "UTF-8");
             message.setFrom(new InternetAddress(SENDER));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(RECIPIENT));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailAddress));
 
             // Create a multipart/alternative child container.
             MimeMultipart msg_body = new MimeMultipart("alternative");
@@ -1553,32 +1529,39 @@ The following Java code reprents the **SendMessage** class.
         try {
             System.out.println("Attempting to send an email through Amazon SES " + "using the AWS SDK for Java...");
 
-            // Instantiate an Amazon SES client, which will make the service
-            // call with the supplied AWS credentials.
-            AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-                    .withRegion(Regions.DEFAULT_REGION)
-                    .withCredentials(new EnvironmentVariableCredentialsProvider())
+            Region region = Region.US_WEST_2;
+            SesClient client = SesClient.builder()
+                    .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                    .region(region)
                     .build();
 
-            // Print the raw email content on the console
-
-            // Send the email.
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            assert message != null;
             message.writeTo(outputStream);
-            RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
 
-            SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
+            ByteBuffer buf = ByteBuffer.wrap(outputStream.toByteArray());
+
+            byte[] arr = new byte[buf.remaining()];
+            buf.get(arr);
+
+            SdkBytes data = SdkBytes.fromByteArray(arr);
+
+            RawMessage rawMessage = RawMessage.builder()
+                    .data(data)
+                    .build();
+
+            SendRawEmailRequest rawEmailRequest = SendRawEmailRequest.builder()
+                    .rawMessage(rawMessage)
+                    .build();
+
             client.sendRawEmail(rawEmailRequest);
-            System.out.println("Email sent!");
-           
-        } catch (Exception ex) {
-            System.out.println("Email Failed");
-            System.err.println("Error message: " + ex.getMessage());
-            ex.printStackTrace();
-          }
+
+        } catch (SesException e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+        System.out.println("Email sent with attachment");
       }
-    }
+     }
     
 #### WriteExcel class
 
@@ -1715,11 +1698,10 @@ The **WriteExcel** class is responsible for dynamically creating an Excel report
 
             // Fifth column
             addLabel(sheet, 4, i+2, status);
-
         }
 
         return size;
-    }
+     }
 
     private void addCaption(WritableSheet sheet, int column, int row, String s)
             throws RowsExceededException, WriteException {
@@ -1768,8 +1750,7 @@ The **WriteExcel** class is responsible for dynamically creating an Excel report
 
 1. Create the **com.aws.services** package. 
 2. Create the **SendMessages** class in this package and add the Java code to it. .  
-3. Create the **S3Service** class in this package and add the Java code to it.
-4. Create the **WriteExcel** class in this package and add the Java code to it.
+3. Create the **WriteExcel** class in this package and add the Java code to it.
 
 ## Create the HTML files
 
@@ -1777,12 +1758,15 @@ At this point, you have created all of the Java files required for the AWS *Trac
 
 + **login.html**
 + **index.html**
++ **add.html**
++ **items.html**
++ **layout.html**
 
 The following illustration shows these files. 
 
-![AWS Tracking Application](images/resources.png)
+![AWS Tracking Application](images/AWT3.png)
 
-The **login.html** file is the login page that lets a user log into the application. This html file contains a form that sends a request to the **/login** handler that is defined in the **MainController**. After a successful login, the **index.html** is used as the application's view (in this example, there is only one view). 
+The **login.html** file is the login page that lets a user log into the application. This html file contains a form that sends a request to the **/login** handler that is defined in the **MainController**. After a successful login, the **index.html** is used as the application's home view. The **add.html** file represents the view for adding an item to the system. The **items.html** file is used to view and modify the items. Finally, the **layout.html** represents the menu visible in all views.  
 
 #### Login HTML file
 
@@ -1887,476 +1871,400 @@ The following HTML code represents the login form.
 
 #### Index HTML file
 
-The following HTML code represents the index HTML file. This file represents the application's view and displays all of the data that the application uses. This view is broken into three sections: 
-
-+ A section that displays all of the items. 
-+ A section that lets you modify an item. 
-+ A section that lets you enter an item. 
-
-The following HTML code represents the index.html file.
+The following HTML code represents the index HTML file. This file represents the application's home view. The following HTML code represents the **index.html** file.
 
     <!DOCTYPE html>
-    <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
-      <head>
-      <meta charset="utf-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="stylesheet" href="../public/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
-      <link rel="stylesheet" href="../public/css/freelancer.min.css" th:href="@{/css/freelancer.min.css}" />
-      <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
-      <link rel="stylesheet" href="../public/css/all.min.css" th:href="@{/css/all.min.css}" />
-      <link rel="stylesheet" href="../public/css/loading.css" th:href="@{/css/loading.css}" />
-      <link rel="stylesheet" th:href="|http://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css|"/>
-      <link rel="stylesheet" th:href="|https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.1/dist/messagebox.min.css|"/>
-      <link rel="stylesheet" th:href="|https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|"/>
-      <link rel="stylesheet" th:href="|https://fonts.googleapis.com/css?family=Montserrat:400,700|"/>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-      <script src="../public/js/jquery.1.10.2.min.js" th:src="@{/js/jquery.1.10.2.min.js}"></script>
-      <script src="../public/js/contact_me.js" th:src="@{/js/contact_me.js}"></script>
-      <script src="../public/js/jquery.loading.js" th:src="@{/js/jquery.loading.js}"></script>
-      <script src="../public/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-      <script th:src="|http://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js|"></script>
-      <script th:src="|https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.1/dist/messagebox.min.js|"></script>
-      <script src="../public/js/jquery.easing.min.js" th:src="@{/js/jquery.easing.min.js}"></script>
-      <script src="../public/js/jqBootstrapValidation.js" th:src="@{/js/jqBootstrapValidation.js}"></script>
-      <title>AWS Work Tracker</title>
+    <link rel="stylesheet" href="../public/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+     <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
+    <link rel="stylesheet" href="../public/css/all.min.css" th:href="@{/css/all.min.css}" />
+    <link rel="stylesheet" href="../public/css/loading.css" th:href="@{/css/loading.css}" />
+    <link rel="stylesheet" th:href="|http://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css|"/>
+    <link rel="stylesheet" th:href="|https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.1/dist/messagebox.min.css|"/>
+    <link rel="stylesheet" th:href="|https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|"/>
+    <link rel="stylesheet" th:href="|https://fonts.googleapis.com/css?family=Montserrat:400,700|"/>
+
+    <script src="../public/js/jquery.1.10.2.min.js" th:src="@{/js/jquery.1.10.2.min.js}"></script>
+    <script src="../public/js/jquery.loading.js" th:src="@{/js/jquery.loading.js}"></script>
+    <script src="../public/js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script src="../public/js/jqBootstrapValidation.js" th:src="@{/js/jqBootstrapValidation.js}"></script>
+
+    <title>AWS Item Tracker</title>
     </head>
 
-    <body id="page-top">
+    <body>
+    <header th:replace="layout :: site-header"/>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
-    <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="#page-top">Welcome <span sec:authentication="principal.username">User</span>        </a>
-        <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            Menu
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
+     <div class="container">
 
-                <li class="nav-item mx-0 mx-lg-1">
-                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Retrieve Items</a>
-                </li>
-                <li class="nav-item mx-0 mx-lg-1">
-                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#modify">Modify Items</a>
-                </li>
+    <h3>Welcome <span sec:authentication="principal.username">User</span> to AWS Item Tracker</h3>
+    <p>Now is: <b th:text="${execInfo.now.time}"></b></p>
 
-                <li class="nav-item mx-0 mx-lg-1">
-                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Enter Item</a>
-                </li>
+    <h2>AWS Item Tracker</h2>
 
-                <form id="logoutForm" th:action="@{/logout}" method="post">
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                </form>
-                <li class="nav-item mx-0 mx-lg-1">
-                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" onclick="document.forms['logoutForm'].submit()">Logout</a>
-                </li>
+    <p>The AWS Item Tracker application is a sample application that uses multiple AWS Services and the Java V2 API. Collecting and  working with items has never been easier! Simply perform these steps:<p>
 
-            </ul>
-        </div>
-     </div>
-    </nav>
-
-    <!-- Masthead -->
-    <header class="masthead bg-primary text-white text-center">
-      <div class="container d-flex align-items-center flex-column">
-
-        <!-- Masthead Avatar Image -->
-        <img src="../public/img/aws-press-release.png" th:src="@{/img/aws-press-release.png}">
-        <!-- Masthead Heading -->
-        <h1 class="masthead-heading text-uppercase mb-0">Track your AWS work</h1>
-
-
-        <!-- Icon Divider -->
-        <div class="divider-custom divider-light">
-            <div class="divider-custom-line"></div>
-            <div class="divider-custom-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="divider-custom-line"></div>
-        </div>
-          <!-- Masthead Subheading -->
-          <p class="masthead-subheading font-weight-light mb-0">A Custom tool created by the Amazon SDK Doc Team</p>
-
-          </div>
-        </header>
-
-        <!-- Portfolio Section -->
-        <section class="page-section portfolio" id="portfolio">
-          <div class="container">
-
-           <!-- Portfolio Section Heading -->
-            <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Retrieve Items</h2>
-
-            <!-- Icon Divider -->
-            <div class="divider-custom">
-              <div class="divider-custom-line"></div>
-              <div class="divider-custom-icon">
-                <i class="fas fa-star"></i>
-              </div>
-              <div class="divider-custom-line"></div>
-          </div>
-
-          <!-- Portfolio Grid Items -->
-          <div class="row">
-
-            <table id="myTable" class="display" style="width:100%">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Writer</th>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Guide</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>No Data</td>
-                    <td>No Data</td>
-                    <td>No Data </td>
-                    <td>No Data</td>
-                    <td>No Data</td>
-                    <td>No Data</td>
-                </tr>
-                </tbody>
-                <tfoot>
-                <tr>
-                    <th>Id</th>
-                    <th>Writer</th>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Guide</th>
-                    <th>Status</th>
-                </tr>
-
-                </tfoot>
-                <div id="success3"></div>
-            </table>
-           </div>
-
-            <div class="container">
-              <!-- Or let Bootstrap automatically handle the layout -->
-            <div class="row">
-                <div class="col-sm" style="background-color:white;">
-                    <button type="submit" class="btn btn-success" id="GetButton">Get Data</button>
-                </div>
-                <div class="col-sm" style="background-color:white;">
-                    <h5>Data Type</h5>
-                    <div class="radio">
-                        <label><input type="radio" name="optradio" value="active" checked>Active Data</label>
-                    </div>
-                    <div class="radio">
-                        <label><input type="radio" name="optradio" value="archive">Archive Data</label>
-                    </div>
-
-                </div>
-
-                <div class="col-sm" style="background-color:white;">
-                    <label for="sel1">Select Manager (select one):</label>
-                    <select class="form-control" id="sel1">
-                        <option>No Manager</option>
-                        <option>pccornel@amazon.com</option>
-                    </select>
-                </div>
-
-                <div class="col-sm" style="background-color:white;">
-                    <button type="submit" class="btn btn-success" id="GetReport">Send Report</button>
-                </div>
-            </div>
-        </div>
-
-          <!-- Portfolio Item 2 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal2">
-                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                    <div class="portfolio-item-caption-content text-center text-white">
-                        <i class="fas fa-plus fa-3x"></i>
-                    </div>
-                </div>
-                <img class="img-fluid" src="img/portfolio/cake.png" alt="">
-              </div>
-          </div>
-
-           <!-- Portfolio Item 3 -->
-            <div class="col-md-6 col-lg-4">
-            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal3">
-                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                    <div class="portfolio-item-caption-content text-center text-white">
-                        <i class="fas fa-plus fa-3x"></i>
-                    </div>
-                </div>
-                <img class="img-fluid" src="img/portfolio/circus.png" alt="">
-            </div>
-          </div>
-
-          <!-- Portfolio Item 4 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal4">
-                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                    <div class="portfolio-item-caption-content text-center text-white">
-                        <i class="fas fa-plus fa-3x"></i>
-                    </div>
-                </div>
-                <img class="img-fluid" src="img/portfolio/game.png" alt="">
-            </div>
-          </div>
-
-          <!-- Portfolio Item 5 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal5">
-                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                    <div class="portfolio-item-caption-content text-center text-white">
-                        <i class="fas fa-plus fa-3x"></i>
-                    </div>
-                </div>
-            </div>
-          </div>
-
-          <!-- Portfolio Item 6 -->
-          <div class="col-md-6 col-lg-4">
-            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal6">
-                <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                    <div class="portfolio-item-caption-content text-center text-white">
-                        <i class="fas fa-plus fa-3x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        </div>
-        <!-- /.row -->
-
-        </div>
-        </section>
-
-        <!-- MODIFY ITEM Section -->
-        <section class="page-section bg-primary text-white mb-0" id="aboutmodify">
-          <div class="container">
-
-          <!-- About Section Heading -->
-          <h2 class="page-section-heading text-center text-uppercase text-white">Modify Item</h2>
-
-          <!-- Icon Divider -->
-          <div class="divider-custom divider-light">
-            <div class="divider-custom-line"></div>
-            <div class="divider-custom-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="divider-custom-line"></div>
-          </div>
-
-          <!-- About Section Content -->
-          <div class="row">
-            <div class="col-lg-4 ml-auto">
-                <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional SASS stylesheets for easy customization.</p>
-            </div>
-            <div class="col-lg-4 mr-auto">
-                <p class="lead">You can create your own custom avatar for the masthead, change the icon in the dividers, and add your email address to the contact form to make it fully functional!</p>
-            </div>
-        </div>
-
-          <!-- About Section Button -->
-          <div class="text-center mt-4">
-            <a class="btn btn-xl btn-outline-light" href="https://startbootstrap.com/themes/freelancer/">
-                <i class="fas fa-download mr-2"></i>
-                Free Download!
-            </a>
-          </div>
-      </div>
-      </section>
-
-      <!-- Contact Section -->
-      <section class="page-section" id="modify">
-      <div class="container">
-
-        <!-- Contact Section Heading -->
-        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Modify Item</h2>
-
-        <!-- Icon Divider -->
-        <div class="divider-custom">
-            <div class="divider-custom-line"></div>
-            <div class="divider-custom-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="divider-custom-line"></div>
-        </div>
-
-          <!-- Contact Section Form -->
-          <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
-                <form name="sentMessage" id="modifyform" novalidate="novalidate">
-                    <div class="control-group">
-                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                            <label>Writer</label>
-                            <input class="form-control" id="modify-id" type="text" placeholder="Item ID" required="required" data-validation-required-message="Please enter Item Id.">
-                            <p class="help-block text-danger"></p>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                            <label>Description</label>
-                            <textarea class="form-control" id="new-description" rows="5" placeholder="Description" required="required" data-validation-required-message="Please enter a description."></textarea>
-                            <p class="help-block text-danger"></p>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                            <label>Status</label>
-                            <textarea class="form-control" id="new-status" rows="5" placeholder="Status" required="required" data-validation-required-message="Please enter the status."></textarea>
-                            <p class="help-block text-danger"></p>
-                        </div>
-                    </div>
-                    <br>
-                    <div id="success2"></div>
-                    <div class="row">
-                        <div class="col-sm-6" style="background-color:white;">
-                            <button type="submit" class="btn btn-primary btn-xl" id="ModifyButton">Modify Item</button>
-                        </div>
-                        <div class="col-sm-6" style="background-color:white;">
-                            <button type="submit" class="btn btn-primary btn-xl" id="GetArchive">Archive</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        </div>
-        </section>
-
-       <!-- About Section -->
-        <section class="page-section bg-primary text-white mb-0" id="about">
-        <div class="container">
-
-        <!-- About Section Heading -->
-        <h2 class="page-section-heading text-center text-uppercase text-white">About</h2>
-
-        <!-- Icon Divider -->
-        <div class="divider-custom divider-light">
-            <div class="divider-custom-line"></div>
-            <div class="divider-custom-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="divider-custom-line"></div>
-          </div>
-
-          <!-- About Section Content -->
-          <div class="row">
-            <div class="col-lg-4 ml-auto">
-                <p class="lead">Freelancer is a free bootstrap theme created by Start Bootstrap. The download includes the complete source files including HTML, CSS, and JavaScript as well as optional SASS stylesheets for easy customization.</p>
-            </div>
-            <div class="col-lg-4 mr-auto">
-                <p class="lead">You can create your own custom avatar for the masthead, change the icon in the dividers, and add your email address to the contact form to make it fully functional!</p>
-            </div>
-          </div>
-
-          <!-- About Section Button -->
-          <div class="text-center mt-4">
-            <a class="btn btn-xl btn-outline-light" href="https://startbootstrap.com/themes/freelancer/">
-                <i class="fas fa-download mr-2"></i>
-                Free Download!
-            </a>
-        </div>
-
-        </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section class="page-section" id="contact">
-        <div class="container">
-
-        <!-- Contact Section Heading -->
-        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Work Item</h2>
-
-        <!-- Icon Divider -->
-        <div class="divider-custom">
-            <div class="divider-custom-line"></div>
-            <div class="divider-custom-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="divider-custom-line"></div>
-        </div>
-
-        <!-- Contact Section Form -->
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
-                <form name="sentMessage" id="contactForm" novalidate="novalidate">
-                    <div class="control-group">
-                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                            <label>Guide</label>
-                            <input class="form-control" id="guide" type="guide" placeholder="AWS Guide/AWS API" required="required" data-validation-required-message="Please enter the AWS Guide.">
-                            <p class="help-block text-danger"></p>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                            <label>Date</label>
-                            <input class="form-control" id="date" type="date" placeholder="Date" required="required" data-validation-required-message="Please enter the date.">
-                            <p class="help-block text-danger"></p>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                            <label>Description</label>
-                            <textarea class="form-control" id="description" rows="5" placeholder="Description" required="required" data-validation-required-message="Please enter a description."></textarea>
-                            <p class="help-block text-danger"></p>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                            <label>Status</label>
-                            <textarea class="form-control" id="status" rows="5" placeholder="Status" required="required" data-validation-required-message="Please enter the status."></textarea>
-                            <p class="help-block text-danger"></p>
-                        </div>
-                    </div>
-                    <br>
-                    <div id="success"></div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-xl" id="SendButton">Create Item</button>
-                    </div>
-                </form>
-            </div>
-           </div>
-          </div>
-        </section>
-
-      <!-- Footer -->
-      <footer class="footer text-center">
-      <div class="container">
-        <div class="row">
-
-            <!-- Footer Location -->
-            <div class="col-lg-4 mb-5 mb-lg-0">
-                <h4 class="text-uppercase mb-4">AWS Tracker</h4>
-             </div>
-        </div>
-    </div>
-      </footer>
-
-      <!-- Copyright Section -->
-      <section class="copyright py-4 text-center text-white">
-      <div class="container">
-        <small>Copyright &copy; Your Website 2019</small>
-      </div>
-      </section>
-
-        <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
-    <   div class="scroll-to-top d-lg-none position-fixed ">
-      <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
-        <i class="fa fa-chevron-up"></i>
-      </a>
-    </div>
+    <ol>
+    <li>Enter work items into the system by clicking the <i>Add Items</i> menu item. Fill in the form and then click the <i>Create Item</i> button.</li>
+    <li>The AWS Item Tracker application stores the data by using the Amazon Relational Database Service (Amazon RDS).</li>
+    <li>You can view all of your items by clicking the <i>Get Items</i> menu item. Next, click the <i>Get Active Items</i> button in the dialog.</li>
+    <li>You can modify an Active Item by selecting an item in the table and then clicking the <i>Get Single Item</i> button. The item appears in the Modify Item section where you can modify the description or status.</li>
+    <li>Modify the item and then click the <i>Update Item</i> button. Note that you cannot modify the ID value. </li>
+    <li>You can archive any item by selecting the item and clicking the <i>Archive Item</i> button. Notice that the table is updated with only active items.</li>
+    <li>You can display all archived items by clicking the <i>Get Archived Items</i> button. Note that you cannot modify an archived item.</li>
+    <li>You can send an email recipient an email message with a report attachment by selecting the email recipient from the dialog and then clicking the <i>Report</i> button. Note only Active data can be sent in a report.</li>
+    <li>The Amazon Simple Email Service is used to send an email with an Excel document to the selected email recipient.</li>
+    </ol>
+    <div>
     </body>
     </html>
     
+
+#### Add HTML file
+
+The following HTML code represents the add view that lets users add new items. 
+
+	<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	<html>
+	<head>
+    	<title>Enter new items</title>
+
+    	<script src="../public/js/jquery.1.10.2.min.js" th:src="@{/js/jquery.1.10.2.min.js}"></script>
+    	<script src="../public/js/jquery-ui.min.js" th:src="@{/js/jquery-ui.min.js}"></script>
+    	<script src="../public/js/contact_me.js" th:src="@{/js/contact_me.js}"></script>
+
+    	<!-- CSS files -->
+    	<link rel="stylesheet" href="../public/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    	<link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+
+	</head>
+	<body>
+	<header th:replace="layout :: site-header"/>
+	<div class="container">
+	<h3>Welcome <span sec:authentication="principal.username">User</span> to AWS Item Tracker</h3>
+    	<p>Add new items by filling in this table and clicking <i>Create Item</i></p>
+
+	<div class="row">
+    	<div class="col-lg-8 mx-auto">
+
+        <form>
+            <div class="control-group">
+                <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                    <label>Guide</label>
+                    <input class="form-control" id="guide" type="guide" placeholder="AWS Guide/AWS API" required="required" data-validation-required-message="Please enter the AWS Guide.">
+                    <p class="help-block text-danger"></p>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                    <label>Description</label>
+                    <textarea class="form-control" id="description" rows="5" placeholder="Description" required="required" data-validation-required-message="Please enter a description."></textarea>
+                    <p class="help-block text-danger"></p>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                    <label>Status</label>
+                    <textarea class="form-control" id="status" rows="5" placeholder="Status" required="required" data-validation-required-message="Please enter the status."></textarea>
+                    <p class="help-block text-danger"></p>
+                </div>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary btn-xl" id="SendButton">Create Item</button>
+        </form>
+    	</div>
+	</div>
+	</div>
+	</body>
+	</html>
+
+#### Items HTML file
+
+The following HTML code represents the items HTML file. This file represents the application's view that lets users modify items and sends reports. 
+
+	<!DOCTYPE html>
+	<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	<html>
+	<head>
+    	<title>Modify Items</title>
+
+ 	<script src="../public/js/jquery.1.10.2.min.js" th:src="@{/js/jquery.1.10.2.min.js}"></script>
+    	<script src="../public/js/jquery-ui.min.js" th:src="@{/js/jquery-ui.min.js}"></script>
+    	<script th:src="|https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js|"></script>
+    	<script th:src="|https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js|"></script>
+    	<script src="../public/js/items.js" th:src="@{/js/items.js}"></script>
+
+    	<!-- CSS files -->
+    	<link rel="stylesheet" href="../public/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    	<link rel="stylesheet" th:href="|https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css|"/>
+    	<link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+    	<link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+    	<link rel="stylesheet" href="../public/css/fancy-box/jquery.fancybox2.css" th:href="@{/css/fancy-box/jquery.fancybox2.css}" />
+    	<link rel="stylesheet" href="../public/css/formBuilder/formBuilder2.css" th:href="@{/css/formBuilder/formBuilder2.css}" />
+    	<link rel="stylesheet" href="../public/css/col.css" th:href="@{/css/col.css}" />
+    	<link rel="stylesheet" href="../public/css/button.css" th:href="@{/css/button.css}" />
+    	<link rel="stylesheet" href="../public/css/all.min.css" th:href="@{/css/all.min.css}" />
+    	<link rel="stylesheet" href="../public/css/loading.css" th:href="@{/css/loading.css}" />
+
+	</head>
+	<body>
+	<header th:replace="layout :: site-header"/>
+
+	<div class="container">
+
+    	<h3>Welcome <span sec:authentication="principal.username">User</span> to AWS Item Tracker</h3>
+    	<h3 id="info3">Get Items</h3>
+	<p>You can manage items in this view.</p>
+
+    	<table id="myTable" class="display" style="width:100%">
+        <thead>
+        <tr>
+            <th>Item Id</th>
+            <th>Name</th>
+            <th>Guide</th>
+            <th>Date Created</th>
+            <th>Description</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>No Data</td>
+            <td>No Data</td>
+            <td>No Data </td>
+            <td>No Data</td>
+            <td>No Data</td>
+            <td>No Data</td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <th>Item Id</th>
+            <th>Name</th>
+            <th>Guide</th>
+            <th>Date Created</th>
+            <th>Description</th>
+            <th>Status</th>
+        </tr>
+        </tfoot>
+        <div id="success3"></div>
+    </table>
+
+    </div>
+    <br>
+    <div class="container">
+
+    <h3>Modify an Item</h3>
+    <p>You can modify items.</p>
+
+    <form>
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>ID</label>
+                <input class="form-control" id="id" type="id" placeholder="Id" readonly data-validation-required-message="Item Id.">
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Description</label>
+                <textarea class="form-control" id="description" rows="5" placeholder="Description" required="required" data-validation-required-message="Description."></textarea>
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Status</label>
+                <textarea class="form-control" id="status" rows="5" placeholder="Status" required="required" data-validation-required-message="Status"></textarea>
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+        <br>
+      </form>
+
+     </div>
+
+     <div id="dialogtemplate2" border="2" title="Basic dialog">
+
+    <table  align="center">
+        <tr>
+        <td>
+                <p>Options:</p>
+            </td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Select Manager:</p>
+            </td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <select id="manager">
+                    <option value="scmacdon@amazon.com">scmacdon@amazon.com</option>
+                    <option value="careybur@amazon.com">careybur@amazon.com</option>
+                </select>
+            </td>
+            <td>
+
+            </td>
+        </tr>
+
+        <tr>
+
+        <tr>
+            <td>
+                <button class="shiny-blue" type="button" onclick="GetItems()">Get Active Items</button>
+            </td>
+
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="shiny-blue" type="button" onclick="GetArcItems()">Get Archived Items</button>
+            </td>
+
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="shiny-blue" type="button" onclick="ModifyItem()">Get Single Item</button>
+            </td>
+
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="shiny-blue" type="button" onclick="modItem()">Update Item</button>
+            </td>
+
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="shiny-blue" type="button" onclick="archiveItem()">Archive Item</button>
+            </td>
+
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="shiny-blue" type="button" id="reportbutton" onclick="Report()">Send Report</button>
+            </td>
+
+            <td>
+
+            </td>
+        </tr>
+    </table>
+    </div>
+
+    <style>
+
+    .ui-widget {
+        font-family: Verdana,Arial,sans-serif;
+        font-size: .8em;
+    }
+
+    .ui-widget-content {
+        background: #F9F9F9;
+        border: 1px solid #90d93f;
+        color: #222222;
+    }
+
+    .ui-dialog {
+        left: 0;
+        outline: 0 none;
+        padding: 0 !important;
+        position: absolute;
+        top: 0;
+    }
+
+    #success {
+        padding: 0;
+        margin: 0;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        background: none repeat scroll 0 0 transparent;
+        border: 0 none;
+        overflow: auto;
+        position: relative;
+        padding: 0 !important;
+    }
+
+    .ui-widget-header {
+        background: #000;
+        border: 0;
+        color: #fff;
+        font-weight: normal;
+    }
+
+    .ui-dialog .ui-dialog-titlebar {
+        padding: 0.1em .5em;
+        position: relative;
+        font-size: 1em;
+    }
+
+	</style>
+
+	</body>
+	</html>
+
+#### Layout HTML file
+
+The following HTML code represents the layout HTML file that represents the application's menu. 
+
+	<!DOCTYPE html>
+	<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	<head th:fragment="site-head">
+    	<meta charset="UTF-8" />
+    	<link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
+    	<script src="../public/js/jquery.1.10.2.min.js" th:src="@{/js/jquery.1.10.2.min.js}"></script>
+    	<meta th:include="this :: head" th:remove="tag"/>
+	</head>
+	<body>
+	<!-- th:hef calls a controller method - which returns the view -->
+	<header th:fragment="site-header">
+    	<a href="index.html" th:href="@{/}"><img src="../public/img/site-logo.png" th:src="@{/img/site-logo.png}" /></a>
+    	<a href="#" style="color: white" th:href="@{/}">Home</a>
+    	<a href="#" style="color: white" th:href="@{/add}">Add Items</a>
+    	<a href="#"  style="color: white" th:href="@{/items}">Get Items</a>
+    	<div id="logged-in-info">
+
+        <form method="post" th:action="@{/logout}">
+            <input type="submit"  value="Logout"/>
+        </form>
+         </div>
+	</header>
+	<h1>Welcome</h1>
+	<body>
+	<p>Welcome to  AWS Item Tracker.</p>
+	</body>
+	</html>
+
 #### Create the HTML files 
 
 1. In the **resources** folder, create a new folder named **templates**. 
