@@ -2608,8 +2608,7 @@ The following JavaScript code represents the contact_me.js that is used in the *
         xhr.send("guide=" + guide + "&description=" + description+ "&status=" + status);
     } );// END of the Send button click
 
-    //Handler for the uploadSave call
-    //This will populate the Data Table widget
+    //Handler for the click SendButton call
     function loadNewItems(event) {
 
         var msg = event.target.responseText;
@@ -2617,7 +2616,7 @@ The following JavaScript code represents the contact_me.js that is used in the *
 
     	}
 
-   	});
+      });
 
 **NOTE**: There are other JS and CSS files located in the Github repository that you must add to your project. Ensure all of the files under resources are included in your project. 
 
@@ -2749,14 +2748,14 @@ If this is your first time accessing this service, you will see a *Welcome to AW
 To deploy the *AWS Tracker* application to the AWS Elastic Beanstalk:
 
 1. Open the Elastic Beanstalk console at https://console.aws.amazon.com/elasticbeanstalk/home. 
-2. Choose **Create New Application**. This opens a wizard that creates your application and launches an appropriate environment.
-3. In the **Create New Application** dialog box, enter the following values. 
-   + **Application Name** - Greeting
+2. Click **Applications** in left menu, then click the **Create a new application** button. This opens a wizard that creates your application and launches an appropriate environment.
+3. In the **Create New Application** section, enter the following values. 
+   + **Application Name** - AWS Tracker
    + **Description** - A description for the application 
 
-![AWS Tracking Application](images/greet10.png)
+![AWS Tracking Application](images/AWT6.png)
 
-4. Choose **Create one now**.
+4. Click **Create**.
 5. Choose **Web server environment**, and then choose **Select**.
 6. In **Preconfigured platform**, choose **Java**. 
 7. In **Upload your code**, browse to the JAR that you created. 
