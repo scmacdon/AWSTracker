@@ -43,13 +43,13 @@ A user can retrieve either *active* or *archive* items. For example, a user can 
 
 The database is MySQL and contains a table named **work** that contains these fields:
 
-+ **idwork** - A VARCHAR(45) value that represents the PK. 
-+ **date** - a Date value that specifies the date the item was created
-+ **description** - a VARCHAR(400) that describes the item 
-+ **guide** - a VARCHAR(45) value that represents the deliverable being worked on
-+ **status** - a  VARCHAR(400) value that describes describes the status
-+ **username** - a VARCHAR(45) value that represents the user whom entered the item 
-+ **archive** - a TINYINT(4)value that represents whether this is an active or archive item 
++ **idwork**: a VARCHAR(45) value that represents the PK. 
++ **date**: a Date value that specifies the date the item was created
++ **description**: a VARCHAR(400) that describes the item 
++ **guide**: a VARCHAR(45) value that represents the deliverable being worked on
++ **status**: a  VARCHAR(400) value that describes describes the status
++ **username**: a VARCHAR(45) value that represents the user whom entered the item 
++ **archive**: a TINYINT(4)value that represents whether this is an active or archive item 
 
 The following illustration shows the **work** table. 
 
@@ -57,7 +57,7 @@ The following illustration shows the **work** table.
 
 Finally, the user can select the email recipient from the **Select Manager** dropdown field and click the **Send Report** button. All active items are placed into a data set and used to dynamically create an Excel document by using the **jxl.write.WritableWorkbook** API. Then the application uses Amazon SES to email the document to the selected email recipient. The following illustration shows an example of a report. 
 
-![AWS Tracking Application](images/trackExcel.png)
+![AWS Tracking Application](images/AWT12.png)
 
 This development document guides you through creating the *AWS Tracker* application. Once the application is developed, this document teaches you how to deploy it to the AWS Elastic Beanstalk.
 
