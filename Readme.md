@@ -10,12 +10,12 @@ In addition, the *AWS Tracking* application uses Spring Boot APIs to build a mod
 
 This application uses a model that is based on a work item and contains these attributes: 
 
-+ **date** - the start date of the item 
-+ **description** - the description of the item
-+ **guide** - the deliverable that is impacted by the item 
-+ **username** - the person whom performs the work item
-+ **status** - the status of the item 
-+ **archive** - whether this item is completed or still being worked on
++ **date**: the start date of the item 
++ **description**: the description of the item
++ **guide**: the deliverable that is impacted by the item 
++ **username**: the person whom performs the work item
++ **status**: the status of the item 
++ **archive**: whether this item is completed or still being worked on
 
 The following illustration shows the login page. 
 
