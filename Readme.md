@@ -2674,7 +2674,7 @@ In this step, you create an Amazon RDS MySQL DB instance that maintains the data
 
 13. Wait for the Status of your new DB instance to show as Available. Then choose the DB instance name to show its details.
 
-**Note**: If you have issues connecting to the database from a client such as MySQL Workbench, then set the correct inbound rules for the security group. For information about setting up Security Group Inbound Rules, see *Controlling Access with Security Groups* at https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html. 
+**Note**: You must setup inbound rules for the security group to connect to the database. You can setup a inbound rule for your development environment and another one for the Elastic Beanstalk (which will host the application). Setting up an inbound rule essentially means whitelisting an IP address. Once you setup the inbound rules, you can connect to the database from a client such as MySQL Workbench. For information about setting up Security Group Inbound Rules, see *Controlling Access with Security Groups* at https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html. 
 
 #### Obtain the Endpoint
 
@@ -2756,16 +2756,25 @@ To deploy the *AWS Tracker* application to the AWS Elastic Beanstalk:
 ![AWS Tracking Application](images/AWT6.png)
 
 4. Click **Create**.
-5. Choose **Web server environment**, and then choose **Select**.
-6. In **Preconfigured platform**, choose **Java**. 
-7. In **Upload your code**, browse to the JAR that you created. 
-8. Choose **Create Environment**. You'll see the application being created. 
+5. Click the **Create a new environment** button. 
+6. Select the **Web server environment** option.
+7. Click **Select**. 
+8. In the Environment information section, you can leave the default values (or you can enter custom information).
+9. In the **Platform** section, choose **Managed platform**.
+10. From the **Platform** dropdown field, choose **Java** (accept the default values for the other fields).
 
-![AWS Tracking Application](images/greet11.png)
+![AWS Tracking Application](images/AWT7.png)
+
+ 
+11. In the **Application code** section, select the **Upload your code** option. 
+12. Click **Local file** and click **Choose file**. Browse to the JAR file that you created. 
+13. Click the **Create environment** button. You'll see the application being created. 
+
+![AWS Tracking Application](images/AWT8.png)
 
 9. Once done, you will see the application state the Health is **Ok**.  
 
-![AWS Tracking Application](images/greet13.png)
+![AWS Tracking Application](images/AWT9.png)
 
 10. To change the port that Spring Boot listens on, add an environment variable named **SERVER_PORT**, with the value 5000.
 11. Add a variable named **AWS_ACCESS_KEY_ID**, and then specify your access key value. 
@@ -2775,17 +2784,13 @@ To deploy the *AWS Tracker* application to the AWS Elastic Beanstalk:
 
 13. Once the variables are configured, you'll see the URL for accessing the application. 
 
-![AWS Tracking Application](images/greet14.png)
+![AWS Tracking Application](images/AWT10.png)
 
-To access the application, open your browser and use the following syntax.
+To access the application, open your browser and enter the URL for your application. You will see the login page for your application.
 
-**URL/greeting**
+![AWS Blog Application](images/AWT11.png)
 
-You need **/greeting** at the end of the URL so that a request is made to the /greeting controller in the **GreetingController** class. When you enter the full URL (including **/greeting**) into a browser, you see the form. 
-
-![AWS Blog Application](images/greet15.png)
-
-**Note:** The final task that you have to perform is to add the **bootstrap.min.css** file to the **resources\public\css** folder. This is the CSS file for the Spring Form. 
+Congratulations, you have created and deployed a secure Spring Boot application that interacts with AWS Services. 
 
 
 
