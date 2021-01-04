@@ -124,7 +124,7 @@ The first step in this AWS tutorial is to update the POM file in your project to
 
 To successfully secure a web application by using Amazon Cognito, create a User Pool in the AWS Management Console. In this example, create a User Pool named **spring-example**. Once the User Pool is successfully created, you see a confirmation message.
 
-![AWS Tracking Application](images/pic4.png)
+![AWS Tracking Application](images/pic5.png)
 
 1.	Open the Amazon Cognito console at https://console.aws.amazon.com/cognito/home.
 
