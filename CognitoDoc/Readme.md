@@ -11,3 +11,4 @@ When the user clicks the log in button, they are presented with a log in form wh
 After the user enters their credentials, they can access the web application. 
 
 ![AWS Tracking Application](images/pic3.png)
+
