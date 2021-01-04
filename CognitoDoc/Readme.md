@@ -161,3 +161,9 @@ Define the client application that can use the User Pool. This is an important s
 You must configure the client application. For example, you need to define the allowed OAuth scope values, as shown in this illustration.
 
 ![AWS Tracking Application](images/pic8.png)
+
+1. Choose **Client app settings** from the menu on the left side. 
+
+![AWS Tracking Application](images/pic9.png)
+
+
