@@ -12,3 +12,4 @@ After the user enters their credentials, they can access the web application.
 
 ![AWS Tracking Application](images/pic3.png)
 
+**Note**: The Spring Boot application used in this AWS tutorial is created by following [Creating your first AWS Java web application](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases/creating_first_project). Before following along with this AWS tutorial, you must complete that AWS tutorial. 
