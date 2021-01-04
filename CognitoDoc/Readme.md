@@ -13,3 +13,30 @@ After the user enters their credentials, they can access the web application.
 ![AWS Tracking Application](images/pic3.png)
 
 **Note**: The Spring Boot application used in this AWS tutorial is created by following [Creating your first AWS Java web application](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases/creating_first_project). Before following along with this AWS tutorial, you must complete that AWS tutorial. 
+
+The following illustration shows the project files created in this tutorial (most of these files were created by following the tutorial referenced in the previous link). The files circled in red are the new files specific to securing the application by using Amazon Cognito. 
+
+![AWS Tracking Application](images/pic4.png)
+
+## Prerequisites
+
+To complete the tutorial, you need the following:
+
++ An AWS account
++ A Java IDE (this example uses IntelliJ)
++ Java 1.8 SDK and Maven
++ Complete the Creating your first AWS Java web application tutorial. 
+
+**Cost to complete:** The AWS services you'll use in this example are part of the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
+
+**Note:** When you're done developing the application, be sure to terminate all of the resources you created to ensure that you're not charged.
+
+**Topics**
+
++ Update the POM file
++ Create an Amazon Cognito User Pool
++	Define a client application within the User Pool
++	Configure the client application
++	Configure a domain name
++	Create a user
++	Modify your web application
