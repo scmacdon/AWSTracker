@@ -142,7 +142,7 @@ To successfully secure a web application by using Amazon Cognito, create a User 
 
 Define the client application that can use the User Pool. This is an important step to ensure your web application can use the User Pool to secure a web application. 
 
-1.	Choose App clients from the menu on the left side. 
+1.	Choose **App clients** from the menu on the left side. 
 
 ![AWS Tracking Application](images/pic6.png)
 
