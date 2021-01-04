@@ -7,3 +7,7 @@ Amazon Cognito lets you add user sign-up, sign-in, and access control to your we
 When the user clicks the log in button, they are presented with a log in form where they can enter their user credentials.
 
 ![AWS Tracking Application](images/pic2.png)
+
+After the user enters their credentials, they can access the web application. 
+
+![AWS Tracking Application](images/pic3.png)
