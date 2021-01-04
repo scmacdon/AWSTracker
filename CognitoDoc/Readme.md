@@ -137,3 +137,21 @@ To successfully secure a web application by using Amazon Cognito, create a User 
 5.	Choose **Review Defaults**.
 
 6.	Choose **Create Pool**. 
+
+## Define a client application within the User Pool
+
+Define the client application that can use the User Pool. This is an important step to ensure your web application can use the User Pool to secure a web application. 
+
+1.	Choose App clients from the menu on the left side. 
+
+![AWS Tracking Application](images/pic6.png)
+
+2. Choose **Add an app client**.
+
+3. Specify a name for the client application. For example, **spring-boot**.
+
+![AWS Tracking Application](images/pic7.png)
+
+4. Choose **Create client app**.
+
+5. Write down the generated App client id and App client secret values (you need these values for a later step in this tutorial).
