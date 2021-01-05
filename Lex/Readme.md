@@ -70,3 +70,15 @@ You can use Amazon Cognito to manage permissions for a web application by creati
 
 ![AWS Lex](images/pic4.png)
 
+8. Choose **Allow**. 
+
+9. Note the Identity pool ID value (this value is specified in the web page).
+
+![AWS Lex](images/pic5.png)
+
+## Add permissions to the IAM roles
+
+You must provide the IAM role that you noted in the previous section with these permissions: 
++ 	AmazonLexRunBotsOnly
++ 	AmazonPollyReadOnlyAccess
+
