@@ -166,4 +166,19 @@ You must configure the client application. For example, you need to define the a
 
 ![AWS Tracking Application](images/pic9.png)
 
+2. Choose **Create User**.
+
+3. In the Create user dialog, enter the user name and other information. 
+
+![AWS Tracking Application](images/pic9.png)
+
+4. Choose **Create user**.
+
+**Note**: The user has a temporary password. The user should define a regular password before logging into an application secured by Amazon Cognito. 
+
+After the user is confirmed, you see the valid users, as shown in this illustration.
+
+![AWS Tracking Application](images/pic10.png)
+
+At this point, you need the following values to proceed: client id, client secret, pool id value, and the AWS region you are using. Without all of these values, you cannot secure your web application. 
 
