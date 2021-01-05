@@ -15,10 +15,10 @@ This AWS tutorial guides you through creating an Amazon Lex box and integrating 
 + Prerequisites
 + Create an IntelliJ project named Greetings
 + Add the Spring POM dependencies to your project
-+	Set up the Java packages in your project
-+	Create the Java logic for the main Boot class
-+	Create the HTML files
-+	Package the Greetings application into a JAR file
++ Set up the Java packages in your project
++ Create the Java logic for the main Boot class
++ Create the HTML files
++ Package the Greetings application into a JAR file
 
 
 ## Prerequisites
@@ -72,7 +72,7 @@ You can use Amazon Cognito to manage permissions for a web application by creati
 
 8. Choose **Allow**. 
 
-9. Note the Identity pool ID value (this value is specified in the web page).
+9. Note the **Identity pool ID** value (this value is specified in the **index.html** file created later in this tutorial).
 
 ![AWS Lex](images/pic5.png)
 
@@ -177,4 +177,225 @@ Ensure that the pom.xml file resembles the following code.
  
   ![AWS Lex](images/pic8.png)
  
- 
+ Create these Java classes:
+
++ **BotExample** - Used as the base class for the Spring Boot application..
++ **BotController** - Used as the Spring Boot controller that handles HTTP requests.
+
+### BotExample class
+
+The following Java code represents the **BotExample** class.
+
+     package com.aws.spring;
+
+     import org.springframework.stereotype.Controller;
+     import org.springframework.ui.Model;
+     import org.springframework.web.bind.annotation.GetMapping;
+
+     @Controller
+     public class BotController {
+
+     @GetMapping("/")
+     public String greetingForm(Model model) {
+        return "index";
+     }
+    }
+
+
+### BotController class
+
+The following Java code represents the **BotController** class.
+
+     package com.aws.spring;
+
+    import org.springframework.stereotype.Controller;
+    import org.springframework.ui.Model;
+    import org.springframework.web.bind.annotation.GetMapping;
+
+    @Controller
+    public class BotController {
+
+     @GetMapping("/")
+     public String greetingForm(Model model) {
+        return "index";
+     }
+   }
+
+## Create the HTML file
+
+At this point, you have created all of the Java files required for this example Spring Boot application. Now you create a HTML file that are required for the application's view. Under the resource folder, create a **templates** folder, and then create the following HTML file:
+
++ index.html
+
+The **index.html** file is the application's home view that displays the Amazon Lex bot. The following HTML represents the **index.html** file. In the following code, ensure that you specify your **IdentityPoolId** value and bot alias value. 
+
+     <!DOCTYPE html>
+     <html>
+
+     <head>
+     <title>Amazon Lex for JavaScript - Sample Application (BookTrip)</title>
+     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.41.0.min.js"></script>
+     <style language="text/css">
+        input#wisdom {
+            padding: 4px;
+            font-size: 1em;
+            width: 400px
+        }
+
+        input::placeholder {
+            color: #ccc;
+            font-style: italic;
+        }
+
+        p.userRequest {
+            margin: 4px;
+            padding: 4px 10px 4px 10px;
+            border-radius: 4px;
+            min-width: 50%;
+            max-width: 85%;
+            float: left;
+            background-color: #7d7;
+        }
+
+        p.lexResponse {
+            margin: 4px;
+            padding: 4px 10px 4px 10px;
+            border-radius: 4px;
+            text-align: right;
+            min-width: 50%;
+            max-width: 85%;
+            float: right;
+            background-color: #bbf;
+            font-style: italic;
+         }
+
+         p.lexError {
+            margin: 4px;
+            padding: 4px 10px 4px 10px;
+            border-radius: 4px;
+            text-align: right;
+            min-width: 50%;
+            max-width: 85%;
+            float: right;
+            background-color: #f77;
+        }
+       </style>
+       </head>
+
+       <body>
+        <h1 style="text-align:  left">Amazon Lex - BookTrip</h1>
+        <p style="width: 400px">
+         This little chatbot shows how easy it is to incorporate
+         <a href="https://aws.amazon.com/lex/" title="Amazon Lex (product)" target="_new">Amazon Lex</a> into your web pages.  Try it out.
+         </p>
+         <div id="conversation" style="width: 400px; height: 400px; border: 1px solid #ccc; background-color: #eee; padding: 4px; overflow: scroll"></div>
+         <form id="chatform" style="margin-top: 10px" onsubmit="return pushChat();">
+         <input type="text" id="wisdom" size="80" value="" placeholder="I need a hotel room">
+         </form>
+
+      <script type="text/javascript">
+       // set the focus to the input box
+        document.getElementById("wisdom").focus();
+
+       // Initialize the Amazon Cognito credentials provider
+        AWS.config.region = 'us-east-1'; // Region
+         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        
+        // Provide your Pool Id here
+        IdentityPoolId: '<IdentityPoolId>',
+        });
+
+      var lexruntime = new AWS.LexRuntime();
+      var lexUserId = 'chatbot-demo' + Date.now();
+      var sessionAttributes = {};
+
+      function pushChat() {
+
+        // if there is text to be sent...
+        var wisdomText = document.getElementById('wisdom');
+        if (wisdomText && wisdomText.value && wisdomText.value.trim().length > 0) {
+
+            // disable input to show we're sending it
+            var wisdom = wisdomText.value.trim();
+            wisdomText.value = '...';
+            wisdomText.locked = true;
+
+            // send it to the Lex runtime
+            var params = {
+                botAlias: '<Bot alias>',
+                botName: 'BookTrip',
+                inputText: wisdom,
+                userId: lexUserId,
+                sessionAttributes: sessionAttributes
+            };
+            showRequest(wisdom);
+            lexruntime.postText(params, function(err, data) {
+                if (err) {
+                    console.log(err, err.stack);
+                    showError('Error:  ' + err.message + ' (see console for details)')
+                }
+                if (data) {
+                    // capture the sessionAttributes for the next cycle
+                    sessionAttributes = data.sessionAttributes;
+                    // show response and/or error/dialog status
+                    showResponse(data);
+                }
+                // re-enable input
+                wisdomText.value = '';
+                wisdomText.locked = false;
+              });
+              }
+             // we always cancel form submission
+             return false;
+            }
+
+    
+        function showRequest(daText) {
+
+         var conversationDiv = document.getElementById('conversation');
+         var requestPara = document.createElement("P");
+         requestPara.className = 'userRequest';
+         requestPara.appendChild(document.createTextNode(daText));
+         conversationDiv.appendChild(requestPara);
+         conversationDiv.scrollTop = conversationDiv.scrollHeight;
+         }
+
+        function showError(daText) {
+
+         var conversationDiv = document.getElementById('conversation');
+         var errorPara = document.createElement("P");
+         errorPara.className = 'lexError';
+         errorPara.appendChild(document.createTextNode(daText));
+         conversationDiv.appendChild(errorPara);
+         conversationDiv.scrollTop = conversationDiv.scrollHeight;
+       }
+
+       function showResponse(lexResponse) {
+
+        var conversationDiv = document.getElementById('conversation');
+        var responsePara = document.createElement("P");
+        responsePara.className = 'lexResponse';
+        if (lexResponse.message) {
+            responsePara.appendChild(document.createTextNode(lexResponse.message));
+            responsePara.appendChild(document.createElement('br'));
+        }
+        if (lexResponse.dialogState === 'ReadyForFulfillment') {
+            responsePara.appendChild(document.createTextNode(
+                'Ready for fulfillment'));
+            // TODO:  show slot values
+         } else {
+            responsePara.appendChild(document.createTextNode(
+                '(' + lexResponse.dialogState + ')'));
+         }
+         conversationDiv.appendChild(responsePara);
+         conversationDiv.scrollTop = conversationDiv.scrollHeight;
+        }
+      </script>
+     </body>
+     </html>
+
+### Next steps
+Congratulations! You have created a Spring Boot application that uses Amazon Lex to create an interactive user experience. As stated at the beginning of this tutorial, be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re not charged.
+
+For more AWS multiservice examples, see
+[usecases](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases).
