@@ -173,6 +173,8 @@ Ensure that the pom.xml file resembles the following code.
  
  ![AWS Lex](images/pic7.png)
  
+ The Java files go into this package.
  
+  ![AWS Lex](images/pic8.png)
  
  
