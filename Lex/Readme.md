@@ -46,4 +46,27 @@ The first step is to create an Amazon Lex bot by using the AWS Management Consol
 
 5. Test the bot in the test window. Start the test by typing *I want to book a hotel*. 
 
-**Note**: For more information about the Book Trip example, see [Book Trip](https://docs.aws.amazon.com/lex/latest/dg/ex-book-trip.html) .
+**Note**: For more information about the Book Trip example, see [Book Trip](https://docs.aws.amazon.com/lex/latest/dg/ex-book-trip.html).
+
+## Create an Amazon Cognito identity pool
+
+You can use Amazon Cognito to manage permissions for a web application by creating an identity pool. An Amazon Cognito identity pool (federated identities) enables you to create unique identities for your users and federate them with identity providers.
+
+1. Sign in to the AWS Management Console and open the Cognito console at https://console.aws.amazon.com/cognito.
+
+2. Choose **Manage new identity pool**.
+
+3. Choose **Create new identity pool**.
+
+4. Specify a pool name (**examplepool**) and then choose **Enable access to unauthenticated identities**.
+
+![AWS Lex](images/pic3.png)
+
+5. Choose **Create Pool**.
+
+6. Expand the **Hide Details** section. 
+
+7. Note the AWS Identity and Access Management (IAM) name specified in the **Role Name** field (you need to provide additional permissions to this role). 
+
+![AWS Lex](images/pic4.png)
+
