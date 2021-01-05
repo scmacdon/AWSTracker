@@ -29,3 +29,17 @@ To complete the tutorial, you need the following:
 + A Java IDE (this tutorial uses the IntelliJ IDE)
 + Java JDK 1.8
 + Maven 3.6 or later
+
+## Create an Amazon Lex bot
+
+The first step is to create an Amazon Lex bot by using the AWS Management Console. In this example, the Amazon Lex **BookTrip** example is used.
+
+1. Sign in to the AWS Management Console and open the Amazon Lex console at https://console.aws.amazon.com/lex/.
+
+2. On the Bots page, choose **Create**.
+
+3. Choose **BookTrip** blueprint (leave the default bot name **BookTrip**).
+
+![AWS Video Analyzer](images/pic2.png)
+
+
