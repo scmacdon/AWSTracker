@@ -166,19 +166,162 @@ You must configure the client application. For example, you need to define the a
 
 ![AWS Tracking Application](images/pic9.png)
 
+2. Specify the correct callback URL. For example, with Spring Security, you can define the path as http://localhost:8080/login/oauth2/code/cognito. For local development, the localhost URL is all that is required. 
+
+**Note**: For production applications, you can enter multiple production URLs as a comma-separated list.
+
+3.For the **Sign out URL**, specify http://localhost:8080/logout. 
+
+4. Select **Authorization code grant** and allow **email** and **openid** scope (as shown in the previous illustration).
+
+5. Choose **Save Changes**. 
+
+## Configure a domain name
+
+In order for a Spring Boot application to use the log in form that is provided by Amazon Cognito, define a domain name in the AWS Management Console. 
+
+1. Choose **Domain name** from the menu on the left side. 
+
+![AWS Tracking Application](images/pic9.png)
+
+2. Enter a domain name. Be sure to choose the **Check availability** button to see if your value is valid.
+
+3. Choose **Save Changes**. 
+
+## Create a user
+
+Create a user that you can use to log into the application. In this example, the user has a user name and a password. 
+
+1. Choose Users and groups from the menu on the left side. 
+
+![AWS Tracking Application](images/pic10.png)
+
 2. Choose **Create User**.
 
 3. In the Create user dialog, enter the user name and other information. 
 
-![AWS Tracking Application](images/pic9.png)
+![AWS Tracking Application](images/pic11.png)
+
+**Note**: The user has a temporary password that should be changed to a regular password before logging into an application.
 
 4. Choose **Create user**.
 
-**Note**: The user has a temporary password. The user should define a regular password before logging into an application secured by Amazon Cognito. 
-
 After the user is confirmed, you see the valid users, as shown in this illustration.
 
-![AWS Tracking Application](images/pic10.png)
+![AWS Tracking Application](images/pic12.png)
 
 At this point, you need the following values to proceed: client id, client secret, pool id value, and the AWS region you are using. Without all of these values, you cannot secure your web application. 
+
+## Modify your web application
+
+At this point in the AWS tutorial, you can add security to the project. If you do not have a web project, create one by following [Creating your first AWS Java web application](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases/creating_first_project).
+
+### Create the WebSecurityConfig Java class
+
+To add security to your web application, you must add the **WebSecurityConfig** class to the **com.example.handlingformsubmission** package. This file ensures that the application is secured. The following Java code represents this class. 
+
+     package com.example.handlingformsubmission;
+
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+    import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+    @Configuration
+    public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf()
+                .and()
+                .authorizeRequests(authorize ->
+                        authorize.mvcMatchers("/").permitAll()
+                                .anyRequest().authenticated())
+                .oauth2Login()
+                .and()
+                .logout()
+                .logoutSuccessUrl("/");
+      }
+    }
+
+### Add an application YML file to your project
+
+Under your project’s resource folder, add a new file named **application.yml**. This file contains the information that is required to use Amazon Cognito to secure the web application. In this file, you specify the values that you obtained from the AWS Management Console, such as the client id, client secret, pool id values. The following code represents this file. 
+
+     spring:
+       security:
+         oauth2:
+          client:
+           registration:
+            cognito:
+            clientId: <enter your client id value>
+            clientSecret: <enter your client secret value>
+            scope: openid, email
+            redirectUriTemplate: http://localhost:8080/login/oauth2/code/cognito <your call back URL>
+            clientName: spring-boot <The client app value you defined>
+         provider:
+          cognito:
+            issuerUri: https://cognito-idp.<AWS Region>.amazonaws.com/<pool id value>
+            
+ ## Modify the greeting HTML file
+ 
+The final step in the AWS tutorial is to modify the **greeting.html** file located under resources/templates folder. You have to add logic to inform the application what content is available for anonymous users and what content can be viewed by authenticated users. Add the following code to the **greeting.html** file. 
+
+     <!DOCTYPE HTML>
+     <html lang="en"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+       xmlns:th="http://www.thymeleaf.org">
+    <head>
+     <title>Getting Started: Spring Boot and the Enhanced DynamoDB Client</title>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+     <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css|"/>
+    </head>
+    <body>
+    <div class="container">
+
+    <div sec:authorize="isAnonymous()">
+        <p>You must log in with Amazon Connito to access this AWS Web Application.</p>
+        <a class="btn btn-primary" th:href="@{/oauth2/authorization/cognito}" role="button">
+            Log in using <b>Amazon Cognito</b>
+        </a>
+    </div>
+
+    <div sec:authorize="isAuthenticated()">
+     <h1>A secure AWS Web application</h1>
+     <p>Hello user <strong th:text="${#authentication.getName()}"></strong></p>
+     <p>You can submit data to a DynamoDB table by using the Enhanced Client. A mobile notification is sent alerting a user a new submission occurred.</p>
+     <form action="#" th:action="@{/greeting}" th:object="${greeting}" method="post">
+       <div class="form-group">
+        <p>Id: <input type="text"  class="form-control" th:field="*{id}" /></p>
+        </div>
+
+        <div class="form-group">
+            <p>Title: <input type="text" class="form-control" th:field="*{title}" /></p>
+        </div>
+
+        <div class="form-group">
+            <p>Name: <input type="text" class="form-control" th:field="*{name}" /></p>
+        </div>
+
+        <div class="form-group">
+            <p>Body: <input type="text" class="form-control" th:field="*{body}"/></p>
+        </div>
+
+        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+      </form>
+        <div sec:authorize="isAuthenticated()">
+            <form method="post" th:action="@{/logout}">
+                <input type="submit" class="btn btn-danger" value="Logout"/>
+            </form>
+        </div>
+     </div>
+     </div>
+     </body>
+    </html>
+
+### Next steps
+Congratulations, you have secured a web application by using Amazon Cognito. As stated at the beginning of this tutorial, be sure to terminate all of the resources you created while going through this tutorial to ensure that you’re not charged.
+
+For more AWS multiservice examples, see
+[usecases](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases).
 
