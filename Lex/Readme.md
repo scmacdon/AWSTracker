@@ -82,3 +82,28 @@ You must provide the IAM role that you noted in the previous section with these 
 + 	AmazonLexRunBotsOnly
 + 	AmazonPollyReadOnlyAccess
 
+## Create an IntelliJ project named SpringChatbot
+
+Create an IntelliJ project that is used to create a web site that uses the Amazon Lex bot.
+
+1. In the IntelliJ IDE, choose **File**, **New**, **Project**.
+
+2. In the New Project dialog box, choose **Maven**.
+
+3. Choose **Next**.
+
+4. In **GroupId**, enter **spring-aws**.
+
+5. In **ArtifactId**, enter **SpringChatbot**.
+
+6.	Choose **Next**.
+
+7.	Choose **Finish**.
+
+## Add the Spring POM dependencies to your project
+
+At this point, you have a new project named SpringChatbot.
+
+![AWS Lex](images/pic6.png)
+
+
