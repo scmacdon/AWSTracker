@@ -122,25 +122,25 @@ The first step in this AWS tutorial is to update the POM file in your project to
 
 ## Create an Amazon Cognito User Pool
 
-To successfully secure a web application by using Amazon Cognito, create a User Pool in the AWS Management Console. In this example, create a User Pool named **spring-example**. Once the User Pool is successfully created, you see a confirmation message.
+Create a User Pool in the AWS Management Console named **spring-example**. Once the User Pool is successfully created, you see a confirmation message.
 
 ![AWS Tracking Application](images/pic5.png)
 
-1.	Open the Amazon Cognito console at https://console.aws.amazon.com/cognito/home.
+1. Open the Amazon Cognito console at https://console.aws.amazon.com/cognito/home.
 
-2.	Choose the **Manage User Pools** button. 
+2. Choose the **Manage User Pools** button. 
 
-3.	Choose the **Create a user pool** button.
+3. Choose the **Create a user pool** button.
 
-4.	In the **Pool name** field, enter **spring-example**. 
+4. In the **Pool name** field, enter **spring-example**. 
 
-5.	Choose **Review Defaults**.
+5. Choose **Review Defaults**.
 
-6.	Choose **Create Pool**. 
+6. Choose **Create Pool**. 
 
 ## Define a client application within the User Pool
 
-Define the client application that can use the User Pool. This is an important step to ensure your web application can use the User Pool to secure a web application. 
+Define the client application that can use the User Pool. 
 
 1. Choose **App clients** from the menu on the left side. 
 
@@ -170,7 +170,7 @@ You must configure the client application. For example, you need to define the a
 
 **Note**: For production applications, you can enter multiple production URLs as a comma-separated list.
 
-3.For the **Sign out URL**, specify http://localhost:8080/logout. 
+3. For the **Sign out URL**, specify http://localhost:8080/logout. 
 
 4. Select **Authorization code grant** and allow **email** and **openid** scope (as shown in the previous illustration).
 
@@ -210,15 +210,15 @@ After the user is confirmed, you see the valid users, as shown in this illustrat
 
 ![AWS Tracking Application](images/pic12.png)
 
-At this point, you need the following values to proceed: client id, client secret, pool id value, and the AWS region you are using. Without all of these values, you cannot secure your web application. 
+At this point, you need the following values to proceed: client id, client secret, pool id value, and the AWS region you are using. Without all of these values, you cannot use Amazon Cognito to require a user to log into your web application. 
 
 ## Modify your web application
 
-At this point in the AWS tutorial, you can add security to the project. If you do not have a web project, create one by following [Creating your first AWS Java web application](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases/creating_first_project).
+If you do not have a web project, create one by following [Creating your first AWS Java web application](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases/creating_first_project).
 
 ### Create the WebSecurityConfig Java class
 
-To add security to your web application, you must add the **WebSecurityConfig** class to the **com.example.handlingformsubmission** package. This file ensures that the application is secured. The following Java code represents this class. 
+Add the **WebSecurityConfig** class to the **com.example.handlingformsubmission** package. This file ensures that the application rerquires a user to log into it. The following Java code represents this class. 
 
      package com.example.handlingformsubmission;
 
@@ -246,7 +246,7 @@ To add security to your web application, you must add the **WebSecurityConfig** 
 
 ### Add an application YML file to your project
 
-Under your project’s resource folder, add a new file named **application.yml**. This file contains the information that is required to use Amazon Cognito to secure the web application. In this file, you specify the values that you obtained from the AWS Management Console, such as the client id, client secret, pool id values. The following code represents this file. 
+Under your project’s resource folder, add a new file named **application.yml**. This file contains the information that is required to use Amazon Cognito. In this file, you specify the values that you obtained from the AWS Management Console, such as the client id, client secret, pool id values. The following code represents this file. 
 
      spring:
        security:
@@ -320,7 +320,7 @@ The final step in the AWS tutorial is to modify the **greeting.html** file locat
     </html>
 
 ### Next steps
-Congratulations, you have secured a web application by using Amazon Cognito. As stated at the beginning of this tutorial, be sure to terminate all of the resources you created while going through this tutorial to ensure that you’re not charged.
+Congratulations, you have required a user to log into a web application by using Amazon Cognito. As stated at the beginning of this tutorial, be sure to terminate all of the resources you created while going through this tutorial to ensure that you’re not charged.
 
 For more AWS multiservice examples, see
 [usecases](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases).
