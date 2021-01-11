@@ -14,7 +14,7 @@ After the user enters their credentials, they can access the web application.
 
 **Note**: The Spring Boot application used in this AWS tutorial is created by following [Creating your first AWS Java web application](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases/creating_first_project). Before following along with this AWS tutorial, you must complete that AWS tutorial. 
 
-The following illustration shows the project files created in this tutorial (most of these files were created by following the tutorial referenced in the previous link). The files circled in red are the new files specific to securing the application by using Amazon Cognito. 
+The following illustration shows the project files created in this tutorial (most of these files were created by following the tutorial referenced in the previous link). The files circled in red are the new files specific to this AWS tutorial. 
 
 ![AWS Tracking Application](images/pic4.png)
 
