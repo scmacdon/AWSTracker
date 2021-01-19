@@ -506,7 +506,7 @@ The JAR file is located in the **target** folder (which is a child folder of the
 
 10. For **Handler**, enter the fully qualified name of the function, for example, **com.aws.example.Handler::handleRequest** (**com.aws.example.Handler** specifies the package and class followed by :: and method name).
 
-![AWS Tracking Application](images/pic11.png)
+![AWS Tracking Application](images/pic10.png)
 
 11. Choose **Save.**
 
@@ -515,11 +515,15 @@ The JAR file is located in the **target** folder (which is a child folder of the
 
 You can use the Amazon Gateway API console to create a Rest endpoint for the Lambda function. Once done, you are able to invoke the Lambda function using a Restful call.
 
-1. Open the Functions page on the Lambda console.
+1. Sign in to the Amazon API Gateway console at https://console.aws.amazon.com/apigateway..
 
-2. Choose the **employeemsg** function.
+2. Under Rest API, choose Build. .
 
-3. Under Designer, choose **Add trigger**.
+![AWS Tracking Application](images/PicNewAPI.png)
+
+3. Select New API.
+
+![AWS Tracking Application](images/picResy10.png)
 
 4. Set the trigger type to **CloudWatch Events/EventBridge**.
 
