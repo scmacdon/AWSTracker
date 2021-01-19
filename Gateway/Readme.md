@@ -517,7 +517,7 @@ You can use the Amazon Gateway API console to create a Rest endpoint for the Lam
 
 1. Sign in to the Amazon API Gateway console at https://console.aws.amazon.com/apigateway..
 
-2. Under Rest API, choose Build. .
+2. Under Rest API, choose Build.
 
 ![AWS Tracking Application](images/picRest.png)
 
@@ -525,22 +525,70 @@ You can use the Amazon Gateway API console to create a Rest endpoint for the Lam
 
 ![AWS Tracking Application](images/PicNewAPI.png)
 
-4. Set the trigger type to **CloudWatch Events/EventBridge**.
+4. Specify **Employee** as the API name and provide a description.
 
-5. For Rule, choose **Create a new rule**.
+![AWS Tracking Application](images/picEmployeeAPI.png)
 
-6. Fill in the Rule name and Rule description. 
+5. Choose Create API. 
 
-7. For rule type, select **Schedule expression**.
+6. Choose **Resources** under the **Employee** section. 
 
-8. In the **Schedule expression** field, enter a cron expression. For example, **cron(0 12 ? * MON-FRI *)**.
+![AWS Tracking Application](images/picResources.png)
 
-9. Choose **Add**.
+7. From the **Actions** dropdown, choose **Create Resources**. 
 
-**Note**: For more information, see [Using AWS Lambda with Amazon CloudWatch Events](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents.html). 
+8. In the name field, specify **employees**. 
+
+9. Choose Create Resources. 
+
+![AWS Tracking Application](images/picCreateResources.png)
+
+10. Choose /employees and then select GET from the drop down. Choose the checkmark icon. 
+
+![AWS Tracking Application](images/picGet.png)
+
+11. Choose **Lambda function** and enter **cron** as the Lambda function name. Choose **Save**.
+
+![AWS Tracking Application](images/picLambda.png)
+
+12. Choose **OK**.
+
+### Test the Amazon API Gateway method
+
+At this point in the tutorial, you can test the Amazon API Gateway method that invokes the **cron** Lambda function. To test the method, choose **Test**, as shown in the following illustration. 
+
+![AWS Tracking Application](images/picTest.png)
+
+Once the Lambda function is invoked, you can view the log file to see a successful message. 
+
+![AWS Tracking Application](images/picLogs.png)
+
+### Deploying the API
+
+After the test is successful, you can deploy the method from the AWS Management Console. 
+
+1. Choose **Get**.
+
+![AWS Tracking Application](images/picGetDeploy.png)
+
+2. From the **Actions** dropdown, select **Deploy API**.
+
+3. Fill in the Deploy API form and choose **Deploy**.
+
+![AWS Tracking Application](images/picDeployMethod.png)
+
+4. Notice that a URL s displayed.
+
+![AWS Tracking Application](images/picURL.png)
+
+5.	Choose **Save Changes**.
+
+6. Choose **Get** again and notice that the URL changes. This is the invocation URL that you can use to invoke the Lambda function.
+
+![AWS Tracking Application](images/picURL2.png)
 
 ### Next steps
-Congratulations, you have created a scheduled event that invokes an AWS Lambda function by using Amazon CloudWatch Events. As stated at the beginning of this tutorial, be sure to terminate all of the resources you created while going through this tutorial to ensure that you’re not charged.
+Congratulations, you have created an AWS Lambda function that is invoked by using an Amazon Gateway API method. As stated at the beginning of this tutorial, be sure to terminate all of the resources you created while going through this tutorial to ensure that you’re not charged.
 
 For more AWS multiservice examples, see
 [usecases](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases).
