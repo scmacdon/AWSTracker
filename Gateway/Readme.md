@@ -519,11 +519,11 @@ You can use the Amazon Gateway API console to create a Rest endpoint for the Lam
 
 2. Under Rest API, choose Build. .
 
-![AWS Tracking Application](images/PicNewAPI.png)
+![AWS Tracking Application](images/PicRest.png)
 
 3. Select New API.
 
-![AWS Tracking Application](images/picResy10.png)
+![AWS Tracking Application](images/PicNewAPI.png)
 
 4. Set the trigger type to **CloudWatch Events/EventBridge**.
 
