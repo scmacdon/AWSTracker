@@ -9,7 +9,9 @@ In this tutorial, you create a Lambda function by using the AWS Lambda Java runt
 
 ![AWS Tracking Application](images/picPhone.png)
 
-This tutorial shows you how to use Java logic to create a solution that performs this use case. For example, you'll learn how to read an Amazon DynamoDB table to determine which employees have reached the one year anniversary date, how to process the data, and send out a text message all by using an AWS Lambda function. Then you’ll learn how to use a cron expression to invoke the AWS Lambda function every weekday. 
+This tutorial shows you how to use Java logic to create a solution that performs this use case.  For example, you'll learn how to read a database to determine which employees have reached the one year anniversary date, how to process the data, and send out a text message all by using a Lambda function. Then you’ll learn how to use Amazon API Gateway to invoke this Lambda function by using a Rest endpoint. For example, you can invoke the Lambda function by using this Curl command:  
+  
+      curl -XGET "https://xxxxqjko1o3.execute-api.us-east-1.amazonaws.com/cronstage/employee" 
 
 This AWS tutorial uses an Amazon DynamoDB table named **Employee** that contains these fields. 
 -	**Id** – the key for the table.
@@ -33,7 +35,7 @@ This AWS tutorial uses an Amazon DynamoDB table named **Employee** that contains
 +	Create an AWS Lambda function by using the AWS Lambda runtime API
 +	Package the project that contains the AWS Lambda function
 +	Deploy the AWS Lambda function
-+	Configure CloudWatch Events to use a cron expression to invoke the AWS Lambda function
++	Configure Amazon API Gateway to invoke the Lambda function
 
 ## Prerequisites
 To follow along with this tutorial, you need the following:
@@ -509,7 +511,9 @@ The JAR file is located in the **target** folder (which is a child folder of the
 11. Choose **Save.**
 
 
-## Configure CloudWatch Events to invoke your function
+## Configure Amazon API Gateway to invoke the Lambda function
+
+You can use the Amazon Gateway API console to create a Rest endpoint for the Lambda function. Once done, you are able to invoke the Lambda function using a Restful call.
 
 1. Open the Functions page on the Lambda console.
 
