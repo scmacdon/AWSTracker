@@ -490,7 +490,7 @@ The JAR file is located in the **target** folder (which is a child folder of the
 
 3. Choose **Author from scratch**.
 
-4. In the **Basic** information section, enter **employeemsg** as the name.
+4. In the **Basic** information section, enter **cron** as the name.
 
 5. In the **Runtime**, choose **Java 8**.
 
