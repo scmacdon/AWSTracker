@@ -2,7 +2,6 @@
 
 You can invoke an AWS Lambda function by using Amazon API Gateway, which is an AWS service for creating, publishing, maintaining, monitoring, and securing REST, HTTP, and WebSocket APIs at scale. API developers can create APIs that access AWS or other web services, as well as data stored in the AWS Cloud. As an API Gateway API developer, you can create APIs for use in your own client applications. For more information, see [What is Amazon API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html).
 .
-
 Lambda is a compute service that enables you to run code without provisioning or managing servers. You can create Lambda functions in various programming languages. For this tutorial, Lambda functions are implemented by using the Lambda Java runtime API. For more information about AWS Lambda, see
 [What is AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html).
 
@@ -23,6 +22,8 @@ This AWS tutorial uses an Amazon DynamoDB table named **Employee** that contains
 **Cost to complete**: The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
 **Note**: Be sure to terminate all of the resources after you have completed this tutorial to ensure that you are not charged.
+
+**Note**: To learn how to invoke an AWS Lambda function using scheduled events, see [Creating scheduled events to invoke Lambda functions](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases/creating_scheduled_events).
 
 #### Topics
 +	Prerequisites
