@@ -4,15 +4,19 @@ You can create an Amazon Lex bot within a web application to engage your web sit
 
 ![AWS Video Analyzer](images/pic1.png)
 
-The Amazon Lex bot created in this AWS tutorial is able to handle multiple languages. For example, a user who speaks french can enter french text and get back a response in French. 
+The Amazon Lex chatbot created in this AWS tutorial is able to handle multiple languages. For example, a user who speaks french can enter French text and get back a response in French. 
 
 ![AWS Video Analyzer](images/LanChatBot2.png)
 
-Likewise, a user can communicate with the Amazon Lex bot in Italian.
+Likewise, a user can communicate with the Amazon Lex chatbot in Italian.
 
 ![AWS Video Analyzer](images/LanChatBot3.png)
 
-This AWS tutorial guides you through creating an Amazon Lex box and integrating it into a Spring Boot web application. 
+This AWS tutorial guides you through creating an Amazon Lex box and integrating it into a Spring Boot web application. The AWS SDK for Java (version 2) is used to invoke these  AWS services:
+
++ Amazon Lex
++ Amazon Comprehend
++ Amazon Translate
 
 **Cost to complete:** The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
