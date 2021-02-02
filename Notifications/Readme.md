@@ -63,7 +63,25 @@ In this AWS tutorial, an Amazon RDS MySQL database is used to track the students
 + **phone** - A VARCHAR(45) value that specifies the home phone number.
 + **email** - A VARCHAR(45) value that specifies the email address.
 
-The workflow starts by determining the absent students for the given day by querying the **students** table. Then XML is passed to the second step in the workflow where multiple AWS services are invoked and messages are sent over different channels.  
+The workflow starts by determining the absent students for the given day by querying the **students** table. Then the workflow dynamically creates XML that contains the absent students.  
+
+      <?xml version="1.0" encoding="UTF-8"?>
+	<Students>
+         <Student>
+          <Name>Sam</Name>
+          <Mobile>15558397418</Mobile>
+          <Phone>155538397418</Phone>
+          <Email>scmacdon@noserver.com</Email>
+        </Student>
+        <Student>
+         <Name>Laurie</Name>
+          <Mobile>15554621058</Mobile>
+          <Phone>155558397418</Phone>
+         <Email>lmccue@cnoserver.com</Email>
+        </Student>
+      </Students>
+
+The second workflow step parses the XML and for each student invokes multiple AWS services to send messages over different channels.   
 
 ## Create an IAM role that's used to execute Lambda functions
 
