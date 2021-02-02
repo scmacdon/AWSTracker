@@ -188,9 +188,9 @@ Workflows can pass data between steps. For example, the **Determine the missing 
 
 2. In the **New Project** dialog box, choose **Maven**, and then choose **Next**.
 
-3. For **GroupId**, enter **LambdaFunctions**.
+3. For **GroupId**, enter **LambdaNotifications**.
 
-4. For **ArtifactId**, enter **LambdaFunctions**.
+4. For **ArtifactId**, enter **LambdaNotifications**.
 
 5. Choose **Next**.
 
@@ -198,7 +198,7 @@ Workflows can pass data between steps. For example, the **Determine the missing 
 
 ## Add the POM dependencies to your project
 
-At this point, you have a new project named **LambdaFunctions**.
+At this point, you have a new project named **LambdaNotifications**.
 
 ![AWS Tracking Application](images/lambda8.png)
 
