@@ -1035,11 +1035,32 @@ In this step, you create an Amazon RDS MySQL DB instance that is used by the Lam
 
 13. Wait for the Status of your new DB instance to show as Available. Then choose the DB instance name to show its details.
 
+**Note**: You must set up inbound rules for the security group to connect to the database. You can set up an inbound rule for your development environment. Setting up an inbound rule essentially means enabling an IP address to use the database. Once you set up the inbound rules, you can connect to the database from a client such as MySQL Workbench. For information about setting up security group inbound rules, see [Controlling Access with Security Groups]https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html).
+
 ### Obtain the endpoint
 
 In the **Connectivity & security** section, view the Endpoint and Port of the DB instance.
 
 ![AWS Tracking Application](images/RDSEndpoint.png)
+
+### Modify the ConnectionHelper class
+
+Modify the **ConnectionHelper** class by updating the url value with the endpoint of the database.
+
+     url = "jdbc:mysql://awstracker.<url to rds>.amazonaws.com/awstracker";
+
+In the previous line of code, notice awstracker. This is the database schema. In addition, update this line of code with the correct user name and password.
+
+      Class.forName("com.mysql.jdbc.Driver").newInstance();
+         return DriverManager.getConnection(instance.url, "root","root1234");
+
+**Note**: If you do not modify the **ConnectionHelper** class, your Lambda function cannot interact with the RDS database.
+
+### Create the database schema and table
+
+You can use MySQL Workbench to connect to the RDS MySQL instance and create a database schema and the work table. To connect to the database, open MySQL Workbench and connect to database.
+
+![AWS Tracking Application](images/MySQL.png)
 
 ## Package the project that contains the Lambda functions
 
