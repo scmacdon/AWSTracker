@@ -49,8 +49,8 @@ The following figure shows the workflow you'll create with this tutorial that is
 
 The following is what happens at each step in the workflow:
 + **Start** -  Initiates the workflow.
-+ **Determines the missing students** – Determines the students that are absent for that given day. For this AWS tutorial, a MySQL database is queried to track the students that are absent. This workflow step then creates an XML document that is passed to the next step. This example shows how a Lambda function can query data from an Amazon RDS table.
-+ **Send all notifications** – Accepts an XML document that contains all absent students. For each student, this step invokes the Amazon Simple Notification Service (SNS) to send a mobile text message, the Pinpoint Service to send a voice message, and the Amazon Simple Email Service (SES) to send an email message. This example shows how a single Lambda function can invoke multiple AWS Services. 
++ **Determines the missing students** – Determines the students that are absent for that given day. For this AWS tutorial, a MySQL database is queried to track the students that are absent. This workflow step then creates XML that is passed to the next step. This example shows how a Lambda function can query data from an Amazon RDS table.
++ **Send all notifications** – Parses the XML that contains all absent students. For each student, this step invokes the Amazon Simple Notification Service (SNS) to send a mobile text message, the Pinpoint Service to send a voice message, and the Amazon Simple Email Service (SES) to send an email message. This example shows how a single Lambda function can invoke multiple AWS Services. 
 + **End** - Stops the workflow.
 
 In this AWS tutorial, an Amazon RDS MySQL database is used to track the students who are absent. The MySQL table is named **students** and contains these fields:
@@ -466,7 +466,7 @@ The following Java code represents the **ConnectionHelper** class.
 
 ### Handler class
 
-This Java code represents the **Handler** class. The class creates a Lamdba function that reads the passed in date value and queries the student table using the date value.  Notice that you can log messages to Amazon CloudWatch logs by using a **LambdaLogger** object. The **handleRequest** method returns XML document that specified all of the students that are absent. This XML is passed to the second step in the workflow.
+This Java code represents the **Handler** class. The class creates a Lamdba function that reads the passed in date value and queries the student table using the date value.  The **handleRequest** method returns XML document that specifies all of the absent students. This XML is passed to the second step in the workflow.
 
      package example;
 
@@ -482,103 +482,198 @@ This Java code represents the **Handler** class. The class creates a Lamdba func
 
     @Override
     public String handleRequest(Map<String,String> event, Context context)
-    {
-        LambdaLogger logger = context.getLogger();
-        Gson gson = new GsonBuilder().create();
-
-        // Log execution details
-        logger.log("ENVIRONMENT VARIABLES: " + gson.toJson(System.getenv()));
-        logger.log("CONTEXT: " + gson.toJson(context));
-        // process event
-        logger.log("EVENT Data: " + gson.toJson(event));
-
-        String myCaseID = event.get("inputCaseID");
-        logger.log("CaseId44: " + myCaseID);
-        return myCaseID;
-       }
-      }
-
-### Handler2 class
-
-The **Handler2** class is the second step in the workflow and uses basic Java application logic to select an employee to assign the ticket. Then a **PersistCase** object is created and used to store the ticket data in a DynamoDB table named **Case**. The email address of the employee is passed to the third step.
-
-      package example;
-
-      import com.amazonaws.services.lambda.runtime.Context;
-      import com.amazonaws.services.lambda.runtime.LambdaLogger;
-      import com.amazonaws.services.lambda.runtime.RequestHandler;
-
-      // Handler value: example.Handler
-     public class Handler2 implements RequestHandler<String, String> {
-
-    @Override
-    public String handleRequest(String event, Context context)
-    {
-
-        PersistCase perCase = new PersistCase();
-
-        LambdaLogger logger = context.getLogger();
-        String val = event ;
-       logger.log("CASE is about to be assigned " +val);
-
-       // Create very simple logic to assign case to an employee
-        int tmp = (Math.random() <= 0.5) ? 1 : 2;
-
-        logger.log("TMP IS " +tmp);
-
-        String emailEmp= "";
-
-        if (tmp == 1) {
-            // assign to tblue
-            emailEmp = "tblue@noServer.com";
-            perCase.putRecord(val, "Tom Blue", emailEmp );
-        } else {
-            // assign to swhite
-            emailEmp = "swhite@noServer.com";
-            perCase.putRecord(val, "Sarah White", emailEmp);
-        }
-
-        logger.log("emailEmp IS " +emailEmp);
-        //return email - used in the next step
-        return emailEmp;
-        }
-      }
-
-### Handler3 class
-
-The **Handler3** class is the third step in the workflow and creates a **SendMessage** object. An email message is sent to the employee to notify them about the new ticket. The email address that is passed from the second step is used.
-
-       package example;
-
-       import com.amazonaws.services.lambda.runtime.Context;
-       import com.amazonaws.services.lambda.runtime.LambdaLogger;
-       import com.amazonaws.services.lambda.runtime.RequestHandler;
-       import java.io.IOException;
-
-       // Handler value: example.Handler
-       public class Handler3 implements RequestHandler<String, String> {
-
-       @Override
-       public String handleRequest(String event, Context context)
        {
         LambdaLogger logger = context.getLogger();
-        String email = event ;
+        String date = event.get("date");
+        logger.log("DATE: " + date);
 
-	// log execution details
-        logger.log("Email value " + email);
-        SendMessage msg = new SendMessage();
-
-       try {
-           msg.sendMessage(email);
-
-       } catch (IOException e)
-       {
-           e.getStackTrace();
-       }
-
-        return "";
+        // Get the XML from the S3 bucket
+        RDSGetStudents students = new RDSGetStudents();
+        String xml = students.getStudentsRDS(date);
+        logger.log("XML: " + xml);
+        return xml;
      }
     }
+
+### HandlerVoiceNot class
+
+The **HandlerVoiceNot** class is the second step in the workflow. It creates a **SendNotifications** object and invokes the following methods and passes the XML to each method: 
+
++ **handleTextMessage** 
++ **handleVoiceMessage**
++ **handleEmailMessage**
+
+The following code represents the **HandlerVoiceNot** method. In this example, the XML that is passed to the Lambda function is stored in the **xml** variable. 
+
+      package com.example.messages;
+
+      import com.amazonaws.services.lambda.runtime.Context;
+      import com.amazonaws.services.lambda.runtime.RequestHandler;
+      import com.amazonaws.services.lambda.runtime.LambdaLogger;
+      import org.jdom2.JDOMException;
+      import javax.mail.MessagingException;
+      import java.io.IOException;
+
+      public class HandlerVoiceNot  implements RequestHandler<String, String>{
+
+     @Override
+     public String handleRequest(String event, Context context) {
+
+        LambdaLogger logger = context.getLogger();
+        String xml = event ;
+        String num = "" ;
+        SendNotifications sn = new SendNotifications();
+        try {
+
+            sn.handleTextMessage(xml);
+            sn.handleVoiceMessage(xml);
+            num =  sn.handleEmailMessage(xml);
+           logger.log("NUMBER: " + num);
+        } catch (JDOMException | IOException | MessagingException e) {
+            e.printStackTrace();
+        }
+        return num;
+       }
+      }
+
+### RDSGetStudents class
+
+The **RDSGetStudents** class uses the JDBC API to query data from the Amazon RDS instance. The result set is stored in XML which is passed to the second step in the worlkflow . 
+
+       package com.example.messages;
+
+       import org.w3c.dom.Document;
+       import org.w3c.dom.Element;
+       import javax.xml.parsers.DocumentBuilder;
+       import javax.xml.parsers.DocumentBuilderFactory;
+       import javax.xml.parsers.ParserConfigurationException;
+       import javax.xml.transform.Transformer;
+       import javax.xml.transform.TransformerException;
+       import javax.xml.transform.TransformerFactory;
+       import javax.xml.transform.dom.DOMSource;
+       import javax.xml.transform.stream.StreamResult;
+       import java.io.*;
+       import java.sql.*;
+       import java.util.ArrayList;
+       import java.util.List;
+
+       public class RDSGetStudents {
+
+        public String getStudentsRDS(String date ) {
+        Connection c = null;
+        String query = "";
+
+        try {
+
+            c = ConnectionHelper.getConnection();
+            ResultSet rs = null;
+         
+            // Use prepared statements
+            PreparedStatement pstmt = null;
+            PreparedStatement ps = null;
+
+            // Specify the SQL Statement to query data
+            query = "Select first, phone, mobile, email FROM students where date = '" +date +"'";
+            pstmt = c.prepareStatement(query);
+            rs = pstmt.executeQuery();
+
+            List<Student> studentList = new ArrayList<>();
+            while (rs.next()) {
+
+                Student student = new Student();
+
+                String name = rs.getString(1);
+                String phone = rs.getString(2);
+                String mobile = rs.getString(3);
+                String email = rs.getString(4);
+
+                student.setFirstName(name);
+                student.setMobileNumber(mobile);
+                student.setPhoneNunber(phone);
+                student.setEmail(email);
+
+                // Push the Student object to the list.
+                studentList.add(student);
+            }
+
+                return convertToString(toXml(studentList));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            ConnectionHelper.close(c);
+        }
+        return null;
+    }
+
+    private String convertToString(Document xml) {
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            StreamResult result = new StreamResult(new StringWriter());
+            DOMSource source = new DOMSource(xml);
+            transformer.transform(source, result);
+            return result.getWriter().toString();
+
+        } catch(TransformerException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+
+    // Convert Work item data retrieved from MySQL
+    private Document toXml(List<Student> itemList) {
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.newDocument();
+
+            // Start building the XML
+            Element root = doc.createElement( "Students" );
+            doc.appendChild( root );
+
+            // Get the elements from the collection
+            int studentCount = itemList.size();
+
+            // Iterate through the collection
+            for ( int index=0; index < studentCount; index++) {
+
+                // Get the WorkItem object from the collection
+                Student myStudent = itemList.get(index);
+
+                Element item = doc.createElement( "Student" );
+                root.appendChild( item );
+
+                // Set Name
+                Element name = doc.createElement( "Name" );
+                name.appendChild( doc.createTextNode(myStudent.getFirstName()) );
+                item.appendChild( name );
+
+                // Set Mobile
+                Element mobile = doc.createElement( "Mobile" );
+                mobile.appendChild( doc.createTextNode(myStudent.getMobileNumber()) );
+                item.appendChild( mobile );
+
+                // Set Phone
+                Element phone = doc.createElement( "Phone" );
+                phone.appendChild( doc.createTextNode(myStudent.getPhoneNunber() ) );
+                item.appendChild( phone );
+
+                // Set Email
+                Element email = doc.createElement( "Email" );
+                email.appendChild( doc.createTextNode(myStudent.getEmail() ) );
+                item.appendChild( email );
+
+            }
+
+         return doc;
+        } catch(ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        return null;
+       }
+      }
 
 ### PersistCase class
 
