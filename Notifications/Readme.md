@@ -1008,6 +1008,39 @@ In this step, you create an Amazon RDS MySQL DB instance that is used by the Lam
 	
 ![AWS Tracking Application](images/RDSSettings.png)
 
+8. In the DB instance size section, set these values:
+
+  + **DB instance performance type** – Burstable
+  +**DB instance class** – db.t2.micro
+
+9. In the **Storage** section, use the default values.
+
+10. In the **Connectivity** section, open **Additional connectivity configuration** and set these values:
+
++ **Virtual Private Cloud (VPC)** – Choose the default.
+
++ **Subnet group** – Choose the default.
+
++ **Publicly accessible** – Yes
+
++ **VPC security groups** – Choose an existing VPC security group that is configured for access.
+
++ **Availability Zone** – No Preference
+
++ **Database port** – 3306
+
+11. Open the **Additional configuration** section, and enter awstracker for the Initial database name. Keep the default settings for the other options.
+
+12. To create your Amazon RDS MySQL DB instance, choose **Create database**. Your new DB instance appears in the Databases list with the status **Creating**.
+
+13. Wait for the Status of your new DB instance to show as Available. Then choose the DB instance name to show its details.
+
+### Obtain the endpoint
+
+In the **Connectivity & security** section, view the Endpoint and Port of the DB instance.
+
+![AWS Tracking Application](images/RDSEndpoint.png)
+
 ## Package the project that contains the Lambda functions
 
 Package up the project into a .jar (JAR) file that you can deploy as a Lambda function by using the following Maven command.
@@ -1047,6 +1080,8 @@ The JAR file is located in the **target** folder (which is a child folder of the
 11. Choose **Save.**
 
 12. Repeat this procedure for the **Handler2** and **Handler3** classes. Name the corresponding Lambda functions **TicStep2** and **TicStep3**. When you finish, you will have three Lambda functions that you can reference in the Amazon States Language document.  
+
+**Note**: To connect to the RDS instance from a Lambda function, you must set the inbound rules using the same security group as the the RDS Instance. For details, [How do I configure a Lambda function to connect to an RDS instance?](https://aws.amazon.com/premiumsupport/knowledge-center/connect-lambda-to-an-rds-instance/).
 
 ## Add the Lambda functions to workflows
 
