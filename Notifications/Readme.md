@@ -1058,9 +1058,31 @@ In the previous line of code, notice awstracker. This is the database schema. In
 
 ### Create the database schema and table
 
-You can use MySQL Workbench to connect to the RDS MySQL instance and create a database schema and the work table. To connect to the database, open MySQL Workbench and connect to database.
+You can use MySQL Workbench to connect to the RDS MySQL instance and create a database schema and the **student** table. To connect to the database, open MySQL Workbench and connect to database.
 
 ![AWS Tracking Application](images/MySQL.png)
+
+**Note**: If you have issues connecting to the database, be sure to recheck your inbound rules.
+
+Create a schema named **awstracker** by using this SQL command.
+
+     CREATE SCHEMA awstracker;
+     
+In the **awstracker** schema, create a table named **student** by using this SQL command.     
+
+     CREATE TABLE `mydb`.`student` (
+      `idstudent` INT NOT NULL AUTO_INCREMENT,
+       `first` VARCHAR(45) NULL,
+       `last` VARCHAR(45) NULL,
+       `date` DATE NULL,
+       `mobile` VARCHAR(45) NULL,
+       `phone` VARCHAR(45) NULL,
+       `email` VARCHAR(45) NULL,
+       PRIMARY KEY (`idstudent`));
+       
+After you're done, you see a new table in your database.
+
+![AWS Tracking Application](images/database.png)
 
 ## Package the project that contains the Lambda functions
 
