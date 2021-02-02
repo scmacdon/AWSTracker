@@ -487,7 +487,7 @@ This Java code represents the **Handler** class. The class creates a Lamdba func
         String date = event.get("date");
         logger.log("DATE: " + date);
 
-        // Get the XML from the S3 bucket
+        // Query the student table and get back XML
         RDSGetStudents students = new RDSGetStudents();
         String xml = students.getStudentsRDS(date);
         logger.log("XML: " + xml);
@@ -497,7 +497,7 @@ This Java code represents the **Handler** class. The class creates a Lamdba func
 
 ### HandlerVoiceNot class
 
-The **HandlerVoiceNot** class is the second step in the workflow. It creates a **SendNotifications** object and invokes the following methods and passes the XML to each method: 
+The **HandlerVoiceNot** class is the second step in the workflow. It creates a **SendNotifications** object and passes the XML to the following methods: 
 
 + **handleTextMessage** 
 + **handleVoiceMessage**
@@ -538,7 +538,7 @@ The following code represents the **HandlerVoiceNot** method. In this example, t
 
 ### RDSGetStudents class
 
-The **RDSGetStudents** class uses the JDBC API to query data from the Amazon RDS instance. The result set is stored in XML which is passed to the second step in the worlkflow . 
+The **RDSGetStudents** class uses the JDBC API to query data from the Amazon RDS instance. The result set is stored in XML which is passed to the second step in the worlkflow. 
 
        package com.example.messages;
 
@@ -675,253 +675,324 @@ The **RDSGetStudents** class uses the JDBC API to query data from the Amazon RDS
        }
       }
 
-### PersistCase class
+### SendNotifications class
 
-The following class uses the Amazon DynamoDB API to store the data in a table. For more information, see [DynamoDB examples using the AWS SDK for Java](https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/examples-dynamodb.html).
+The **SendNotifications** class uses the Amazon SES API, the Amazon SNS API, and the Amazom Pinpoint API to send messages. Each Student in the XML is sent a message. 
 
-       package example;
+       package com.example.messages;
 
-       import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-       import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-       import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
-       import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
-       import software.amazon.awssdk.regions.Region;
-       import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-       import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
-       import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-       import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-       import java.time.Instant;
-       import java.time.LocalDate;
-       import java.time.LocalDateTime;
-       import java.time.ZoneOffset;
-
-       /*
-        Prior to running this code example, create a table named Case with a PK named id
-       */
-
-      public class PersistCase {
-
-      // Puts an item into a DynamoDB table
-      public void putRecord(String caseId, String employeeName, String email) {
-
-        // Create a DynamoDbClient object
-        Region region = Region.US_WEST_2;
-        DynamoDbClient ddb = DynamoDbClient.builder()
-                .region(region)
-                .build();
-
-        // Create a DynamoDbEnhancedClient and use the DynamoDbClient object
-        DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
-                .dynamoDbClient(ddb)
-                .build();
-
-        try {
-            // Create a DynamoDbTable object
-            DynamoDbTable<Case> caseTable = enhancedClient.table("Case", TableSchema.fromBean(Case.class));
-
-            // Create an Instant object
-            LocalDate localDate = LocalDate.parse("2020-04-07");
-            LocalDateTime localDateTime = localDate.atStartOfDay();
-            Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
-
-            // Populate the table
-            Case caseRecord = new Case();
-            caseRecord.setName(employeeName);
-            caseRecord.setId(caseId);
-            caseRecord.setEmail(email);
-            caseRecord.setRegistrationDate(instant) ;
-
-            // Put the case data into a DynamoDB table
-            caseTable.putItem(caseRecord);
-
-        } catch (DynamoDbException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-        System.out.println("done");
-    }
-
-
-    // Create the Case table to track open cases created in the workflow
-    @DynamoDbBean
-    public static class Case {
-
-        private String id;
-        private String name;
-        private String email;
-        private Instant regDate;
-
-        @DynamoDbPartitionKey
-        public String getId() {
-            return this.id;
-        };
-
-        public void setId(String id) {
-
-            this.id = id;
-        }
-
-        @DynamoDbSortKey
-        public String getName() {
-            return this.name;
-
-        }
-
-        public void setName(String name) {
-
-            this.name = name;
-        }
-
-        public String getEmail() {
-            return this.email;
-        }
-
-        public void setEmail(String email) {
-
-            this.email = email;
-        }
-
-        public Instant getRegistrationDate() {
-            return regDate;
-        }
-        public void setRegistrationDate(Instant registrationDate) {
-
-            this.regDate = registrationDate;
-        }
-       }
-      }
-
-### SendMessage class
-
-The following Java class represents the **SendMessage** class. This class uses the Amazon SES API to send an email message to the employee. An email address that you send an email message to must be verified. For information, see [Verifying an email address](https://docs.aws.amazon.com/ses/latest/DeveloperGuide//verify-email-addresses-procedure.html).
-
-       package example;
-
-       import software.amazon.awssdk.regions.Region;
-       import software.amazon.awssdk.services.ses.SesClient;
-       import javax.mail.Message;
-       import javax.mail.MessagingException;
-       import javax.mail.Session;
-       import javax.mail.internet.AddressException;
-       import javax.mail.internet.InternetAddress;
-       import javax.mail.internet.MimeMessage;
-       import javax.mail.internet.MimeMultipart;
-       import javax.mail.internet.MimeBodyPart;
-       import java.io.ByteArrayOutputStream;
-       import java.io.IOException;
-       import java.nio.ByteBuffer;
-       import java.util.Properties;
+       import org.jdom2.Document;
+       import org.jdom2.JDOMException;
+       import org.jdom2.input.SAXBuilder;
+       import org.xml.sax.InputSource;
        import software.amazon.awssdk.core.SdkBytes;
+       import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+       import software.amazon.awssdk.regions.Region;
+       import software.amazon.awssdk.services.pinpointsmsvoice.PinpointSmsVoiceClient;
+       import software.amazon.awssdk.services.pinpointsmsvoice.model.SSMLMessageType;
+       import software.amazon.awssdk.services.pinpointsmsvoice.model.VoiceMessageContent;
+       import software.amazon.awssdk.services.pinpointsmsvoice.model.SendVoiceMessageRequest;
+       import software.amazon.awssdk.services.pinpointsmsvoice.model.PinpointSmsVoiceException;
+       import software.amazon.awssdk.services.sns.SnsClient;
+       import software.amazon.awssdk.services.sns.model.PublishRequest;
+       import software.amazon.awssdk.services.sns.model.SnsException;
+       import software.amazon.awssdk.services.ses.SesClient;
        import software.amazon.awssdk.services.ses.model.SendRawEmailRequest;
        import software.amazon.awssdk.services.ses.model.RawMessage;
        import software.amazon.awssdk.services.ses.model.SesException;
+       import java.io.*;
+       import javax.mail.Message;
+       import javax.mail.MessagingException;
+       import javax.mail.Session;
+       import javax.mail.internet.*;
+       import java.nio.ByteBuffer;
+       import java.util.*;
 
-       public class SendMessage {
+       public class SendNotifications {
 
-        public void sendMessage(String email) throws IOException {
+       public String handleEmailMessage(String myDom) throws JDOMException, IOException, MessagingException {
 
-        //Sender
-        String sender = "SPECIFY an email address" ; // REPLACE WITH AN EMAIL ADDRESSS
+        String myEmail = "";
+        
+	// Parse the XML. 
+	SAXBuilder builder = new SAXBuilder();
+        Document jdomDocument  = builder.build(new InputSource(new StringReader(myDom)));
+        org.jdom2.Element root = jdomDocument.getRootElement();
 
-        String subject = "New Case";
+        // get the list of children agent elements
+        List<org.jdom2.Element> students = root.getChildren("Student");
+        for (org.jdom2.Element element : students) {
 
-        // The email body for recipients with non-HTML email clients.
-        String bodyText = "Hello,\r\n" + "You are assigned a new case";
+            myEmail = element.getChildText("Email");
+            SendEmailMessage(myEmail);
+        }
+        return myEmail;
+    }
 
-        // The HTML body of the email.
-        String bodyHTML = "<html>" + "<head></head>" + "<body>" + "<h1>Hello!</h1>"
-                + "<p>Please check the database for new ticket assigned to you.</p>" + "</body>" + "</html>";
 
-        Region region = Region.US_WEST_2;
-        SesClient client = SesClient.builder()
-                .region(region)
+
+    public String handleTextMessage(String myDom) throws JDOMException, IOException{
+
+        String mobileNum = "";
+        String email;
+
+	// Parse the XML. 
+        SAXBuilder builder = new SAXBuilder();
+        Document jdomDocument  = builder.build(new InputSource(new StringReader(myDom)));
+        org.jdom2.Element root = jdomDocument.getRootElement();
+
+        // get the list of children agent elements
+        List<org.jdom2.Element> students = root.getChildren("Student");
+        for (org.jdom2.Element element : students) {
+
+            mobileNum = element.getChildText("Mobile");
+            sendVoiceMsg(mobileNum);
+        }
+        return mobileNum;
+    }
+
+
+
+    public String handleVoiceMessage(String myDom) throws JDOMException, IOException{
+
+        String mobileNum = "";
+        String email;
+
+        // Parse the XML. 
+        SAXBuilder builder = new SAXBuilder();
+        Document jdomDocument  = builder.build(new InputSource(new StringReader(myDom)));
+        org.jdom2.Element root = jdomDocument.getRootElement();
+
+        // get the list of children agent elements
+        List<org.jdom2.Element> students = root.getChildren("Student");
+        for (org.jdom2.Element element : students) {
+
+            mobileNum = element.getChildText("Mobile");
+            PublishTextSMS(mobileNum);
+        }
+        return mobileNum;
+      }
+
+    private void sendVoiceMsg(String mobileNumber) {
+
+        String languageCode = "en-US";
+        String voiceName = "Matthew";
+
+        String originationNumber = "+1-204-817-9095";
+        String destinationNumber = mobileNumber;
+        String ssmlMessage = "<speak>Please be advised that your student was marked absent from school today.</speak>";
+
+        // Set the content type to application/json
+        List<String> listVal = new ArrayList<>();
+        listVal.add("application/json");
+
+        Map<String, List<String>> values = new HashMap<>();
+        values.put("Content-Type", listVal);
+
+        ClientOverrideConfiguration config2 = ClientOverrideConfiguration.builder()
+                .headers(values)
+                .build();
+
+        PinpointSmsVoiceClient client = PinpointSmsVoiceClient.builder()
+                .overrideConfiguration(config2)
+                .region(Region.US_EAST_1)
+                .build();
+
+        // Send a voice message from a Lambda function.
+        try {
+            SSMLMessageType ssmlMessageType = SSMLMessageType.builder()
+                    .languageCode(languageCode)
+                    .text(ssmlMessage)
+                    .voiceId(voiceName)
+                    .build();
+
+            VoiceMessageContent content = VoiceMessageContent.builder()
+                    .ssmlMessage(ssmlMessageType)
+                    .build();
+
+            SendVoiceMessageRequest voiceMessageRequest = SendVoiceMessageRequest.builder()
+                    .destinationPhoneNumber(destinationNumber)
+                    .originationPhoneNumber(originationNumber)
+                    .content(content)
+                    .build();
+
+            client.sendVoiceMessage(voiceMessageRequest);
+            System.out.println("The message was sent successfully.");
+
+        } catch (PinpointSmsVoiceException e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+    }
+
+    private void PublishTextSMS(String phoneNumber) {
+
+        String message = "Please be advised that your student was marked absent from school today.";
+
+
+        SnsClient snsClient = SnsClient.builder()
+                .region(Region.US_EAST_1)
                 .build();
 
         try {
-            send(client, sender,email, subject,bodyText,bodyHTML);
-
-        } catch (IOException | MessagingException e) {
-            e.getStackTrace();
-        }
-      }
-
-    public static void send(SesClient client,
-                            String sender,
-                            String recipient,
-                            String subject,
-                            String bodyText,
-                            String bodyHTML
-    ) throws AddressException, MessagingException, IOException {
-
-        Session session = Session.getDefaultInstance(new Properties());
-
-        // Create a new MimeMessage object.
-        MimeMessage message = new MimeMessage(session);
-
-        // Add subject, from and to lines.
-        message.setSubject(subject, "UTF-8");
-        message.setFrom(new InternetAddress(sender));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
-
-        // Create a multipart/alternative child container.
-        MimeMultipart msgBody = new MimeMultipart("alternative");
-
-        // Create a wrapper for the HTML and text parts.
-        MimeBodyPart wrap = new MimeBodyPart();
-
-        // Define the text part.
-        MimeBodyPart textPart = new MimeBodyPart();
-        textPart.setContent(bodyText, "text/plain; charset=UTF-8");
-
-        // Define the HTML part.
-        MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent(bodyHTML, "text/html; charset=UTF-8");
-
-        // Add the text and HTML parts to the child container.
-        msgBody.addBodyPart(textPart);
-        msgBody.addBodyPart(htmlPart);
-
-        // Add the child container to the wrapper object.
-        wrap.setContent(msgBody);
-
-        // Create a multipart/mixed parent container.
-        MimeMultipart msg = new MimeMultipart("mixed");
-
-        // Add the parent container to the message.
-        message.setContent(msg);
-
-        // Add the multipart/alternative part to the message.
-        msg.addBodyPart(wrap);
-
-        try {
-            System.out.println("Attempting to send an email through Amazon SES " + "using the AWS SDK for Java...");
-
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            message.writeTo(outputStream);
-
-            ByteBuffer buf = ByteBuffer.wrap(outputStream.toByteArray());
-
-            byte[] arr = new byte[buf.remaining()];
-            buf.get(arr);
-
-            SdkBytes data = SdkBytes.fromByteArray(arr);
-
-            RawMessage rawMessage = RawMessage.builder()
-                    .data(data)
+            PublishRequest request = PublishRequest.builder()
+                    .message(message)
+                    .phoneNumber(phoneNumber)
                     .build();
 
-            SendRawEmailRequest rawEmailRequest = SendRawEmailRequest.builder()
-                    .rawMessage(rawMessage)
-                    .build();
+            snsClient.publish(request);
 
-            client.sendRawEmail(rawEmailRequest);
-
-          } catch (SesException e) {
+        } catch (SnsException e) {
             System.err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
-          }
-         }
-       }
+        }
+    }
+
+     private void SendEmailMessage(String recipient) throws MessagingException, IOException {
+      
+            SesClient client = SesClient.builder()
+                    .region(Region.US_EAST_1)
+                    .build();
+
+            // The email body for non-HTML email clients
+            String bodyText = "Hello,\r\n" + "Please be advised that your student was marked absent from school today. ";
+
+            // The HTML body of the email
+            String bodyHTML = "<html>" + "<head></head>" + "<body>" + "<h1>Hello!</h1>"
+                    + "<p>Please be advised that your student was marked absent from school today.</p>" + "</body>" + "</html>";
+
+            String sender = "<ENTER THE SENDER EMAIL >";
+            String subject = "School Attendence";
+
+            Session session = Session.getDefaultInstance(new Properties());
+            MimeMessage message = new MimeMessage(session);
+
+            // Add subject, from and to lines
+            message.setSubject(subject, "UTF-8");
+            message.setFrom(new InternetAddress(sender));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
+
+            // Create a multipart/alternative child container
+            MimeMultipart msgBody = new MimeMultipart("alternative");
+
+            // Create a wrapper for the HTML and text parts
+            MimeBodyPart wrap = new MimeBodyPart();
+
+            // Define the text part
+            MimeBodyPart textPart = new MimeBodyPart();
+            textPart.setContent(bodyText, "text/plain; charset=UTF-8");
+
+            // Define the HTML part
+            MimeBodyPart htmlPart = new MimeBodyPart();
+            htmlPart.setContent(bodyHTML, "text/html; charset=UTF-8");
+
+            // Add the text and HTML parts to the child container
+            msgBody.addBodyPart(textPart);
+            msgBody.addBodyPart(htmlPart);
+
+            // Add the child container to the wrapper object
+            wrap.setContent(msgBody);
+
+            // Create a multipart/mixed parent container
+            MimeMultipart msg = new MimeMultipart("mixed");
+
+            // Add the parent container to the message
+            message.setContent(msg);
+
+            // Add the multipart/alternative part to the message
+            msg.addBodyPart(wrap);
+
+            try {
+                System.out.println("Attempting to send an email through Amazon SES " + "using the AWS SDK for Java...");
+
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                message.writeTo(outputStream);
+                ByteBuffer buf = ByteBuffer.wrap(outputStream.toByteArray());
+
+                byte[] arr = new byte[buf.remaining()];
+                buf.get(arr);
+
+                SdkBytes data = SdkBytes.fromByteArray(arr);
+                RawMessage rawMessage = RawMessage.builder()
+                        .data(data)
+                        .build();
+
+                SendRawEmailRequest rawEmailRequest = SendRawEmailRequest.builder()
+                        .rawMessage(rawMessage)
+                        .build();
+
+                client.sendRawEmail(rawEmailRequest);
+
+            } catch (SesException e) {
+                System.err.println(e.awsErrorDetails().errorMessage());
+                System.exit(1);
+            }
+        }
+    }
+
+**NOTE** Specified a valid email for the sender that has been validated.  For information, see [Verifying an email address](https://docs.aws.amazon.com/ses/latest/DeveloperGuide//verify-email-addresses-procedure.html). 
+
+### Student class
+
+The following Java class represents the **Student** class. 
+
+       package com.example.messages;
+
+public class Student {
+
+    private String firstName;
+    private String email;
+    private String mobileNumber ;
+    private String phoneNunber;
+
+    public void setPhoneNunber(String phoneNunber) {
+        this.phoneNunber = phoneNunber;
+    }
+
+    public String getPhoneNunber() {
+        return this.phoneNunber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public String getMobileNumber() {
+        return this.mobileNumber;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getFirstName() {
+        return this.firstName;
+     }
+    }
+
+## Set up the RDS instance
+
+In this step, you create an Amazon RDS MySQL DB instance that is used by the Lambda function.
+
+1. Sign in to the AWS Management Console and open the Amazon RDS console at https://console.aws.amazon.com/rds/.
+
+2. In the upper-right corner of the AWS Management Console, choose the AWS Region in which you want to create the DB instance. This example uses the US West (Oregon) Region.
+
+3. In the navigation pane, choose **Databases**.
+
+4. Choose **Create database**.
+
+5. On the Create database page, make sure that the **Standard Create** option is chosen, and then choose **MySQL**.
+
+
 ## Package the project that contains the Lambda functions
 
 Package up the project into a .jar (JAR) file that you can deploy as a Lambda function by using the following Maven command.
