@@ -1122,15 +1122,15 @@ The JAR file is located in the **target** folder (which is a child folder of the
 
 11. Choose **Save.**
 
-12. Repeat this procedure for the **Handler2** and **Handler3** classes. Name the corresponding Lambda functions **TicStep2** and **TicStep3**. When you finish, you will have three Lambda functions that you can reference in the Amazon States Language document.  
+12. Repeat this procedure for the **HandlerVoiceNot** class. Name the corresponding Lambda functions **HandlerVoice**. When you finish, you will have two Lambda functions that you can reference in the Amazon States Language document.  
 
-**Note**: To connect to the RDS instance from a Lambda function, you must set the inbound rules using the same security group as the the RDS Instance. For details, [How do I configure a Lambda function to connect to an RDS instance?](https://aws.amazon.com/premiumsupport/knowledge-center/connect-lambda-to-an-rds-instance/).
+**IMPORTANT**: To connect to the RDS instance from a Lambda function, you must set the inbound rules using the same security group as the the RDS Instance. For details, [How do I configure a Lambda function to connect to an RDS instance?](https://aws.amazon.com/premiumsupport/knowledge-center/connect-lambda-to-an-rds-instance/).
 
 ## Add the Lambda functions to workflows
 
 Open the Lambda console. Notice that you can view the Lambda Amazon Resource Name (ARN) value in the upper-right corner.
 
-![AWS Tracking Application](images/lambda12A.png)
+![AWS Tracking Application](images/LambdaEndpoint.png)
 
 Copy the value and then paste it into step 1 of the Amazon States Language document, located in the Step Functions console.
 
