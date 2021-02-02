@@ -71,7 +71,7 @@ Create the following two IAM roles:
 + **lambda-support** - Used to invoke Lamdba functions.
 + **workflow-support** - Used to enable AWS Step Functions to invoke the workflow.
 
-This tutorial uses the DynamoDB and Amazon SES services. The **lambda-support** role has to have policies that enable it to invoke these services from a Lambda function.  
+This tutorial uses the Amazon SNS, Amazon SES, and Amazon Pinpoint to send messages. The **lambda-support** role has to have policies that enable it to invoke these services from a Lambda function.
 
 #### To create an IAM role
 
@@ -81,7 +81,7 @@ This tutorial uses the DynamoDB and Amazon SES services. The **lambda-support** 
 
 3. Choose **AWS service**, and then choose **Lambda**.
 
-![AWS Tracking Application](images/lambda21.png)
+![AWS Tracking Application](images/lambda1.png)
 
 4. Choose **Permissions**.
 
@@ -93,7 +93,7 @@ This tutorial uses the DynamoDB and Amazon SES services. The **lambda-support** 
 
 8. Name the role **lambda-support**.
 
-![AWS Tracking Application](images/lambda17.png)
+![AWS Tracking Application](images/LambdaName.png)
 
 9. Choose **Create role**.
 
@@ -101,19 +101,39 @@ This tutorial uses the DynamoDB and Amazon SES services. The **lambda-support** 
 
 11. Choose **Attach Policies**.
 
-12. Search for **AmazonDynamoDBFullAccess**, and then choose **Attach policy**.
+12. Search for **AmazonSESFullAccess**, and then choose **Attach policy**.
 
-13. Search for **AmazonSESFullAccess**, and then choose **Attach policy**. When you're done, you can see the permissions.
+13. Search for **AmazonSNSFullAccess**, and then choose **Attach policy**. When you're done, you can see the permissions.
 
-![AWS Tracking Application](images/lambda16.png)
+![AWS Tracking Application](images/Policies.png)
 
-14. Repeat this process to create **workflow-support**. For step three, instead of choosing **Lambda**, choose **Step Functions**. You don't need to perform steps 11-13.  
+**Note**: Repeat this process to create **workflow-support**. For step three, instead of choosing **Lambda**, choose **Step Functions**. You don't need to perform steps 11-13.  
+
+### Create a custom policy for Pinpoint voice
+
+Because the Lambda function invokes the Pinpoint service’s **sendVoiceMessage** method, the **lambda-support** role needs permission to invoke this operation. To perform this task, you need to create a custom policy using this JSON.
+
+     {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "FullAccess",
+            "Effect": "Allow",
+            "Action": [
+                "sms-voice:*"
+            ],
+            "Resource": "*"
+        }
+     ]
+    } 
+
+**Note**: To create a custom policy, see [Policies and permissions in IAM ](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html).
 
 ## Create a serverless workflow by using Step functions
 
-You can create a workflow that processes support tickets. To define a workflow by using Step Functions, you create an Amazon States Language (JSON-based) document to define your state machine. An Amazon States Language document describes each step. After you define the document, Step functions provides a visual representation of the workflow. The following figure shows the Amazon States Language document and the visual representation of the workflow.
+o define a workflow that sends notifications over multiple channels by using AWS Step Functions, you create an Amazon States Language (JSON-based) document to define your state machine. An Amazon States Language document describes each step. After you define the document, Step functions provides a visual representation of the workflow. The following figure shows the Amazon States Language document and the visual representation of the workflow.
 
-![AWS Tracking Application](images/Lambda2.png)
+![AWS Tracking Application](images/workflowmodelA.png)
 
 Workflows can pass data between steps. For example, the **Open Case** step processes a case ID value (passed to the workflow) and passes that value to the **Assign Case** step. Later in this tutorial, you'll create application logic in the Lambda function to read and process the data values.  
 
