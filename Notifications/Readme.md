@@ -992,6 +992,21 @@ In this step, you create an Amazon RDS MySQL DB instance that is used by the Lam
 
 5. On the Create database page, make sure that the **Standard Create** option is chosen, and then choose **MySQL**.
 
+![AWS Tracking Application](images/RDS.png)
+
+6. In the **Templates** section, choose **Free tier**.
+
+![AWS Tracking Application](images/TemplateRDS.png)
+
+7. In the Settings section, set these values:
+
+	**DB instance identifier** – awstracker
+	**Master username** – root
+	**Auto generate a password** – Disable the option
+	**Master password** – root1234
+	**Confirm password** – root1234
+	
+![AWS Tracking Application](images/RDSSettings.png)
 
 ## Package the project that contains the Lambda functions
 
