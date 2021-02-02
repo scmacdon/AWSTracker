@@ -2,7 +2,7 @@
 
 You can use Amazon Web Services to create a workflow that sends notifications over multiple channels. There are many practical business needs for this type of functionality. For example, assume your organization is a weather agency that needs to warn many people of detrimental weather approaching. Or your organization needs to send out alerts when kids are missing. 
 
-The use case that this AWS tutorial focuses on is you work at a school and you need to alert parents when a student skips school. Do you send an email, do you phone the parents, or do you send a text message? The AWS workflow created in this tutorial sends messages over multiple channels, including email, as shown in this illustration. 
+The use case that this AWS tutorial addresses is assume you work at a school and you need to alert parents when a student skips school. Do you send an email message, do you phone the parents, or do you send a text message to a mobile device? The AWS workflow created in this tutorial sends messages over multiple channels, including email, as shown in this illustration. 
 
 ![AWS Tracking Application](images/message.png)
 
