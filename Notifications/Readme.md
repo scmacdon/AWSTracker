@@ -1084,6 +1084,8 @@ After you're done, you see a new table in your database.
 
 ![AWS Tracking Application](images/database.png)
 
+Using MySQL Workbenchm enter some records that you will use to test your Lambda functions.
+
 ## Package the project that contains the Lambda functions
 
 Package up the project into a .jar (JAR) file that you can deploy as a Lambda function by using the following Maven command.
@@ -1092,7 +1094,7 @@ Package up the project into a .jar (JAR) file that you can deploy as a Lambda fu
 
 The JAR file is located in the **target** folder (which is a child folder of the project folder).
 
-![AWS Tracking Application](images/lambda10.png)
+![AWS Tracking Application](images/LambdaJAR.png)
 
 ## Deploy the Lambda functions
 
