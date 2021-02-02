@@ -40,20 +40,30 @@ To follow along with the tutorial, you need the following:
 + A Java IDE (for this tutorial, the IntelliJ IDE is used).
 + Java 1.8 JDK.
 + Maven 3.6 or higher.
-+ An Amazon DynamoDB table named **Case** with a key named **Id**. To learn how to create a DynamoDB table, see [Create a Table](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/getting-started-step-1.html).
 
 ## Understand the workflow
 
-The following figure shows the workflow you'll create with this tutorial.
+The following figure shows the workflow you'll create with this tutorial that is able to send out multiple messages over multiple channels. 
 
-![AWS Tracking Application](images/lambda1.png)
+![AWS Tracking Application](images/workflowmodelA.png)
 
 The following is what happens at each step in the workflow:
 + **Start** -  Initiates the workflow.
-+ **Open Case** – Handles a support ticket ID value by passing it to the workflow.
-+ **Assign Case** – Assigns the support case to an employee and stores the data in a DynamoDB table.
-+ **Send Email** – Sends the employee an email message by using the Amazon Simple Email Service (Amazon SES) to inform them there is a new ticket.
++ **Determines the missing students** – Determines the students that are absent for that given day. For this AWS tutorial, a MySQL database is queried to track the students that are absent. This workflow step then creates an XML document that is passed to the next step. This example shows how a Lambda function can query data from an Amazon RDS table.
++ **Send all notifications** – Accepts an XML document that contains all absent students. For each student, this step invokes the Amazon Simple Notification Service (SNS) to send a mobile text message, the Pinpoint Service to send a voice message, and the Amazon Simple Email Service (SES) to send an email message. This example shows how a single Lambda function can invoke multiple AWS Services. 
 + **End** - Stops the workflow.
+
+In this AWS tutorial, an Amazon RDS MySQL database is used to track the students who are absent. The MySQL table is named **students** and contains these fields:
+
++ **idstudents** - An int value that represents the PK.
++ **date** - A date value that specifies the date when the student was absent.
++ **first** - A VARCHAR(45) value that specifies the students first name.
++ **last** - A VARCHAR(45) value that specifies the students last name.
++  **mobile** - A VARCHAR(45) value that specifies the mobile number.
++ **phone** - A VARCHAR(45) value that specifies the home phone number.
++ **email** - A VARCHAR(45) value that specifies the email address.
+
+The workflow starts by determining the absent students for the given day by querying the **students** table. Then XML is passed to the second step in the workflow where multiple AWS services are invoked and messages are sent over different channels.  
 
 ## Create an IAM role that's used to execute Lambda functions
 
