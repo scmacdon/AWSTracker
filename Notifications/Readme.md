@@ -200,52 +200,82 @@ Workflows can pass data between steps. For example, the **Determine the missing 
 
 At this point, you have a new project named **LambdaNotifications**.
 
-![AWS Tracking Application](images/lambda8.png)
-
-Add the following dependency for the Amazon SES API (AWS SDK for Java version 2).
-
-     <dependency>
-       <groupId>software.amazon.awssdk</groupId>
-       <artifactId>ses</artifactId>
-       <version>2.10.41</version>
-     </dependency>
-
-Add the following dependencies for the Amazon DynamoDB API (AWS SDK for Java version 2).
-
-     <dependency>
-       <groupId>software.amazon.awssdk</groupId>
-       <artifactId>dynamodb-enhanced</artifactId>
-       <version>2.11.4-PREVIEW</version>
-     </dependency>
-     <dependency>
-       <groupId>software.amazon.awssdk</groupId>
-       <artifactId>dynamodb</artifactId>
-       <version>2.5.10</version>
-     </dependency>
+![AWS Tracking Application](images/Projet.png)
 
 The pom.xml file looks like the following.
 
       <?xml version="1.0" encoding="UTF-8"?>
-	<project xmlns="http://maven.apache.org/POM/4.0.0"
+      <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-     <modelVersion>4.0.0</modelVersion>
-     <groupId>LambdaFunctions</groupId>
-     <artifactId>LambdaFunctions</artifactId>
+      <modelVersion>4.0.0</modelVersion>
+     <groupId>LambdaNotifications</groupId>
+     <artifactId>LambdaNotifications</artifactId>
      <version>1.0-SNAPSHOT</version>
      <packaging>jar</packaging>
-      <name>java-basic-function</name>
+     <name>java-basic-function</name>
      <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
      </properties>
+     <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.15.66</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+     </dependencyManagement>
      <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-core -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-core</artifactId>
             <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>pinpointsmsvoice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sns</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+         <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.41</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ses</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -303,6 +333,10 @@ The pom.xml file looks like the following.
             <version>2.10.41</version>
         </dependency>
         <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>pinpoint</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
             <version>1.5.5</version>
@@ -315,7 +349,7 @@ The pom.xml file looks like the following.
      </dependencies>
      <build>
         <plugins>
-               <plugin>
+            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
@@ -344,14 +378,15 @@ The pom.xml file looks like the following.
                     <target>1.8</target>
                 </configuration>
             </plugin>
-        </plugins>
-       </build>
-     </project>
+         </plugins>
+        </build>
+       </project>
+
 ## Create Lambda functions by using the AWS SDK for Java Lambda API
 
-Use the Lambda runtime API to create the Java classes that define the Lamdba functions. In this example, there are three workflow steps that each correspond to a Java class. There are also two extra classes that invoke the Amazon DynamoDB service and the Amazon SES service.  
+Use the Lambda runtime API to create the Java classes that define the Lamdba functions. In this example, there are two workflow steps that each correspond to a Java class. There are also extra classes that invoke the AWS services.  
 
-The following figure shows the Java classes in the project. Notice that all Java classes are located in a package named **example**.
+The following figure shows the Java classes in the project. Notice that all Java classes are located in a package named **com.example.messages**.
 
 ![AWS Tracking Application](images/lambda9.png)
 
