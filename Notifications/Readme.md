@@ -1104,13 +1104,11 @@ The JAR file is located in the **target** folder (which is a child folder of the
 
 3. Choose **Author from scratch**.
 
-4. In the **Basic** information section, enter **TicStep1** as the name.
+4. In the **Basic** information section, enter **School** as the name.
 
 5. In the **Runtime**, choose **Java 8**.
 
 6. Choose **Use an existing role**, and then choose **lambda-support** (the IAM role that you created).
-
-![AWS Tracking Application](images/lambda20.png)
 
 7. Choose **Create function**.
 
@@ -1118,9 +1116,9 @@ The JAR file is located in the **target** folder (which is a child folder of the
 
 9. Choose **Upload**, and then browse to the JAR file that you created.  
 
-10. For **Handler**, enter the fully qualified name of the function, for example, **example.Handler::handleRequest** (**example.Handler** specifies the package and class followed by :: and method name).
+10. For **Handler**, enter the fully qualified name of the function, for example, **com.example.messages.Handler::handleRequest** (**com.example.messages.Handler** specifies the package and class followed by :: and method name).
 
-![AWS Tracking Application](images/lambda11.png)
+![AWS Tracking Application](images/Settings.png)
 
 11. Choose **Save.**
 
