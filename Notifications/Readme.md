@@ -1124,7 +1124,7 @@ The JAR file is located in the **target** folder (which is a child folder of the
 
 12. Repeat this procedure for the **HandlerVoiceNot** class. Name the corresponding Lambda functions **HandlerVoice**. When you finish, you will have two Lambda functions that you can reference in the Amazon States Language document.  
 
-**IMPORTANT**: To connect to the RDS instance from a Lambda function, you must set the inbound rules using the same security group as the the RDS Instance. For details, [How do I configure a Lambda function to connect to an RDS instance?](https://aws.amazon.com/premiumsupport/knowledge-center/connect-lambda-to-an-rds-instance/).
+**IMPORTANT**: To connect to the RDS instance from a Lambda function, you must set the inbound rules using the same security group as the RDS Instance. For details, [How do I configure a Lambda function to connect to an RDS instance?](https://aws.amazon.com/premiumsupport/knowledge-center/connect-lambda-to-an-rds-instance/).
 
 ## Add the Lambda functions to workflows
 
