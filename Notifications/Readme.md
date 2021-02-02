@@ -388,20 +388,67 @@ Use the Lambda runtime API to create the Java classes that define the Lamdba fun
 
 The following figure shows the Java classes in the project. Notice that all Java classes are located in a package named **com.example.messages**.
 
-![AWS Tracking Application](images/lambda9.png)
+![AWS Tracking Application](images/ProjectJava.png)
 
 To create a Lambda function by using the Lambda runtime API, you implement **com.amazonaws.services.lambda.runtime.RequestHandler**. The application logic that's executed when the workflow step is invoked is located in the **handleRequest** method. The return value of this method is passed to the next step in a workflow.
 
 Create these Java classes, which are described in the following sections:
-+ **Handler** - Used as the first step in the workflow that processes the ticket ID value.  
-+ **Handler2** - Used as the second step in the workflow that assigns the ticket to an employee and stores the data in a database.
-+ **Handler3** - Used as the third step in the workflow that sends an email message to the employee to notify them about the ticket.
-+ **PersistCase** - Uses the Amazon DynamoDB API to store the data in a DynamoDB table.
-+ **SendMessage** - Uses the Amazon SES API to send an email message.
++ **ConnectionHelper** - Used to connect to the Amazon RDS instance.  
++ **Handler** - Used as the first step in the workflow. This class queries data from the Amazon RDS instance. 
++ **HandlerVoiceNot** - Used as the second step in the workflow that sends out messages over multiple channels.
++ **RDSGetStudents** - Queries data from the student table using the JDBC API. 
++ **SendNotifications** - Uses the AWS SDK for Java V2 to invoke the SNS, Pinpoint, and SES services.
++ **Student** - A Java class that defines data members to store student data. 
+
+### ConnectionHelper class
+
+The following Java code represents the **ConnectionHelper** class.
+
+     package com.example.messages;
+
+     import java.sql.Connection;
+     import java.sql.DriverManager;
+     import java.sql.SQLException;
+
+    public class ConnectionHelper {
+
+     private String url;
+
+     private static ConnectionHelper instance;
+
+     private ConnectionHelper() {
+        url = "jdbc:mysql://localhost:3306/mydb?useSSL=false";
+    }
+
+    public static Connection getConnection() throws SQLException {
+        if (instance == null) {
+            instance = new ConnectionHelper();
+        }
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            return DriverManager.getConnection(instance.url, "root","root1234");
+        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.getStackTrace();
+        }
+        return null;
+    }
+    public static void close(Connection connection) {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+       }
+      }
+
+**Note**: The URL value is **localhost:3306**. This value is modified after the RDS instance is created. The Lambda function uses this URL to communicate with the database. You must also ensure that you specify the user name and password for your RDS instance.
 
 ### Handler class
 
-This Java code represents the **Handler** class. The class creates a Lamdba function that reads the ticket ID value that is passed to the workflow. Notice that you can log messages to Amazon CloudWatch logs by using a **LambdaLogger** object. The **handleRequest** method returns the ticket ID value that is passed to the second step in the workflow.
+This Java code represents the **Handler** class. The class creates a Lamdba function that reads the passed in date value and queries the student table using the date value.  Notice that you can log messages to Amazon CloudWatch logs by using a **LambdaLogger** object. The **handleRequest** method returns XML document that specified all of the students that are absent. This XML is passed to the second step in the workflow.
 
      package example;
 
