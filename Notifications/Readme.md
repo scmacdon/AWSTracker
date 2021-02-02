@@ -178,11 +178,9 @@ Workflows can pass data between steps. For example, the **Determine the missing 
 
 8. Choose **workflow-support** (the IAM role that you created).
 
-![AWS Tracking Application](images/lambda19.png)
+![AWS Tracking Application](images/workflowuser.png)
 
 9. Choose **Create state machine**. A message appears that states the state machine was successfully created.
-
-![AWS Tracking Application](images/lambda7.png)
 
 ## Create an IntelliJ project named LambdaFunctions
 
