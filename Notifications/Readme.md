@@ -4,14 +4,17 @@ You can use Amazon Web Services to create a workflow that sends notifications ov
 
 The use case that this AWS tutorial focuses on is you work at a school and you need to alert parents when a student skips school. Do you send an email, do you phone the parents, or do you send a text message? The AWS workflow created in this tutorial sends messages over multiple channels, including email, as shown in this illustration. 
 
-
 ![AWS Tracking Application](images/message.png)
 
-**Note:** You can create Lambda functions in various programming languages. For this tutorial, Lambda functions are
-implemented by using the Lambda Java API. For more information about Lambda, see
+In this AWS tutorial, you create an AWS serverless workflow by using the AWS SDK for Java and AWS Step Functions. Each workflow step is implemented by using an AWS Lambda function. Lambda is a compute service that enables you to run code without provisioning or managing servers. For more information about Lambda, see
 [What is AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html).
 
-In this tutorial, you create a workflow that creates support tickets for an organization. Each workflow step performs an operation on the ticket. This tutorial shows you how to use Java to process workflow data. For example, you'll learn how to read data that's passed to the workflow, how to pass data between steps, and how to invoke AWS services from the workflow.
+To send notifications over multiple channels, you can use these AWS Services:
+
++ Amazon Pinpoint service
++ Amazon Simple Notification Service (SNS)
++ Amazon Simple Email Service (SES)
+
 
 **Cost to complete:** The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
