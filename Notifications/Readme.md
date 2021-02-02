@@ -131,11 +131,13 @@ Because the Lambda function invokes the Pinpoint service’s **sendVoiceMessage*
 
 ## Create a serverless workflow by using Step functions
 
-o define a workflow that sends notifications over multiple channels by using AWS Step Functions, you create an Amazon States Language (JSON-based) document to define your state machine. An Amazon States Language document describes each step. After you define the document, Step functions provides a visual representation of the workflow. The following figure shows the Amazon States Language document and the visual representation of the workflow.
+To define a workflow that sends notifications over multiple channels by using AWS Step Functions, you create an Amazon States Language (JSON-based) document to define your state machine. An Amazon States Language document describes each step. After you define the document, AWS Step Functions provides a visual representation of the workflow. The following figure shows a visual representation of the workflow.
 
 ![AWS Tracking Application](images/workflowmodelA.png)
 
-Workflows can pass data between steps. For example, the **Open Case** step processes a case ID value (passed to the workflow) and passes that value to the **Assign Case** step. Later in this tutorial, you'll create application logic in the Lambda function to read and process the data values.  
+Workflows can pass data between steps. For example, the **Determine the missing students** step queries the **students** table, dynamically create XML that specifies all of the absentstudents based on the date, and passes the XML to the **Send All Notifications** step. 
+
+**Note**: Later in this tutorial, you'll create application logic in the Lambda function to read and process the data values.  
 
 #### To create a workflow
 
@@ -145,31 +147,27 @@ Workflows can pass data between steps. For example, the **Open Case** step proce
 
 3. Choose **Author with code snippets**. In the **Type** area, choose **Standard**.
 
-![AWS Tracking Application](images/lambda3.png)
+![AWS Tracking Application](images/StepFunctions.png)
 
 4. Specify the Amazon States Language document by entering the following code.
 
         {
-        "Comment": "A simple AWS Step Functions state machine that automates a call center support session.",
-        "StartAt": "Open Case",
+        "Comment": "A simple AWS Step Functions state machine that sends mass notifications over multiple channels.",
+        "StartAt": "Determine the missing students",
         "States": {
-        "Open Case": {
-        "Type": "Task",
-        "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
-        "Next": "Assign Case"
-          },
-         "Assign Case": {
+         "Determine the missing students": {
          "Type": "Task",
-         "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
-         "Next": "Send Email"
+         "Resource": " arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME ",
+         "Next": "Send All Notifications"
          },
-         "Send Email": {
+        "Send All Notifications": {
          "Type": "Task",
-         "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
+         "Resource": " arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME ",
          "End": true
-          }
-          }
          }
+        }
+       }
+
 **Note:** Don't worry about the errors related to the Lambda resource values. You'll update these values later in this tutorial.
 
 5. Choose **Next**.
