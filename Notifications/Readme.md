@@ -1084,7 +1084,7 @@ After you're done, you see a new table in your database.
 
 ![AWS Tracking Application](images/database.png)
 
-Using MySQL Workbenchm enter some records that you will use to test your Lambda functions.
+Using MySQL Workbench, enter some records that you will use to test your Lambda functions.
 
 ## Package the project that contains the Lambda functions
 
