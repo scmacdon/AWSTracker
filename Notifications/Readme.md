@@ -1143,9 +1143,10 @@ Update the Resource for the **Assign Case** and **Send Email** steps. This is ho
 You can invoke the workflow on the Step Functions console.  An execution receives JSON input. For this example, you can pass the following JSON data to the workflow.  
 
      {
-	"inputCaseID": "001"
+     "date": "2021-02-01"
      }
 
+**Note**: Change the date value to match the date values in the **students** table. Otherwise, you will get back an empty result set. 
 
 #### To execute your workflow
 
