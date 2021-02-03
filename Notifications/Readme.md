@@ -1154,18 +1154,15 @@ You can invoke the workflow on the Step Functions console.  An execution receive
 
 2. In the **Input** section, pass the JSON data. As each step is completed, it turns green.
 
-![AWS Tracking Application](images/workflowGreen.png)
+
 
 If the step turns red, an error occurred. You can click the step and view the logs that are accessible from the right side.
 
+![AWS Tracking Application](images/workflowLogs.png)
 
-
-When the workflow is finished, you can view the data in the DynamoDB table.
-
-![AWS Tracking Application](images/lambda15.png)
 
 ### Next steps
-Congratulations, you have created an AWS serverless workflow by using the AWS SDK for Java. As stated at the beginning of this tutorial, be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re no longer charged.
+Congratulations, you have created an AWS serverless workflow that send message over multiple channels. As stated at the beginning of this tutorial, be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re no longer charged.
 
 For more AWS multiservice examples, see
 [usecases](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases).
