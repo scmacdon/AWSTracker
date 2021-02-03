@@ -18,7 +18,7 @@ To send notifications over multiple channels, you can use these AWS Services:
 
 **Cost to complete:** The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
-**Note:** Be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re no longer charged.
+**Note:** Be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re not charged.
 
 #### Topics
 
@@ -26,11 +26,12 @@ To send notifications over multiple channels, you can use these AWS Services:
 + Understand the workflow
 + Create an IAM role that is used to execute Lambda functions
 + Create a workflow by using AWS Step functions
-+ Create an IntelliJ project named LambdaFunctions
++ Create an IntelliJ project 
 + Add the POM dependencies to your project
-+ Create Lambda functions by using the Lambda API in the AWS SDK for Java
++ Create Lambda functions by using the Lambda Java API
 + Package the project that contains Lambda functions
 + Deploy Lambda functions
++ Create the Amazon RDS database 
 + Add Lambda functions to workflows
 + Invoke the workflow from the AWS Console
 
