@@ -1152,13 +1152,13 @@ You can invoke the workflow on the Step Functions console.  An execution receive
 
 1. On the Step Functions console, choose **Start execution**.
 
-2. In the **Input** section, pass the JSON data. View the workflow. As each step is completed, it turns green.
+2. In the **Input** section, pass the JSON data. As each step is completed, it turns green.
 
-![AWS Tracking Application](images/lambda1.png)
+![AWS Tracking Application](images/workflowGreen.png)
 
 If the step turns red, an error occurred. You can click the step and view the logs that are accessible from the right side.
 
-![AWS Tracking Application](images/lambda14.png)
+
 
 When the workflow is finished, you can view the data in the DynamoDB table.
 
