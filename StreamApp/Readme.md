@@ -16,7 +16,7 @@ Once a video is uploaded into the Amazon S3 bucket, it is displayed in the video
 
 ![AWS Video Analyzer](images/pic4.png)
 
-In this AWS tutorial, you create a Spring Boot web application. After the application is created, this tutorial shows you how to deploy the application to the Amazon Cloud. 
+In this AWS tutorial, you create a Spring Boot web application. After the application is created, this tutorial shows you how to deploy the application to AWS Elastic Beanstalk. 
 
 **Cost to complete:** The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
