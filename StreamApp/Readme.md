@@ -535,7 +535,7 @@ The following Java code represents the **VideoStreamService** class. This class 
 
 ## Create the HTML file
 
-At this point, you have created all of the Java files required for this example Spring Boot application. Now you create a HTML file that are required for the application's view. Under the resource folder, create a **templates** folder, and then create the following HTML file:
+At this point, you have created all of the Java files required for this example Spring Boot application. Now you create HTML files that are required for the application's view. Under the resource folder, create a **templates** folder, and then create the following HTML files:
 
 + index.html
 + layout.html
@@ -737,7 +737,7 @@ If this is your first time accessing this service, you will see a **Welcome to A
 1. Open the Elastic Beanstalk console at https://console.aws.amazon.com/elasticbeanstalk/home.
 2. In the navigation pane, choose  **Applications**, and then choose **Create a new application**. This opens a wizard that creates your application and launches an appropriate environment.
 3. On the **Create New Application** page, enter the following values:
-   + **Application Name** - DynamoDB Tracker
+   + **Application Name** - Spring Video App
    + **Description** - A description for the application
 4. Choose **Create**.
 5. Choose **Create a new environment**.
@@ -750,7 +750,7 @@ If this is your first time accessing this service, you will see a **Welcome to A
 12. Choose **Local file**, and then select **Choose file**. Browse to the JAR file that you created.  
 13. Choose **Create environment**. You'll see the application being created.
 
-![AWS Tracking Application](images/pic13.png)
+![AWS Tracking Application](images/pic6.png)
 
 When you’re done, you will see the application state the **Health** is **Ok** .
 
