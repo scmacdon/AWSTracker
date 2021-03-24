@@ -151,7 +151,7 @@ At this point, you have a new project named **SpringVideoApp**. Ensure that the 
  Create these Java classes:
 
 + **Application** - Used as the base class for the Spring Boot application.
-+ **Tags** = Used to store tag information. 
++ **Tags** - Used to store tag information. 
 + **VideoStreamController** - Used as the Spring Boot controller that handles HTTP requests.
 + **VideoStreamService** - Used as the Spring Service that uses the Amazon S3 Java API. 
 
