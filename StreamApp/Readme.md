@@ -36,7 +36,7 @@ To complete the tutorial, you need the following:
 + Maven 3.6 or later
 + An Amazon S3 bucket. 
 
-## Create an IntelliJ project named SpringVideo
+## Create an IntelliJ project named SpringVideoApp
 
 Create an IntelliJ project that is used to create the web application that streams Amazon S3 video content.
 
@@ -48,7 +48,7 @@ Create an IntelliJ project that is used to create the web application that strea
 
 4. In **GroupId**, enter **spring-aws**.
 
-5. In **ArtifactId**, enter **SpringVideo**.
+5. In **ArtifactId**, enter **SpringVideoApp**.
 
 6.	Choose **Next**.
 
@@ -56,7 +56,7 @@ Create an IntelliJ project that is used to create the web application that strea
 
 ## Add the Spring POM dependencies to your project
 
-At this point, you have a new project named **SpringVideo**. Ensure that the pom.xml file resembles the following code.
+At this point, you have a new project named **SpringVideoApp**. Ensure that the pom.xml file resembles the following code.
 
      <?xml version="1.0" encoding="UTF-8"?>
      <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -136,13 +136,9 @@ At this point, you have a new project named **SpringVideo**. Ensure that the pom
      
  ## Create the Java classes
  
- Create a Java package in the main/java folder named **com.aws.spring**.
+ Create a Java package in the main/java folder named **com.example**. This Java classes go into this package. 
  
- ![AWS Lex](images/pic7.png)
- 
- The Java files go into this package.
- 
-  ![AWS Lex](images/pic8.png)
+ ![AWS Lex](images/pic2.png)
  
  Create these Java classes:
 
