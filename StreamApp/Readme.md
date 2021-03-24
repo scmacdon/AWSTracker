@@ -732,7 +732,7 @@ Sign in to the AWS Management Console, and then open the Elastic Beanstalk conso
 
 If this is your first time accessing this service, you will see a **Welcome to AWS Elastic Beanstalk** page. Otherwise, you’ll see the Elastic Beanstalk Dashboard, which lists all of your applications.
 
-#### To deploy the DynamoDB Tracker application to Elastic Beanstalk
+#### To deploy the application to Elastic Beanstalk
 
 1. Open the Elastic Beanstalk console at https://console.aws.amazon.com/elasticbeanstalk/home.
 2. In the navigation pane, choose  **Applications**, and then choose **Create a new application**. This opens a wizard that creates your application and launches an appropriate environment.
@@ -758,7 +758,7 @@ When you’re done, you will see the application state the **Health** is **Ok** 
 11. Add a variable named **AWS_ACCESS_KEY_ID**, and then specify your access key value.
 12. Add a variable named **AWS_SECRET_ACCESS_KEY**, and then specify your secret key value. After the variables are configured, you'll see the URL for accessing the application.
 
-![AWS Tracking Application](images/pic14.png)
+![AWS Tracking Application](images/pic7.png)
 
 **Note:** If you don't know how to set variables, see [Environment properties and other software settings](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-softwaresettings.html).
 
