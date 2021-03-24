@@ -538,173 +538,146 @@ The following Java code represents the **VideoStreamService** class. This class 
 At this point, you have created all of the Java files required for this example Spring Boot application. Now you create a HTML file that are required for the application's view. Under the resource folder, create a **templates** folder, and then create the following HTML file:
 
 + index.html
++ layout.html
++ upload.html
++ video.html
 
-The **index.html** file is the application's home view that displays the Amazon Lex bot. The following HTML represents the **index.html** file. In the following code, ensure that you specify your **IdentityPoolId** value and bot alias value. 
+### index.html
+The **index.html** file is the application's home view. The following HTML represents the **index.html** file. 
+
+     <!DOCTYPE HTML>
+     <html xmlns:th="https://www.thymeleaf.org">
+     <meta charset="utf-8" />
+     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+    <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
+
+    <title>AWS Item Tracker</title>
+    </head>
+
+    <body>
+    <header th:replace="layout :: site-header"></header>
+    <div class="container">
+
+    <h2>Video Stream over HTTP App</h2>
+
+    <p>The AWS Item Tracker application is a sample application that uses multiple AWS Services and the Java V2 API. Collecting and working with items has never been easier! Simply perform these steps:<p>
+
+    <ol>
+        <li>Enter work items into the system by choosing the <i>Add Items</i> menu item. Fill in the form and then choose <i>Create Item</i>.</li>
+        <li>The AWS Item Tracker application stores the data by using the Amazon Relational Database Service (Amazon RDS).</li>
+        <li>You can view all of your items by choosing the <i>Get Items</i> menu item. Next, choose <i>Get Active Items</i> in the dialog box.</li>
+        <li>You can modify an Active Item by selecting an item in the table and then choosing <i>Get Single Item</i>. The item appears in the Modify Item section where you can modify the description or status.</li>
+        <li>Modify the item and then choose <i>Update Item</i>. You cannot modify the ID value. </li>
+        <li>You can archive any item by selecting the item and choosing <i>Archive Item</i>. Notice that the table is updated with only active items.</li>
+        <li>You can display all archived items by choosing <i>Get Archived Items</i>. You cannot modify an archived item.</li>
+        <li>You can send an email recipient an email message with a report attachment by selecting the email recipient from the dialog box and then choosing <i>Send Report</i>.Only Active data is sent in a report.</li>
+        <li>The Amazon Simple Email Service is used to send an email with an Excel document to the selected email recipient.</li>
+    </ol>
+    </div>
+
+    </body>
+    </html>
+
+### layout.html
+The following code represents the **layout.html** file that represents the application's menu.
 
      <!DOCTYPE html>
-     <html>
+     <html xmlns:th="http://www.thymeleaf.org">
+     <head th:fragment="site-head">
+     <meta charset="UTF-8" />
+     <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+     <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+     <meta th:include="this :: head" th:remove="tag"/>
+     </head>
+     <body>
+     <!-- th:hef calls a controller method - which returns the view -->
+    <header th:fragment="site-header">
+    <a href="index.html" th:href="@{/}"><img src="../public/img/site-logo.png" th:src="@{/img/site-logo.png}" /></a>
+    <a href="#" style="color: white" th:href="@{/}">Home</a>
+    <a href="#" style="color: white" th:href="@{/upload}">Upload Videos</a>
+    <a href="#"  style="color: white" th:href="@{/watch}">Watch Videos</a>
+    <div id="logged-in-info">
+        <form method="post" th:action="@{/logout}">
+            <input type="submit"  value="Logout"/>
+        </form>
+    </div>
+    </header>
+    <h1>Welcome</h1>
+    </body>
+    </html>
 
-     <head>
-     <title>Amazon Lex for JavaScript - Sample Application (BookTrip)</title>
-     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.41.0.min.js"></script>
-     <style language="text/css">
-        input#wisdom {
-            padding: 4px;
-            font-size: 1em;
-            width: 400px
-        }
+### upload.html
+The **upload.html** file is the application's view that lets users upload a MP4 file. 
 
-        input::placeholder {
-            color: #ccc;
-            font-style: italic;
-        }
+     <!DOCTYPE html>
+     <html xmlns:th="http://www.thymeleaf.org">
+     <head lang="en">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+    <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+    <title>Spring Framework</title>
+    </head>
+    <body>
+    <header th:replace="layout :: site-header"></header>
 
-        p.userRequest {
-            margin: 4px;
-            padding: 4px 10px 4px 10px;
-            border-radius: 4px;
-            min-width: 50%;
-            max-width: 85%;
-            float: left;
-            background-color: #7d7;
-        }
+  
+    <div class="container">
+        <h2>Video Stream over HTTP App</h2>
+        <p>Upload a MP4 video to an Amazon S3 bucket</p>
 
-        p.lexResponse {
-            margin: 4px;
-            padding: 4px 10px 4px 10px;
-            border-radius: 4px;
-            text-align: right;
-            min-width: 50%;
-            max-width: 85%;
-            float: right;
-            background-color: #bbf;
-            font-style: italic;
-         }
+        <form method="POST" onsubmit="myFunction()" action="/fileupload" enctype="multipart/form-data">
+            Video Description:<input type="text" name="description" required><br>
+            <input type="file" name="file" /><br/><br/>
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
+    </body>
+    </html>
 
-         p.lexError {
-            margin: 4px;
-            padding: 4px 10px 4px 10px;
-            border-radius: 4px;
-            text-align: right;
-            min-width: 50%;
-            max-width: 85%;
-            float: right;
-            background-color: #f77;
-        }
-       </style>
-       </head>
+### index.html
+The **index.html** file is the application's home view. The following HTML represents the **index.html** file. 
 
-       <body>
-        <h1 style="text-align:  left">Amazon Lex - BookTrip</h1>
-        <p style="width: 400px">
-         This little chatbot shows how easy it is to incorporate
-         <a href="https://aws.amazon.com/lex/" title="Amazon Lex (product)" target="_new">Amazon Lex</a> into your web pages.  Try it out.
-         </p>
-         <div id="conversation" style="width: 400px; height: 400px; border: 1px solid #ccc; background-color: #eee; padding: 4px; overflow: scroll"></div>
-         <form id="chatform" style="margin-top: 10px" onsubmit="return pushChat();">
-         <input type="text" id="wisdom" size="80" value="" placeholder="I need a hotel room">
-         </form>
+     <!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-      <script type="text/javascript">
-       // set the focus to the input box
-        document.getElementById("wisdom").focus();
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+    <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
 
-       // Initialize the Amazon Cognito credentials provider
-        AWS.config.region = 'us-east-1'; // Region
-         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        
-        // Provide your Pool Id here
-        IdentityPoolId: '<IdentityPoolId>',
-        });
+    <title>AWS Item Tracker</title>
+</head>
 
-      var lexruntime = new AWS.LexRuntime();
-      var lexUserId = 'chatbot-demo' + Date.now();
-      var sessionAttributes = {};
+<body>
+<header th:replace="layout :: site-header"></header>
+<div class="container">
 
-      function pushChat() {
+    <h2>Video Stream over HTTP App</h2>
 
-        // if there is text to be sent...
-        var wisdomText = document.getElementById('wisdom');
-        if (wisdomText && wisdomText.value && wisdomText.value.trim().length > 0) {
+    <p>The AWS Item Tracker application is a sample application that uses multiple AWS Services and the Java V2 API. Collecting and working with items has never been easier! Simply perform these steps:<p>
 
-            // disable input to show we're sending it
-            var wisdom = wisdomText.value.trim();
-            wisdomText.value = '...';
-            wisdomText.locked = true;
+    <ol>
+        <li>Enter work items into the system by choosing the <i>Add Items</i> menu item. Fill in the form and then choose <i>Create Item</i>.</li>
+        <li>The AWS Item Tracker application stores the data by using the Amazon Relational Database Service (Amazon RDS).</li>
+        <li>You can view all of your items by choosing the <i>Get Items</i> menu item. Next, choose <i>Get Active Items</i> in the dialog box.</li>
+        <li>You can modify an Active Item by selecting an item in the table and then choosing <i>Get Single Item</i>. The item appears in the Modify Item section where you can modify the description or status.</li>
+        <li>Modify the item and then choose <i>Update Item</i>. You cannot modify the ID value. </li>
+        <li>You can archive any item by selecting the item and choosing <i>Archive Item</i>. Notice that the table is updated with only active items.</li>
+        <li>You can display all archived items by choosing <i>Get Archived Items</i>. You cannot modify an archived item.</li>
+        <li>You can send an email recipient an email message with a report attachment by selecting the email recipient from the dialog box and then choosing <i>Send Report</i>.Only Active data is sent in a report.</li>
+        <li>The Amazon Simple Email Service is used to send an email with an Excel document to the selected email recipient.</li>
+    </ol>
+    </div>
 
-            // send it to the Lex runtime
-            var params = {
-                botAlias: '<Bot alias>',
-                botName: 'BookTrip',
-                inputText: wisdom,
-                userId: lexUserId,
-                sessionAttributes: sessionAttributes
-            };
-            showRequest(wisdom);
-            lexruntime.postText(params, function(err, data) {
-                if (err) {
-                    console.log(err, err.stack);
-                    showError('Error:  ' + err.message + ' (see console for details)')
-                }
-                if (data) {
-                    // capture the sessionAttributes for the next cycle
-                    sessionAttributes = data.sessionAttributes;
-                    // show response and/or error/dialog status
-                    showResponse(data);
-                }
-                // re-enable input
-                wisdomText.value = '';
-                wisdomText.locked = false;
-              });
-              }
-             // we always cancel form submission
-             return false;
-            }
-
-    
-        function showRequest(daText) {
-
-         var conversationDiv = document.getElementById('conversation');
-         var requestPara = document.createElement("P");
-         requestPara.className = 'userRequest';
-         requestPara.appendChild(document.createTextNode(daText));
-         conversationDiv.appendChild(requestPara);
-         conversationDiv.scrollTop = conversationDiv.scrollHeight;
-         }
-
-        function showError(daText) {
-
-         var conversationDiv = document.getElementById('conversation');
-         var errorPara = document.createElement("P");
-         errorPara.className = 'lexError';
-         errorPara.appendChild(document.createTextNode(daText));
-         conversationDiv.appendChild(errorPara);
-         conversationDiv.scrollTop = conversationDiv.scrollHeight;
-       }
-
-       function showResponse(lexResponse) {
-
-        var conversationDiv = document.getElementById('conversation');
-        var responsePara = document.createElement("P");
-        responsePara.className = 'lexResponse';
-        if (lexResponse.message) {
-            responsePara.appendChild(document.createTextNode(lexResponse.message));
-            responsePara.appendChild(document.createElement('br'));
-        }
-        if (lexResponse.dialogState === 'ReadyForFulfillment') {
-            responsePara.appendChild(document.createTextNode(
-                'Ready for fulfillment'));
-            // TODO:  show slot values
-         } else {
-            responsePara.appendChild(document.createTextNode(
-                '(' + lexResponse.dialogState + ')'));
-         }
-         conversationDiv.appendChild(responsePara);
-         conversationDiv.scrollTop = conversationDiv.scrollHeight;
-        }
-      </script>
-     </body>
-     </html>
+  </body>
+</html>
 
 ## Create a JAR file for the DynamoDB Tracker application
 
