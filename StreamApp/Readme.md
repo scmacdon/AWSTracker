@@ -34,7 +34,7 @@ To complete the tutorial, you need the following:
 + A Java IDE (this tutorial uses the IntelliJ IDE)
 + Java JDK 1.8
 + Maven 3.6 or later
-+ An Amazon S3 bucket. 
++ An Amazon S3 bucket that contains 3-5 MP4 files. 
 
 ## Create an IntelliJ project named SpringVideoApp
 
