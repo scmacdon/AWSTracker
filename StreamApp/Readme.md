@@ -762,7 +762,7 @@ When you’re done, you will see the application state the **Health** is **Ok** 
 
 **Note:** If you don't know how to set variables, see [Environment properties and other software settings](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-softwaresettings.html).
 
-To access the application, open your browser and enter the URL for your application. You will see the login page for your application.
+To access the application, open your browser and enter the URL for your application. You will see the Home page for your application.
 
 ### Next steps
 Congratulations! You have created a Spring Boot application that uses Amazon Lex to create an interactive user experience. As stated at the beginning of this tutorial, be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re not charged.
