@@ -150,47 +150,388 @@ At this point, you have a new project named **SpringVideoApp**. Ensure that the 
  
  Create these Java classes:
 
-+ **BotExample** - Used as the base class for the Spring Boot application..
-+ **BotController** - Used as the Spring Boot controller that handles HTTP requests.
++ **Application** - Used as the base class for the Spring Boot application.
++ **Tags** = Used to store tag information. 
++ **VideoStreamController** - Used as the Spring Boot controller that handles HTTP requests.
++ **VideoStreamService** - Used as the Spring Service that uses the Amazon S3 Java API. 
 
-### BotExample class
+### Application class
 
-The following Java code represents the **BotExample** class.
+The following Java code represents the **Application** class.
 
-     package com.aws.spring;
+     package com.example;
 
-     import org.springframework.stereotype.Controller;
-     import org.springframework.ui.Model;
-     import org.springframework.web.bind.annotation.GetMapping;
+      import org.springframework.boot.SpringApplication;
+      import org.springframework.boot.autoconfigure.SpringBootApplication;
+      import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
-     @Controller
-     public class BotController {
+      @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+      public class Application {
 
-     @GetMapping("/")
-     public String greetingForm(Model model) {
+      public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+      }
+    }
+
+
+### Tags class
+
+The following Java code represents the **Tags** class.
+
+     package com.example;
+
+    public class Tags {
+
+     private String name;
+     private String description;
+
+     public String getDesc() {
+        return this.description ;
+     }
+
+     public void setDesc(String description){
+        this.description = description;
+     }
+
+     public String getName() {
+        return this.name ;
+     }
+
+     public void setName(String name){
+        this.name = name;
+     }
+    }
+
+### VideoStreamController class
+
+The following Java code represents the **VideoStreamController** class.
+
+    package com.example;
+
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.stereotype.Controller;
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.multipart.MultipartFile;
+    import org.springframework.web.servlet.ModelAndView;
+    import org.springframework.web.servlet.view.RedirectView;
+    import reactor.core.publisher.Mono;
+    import javax.servlet.http.HttpServletRequest;
+    import javax.servlet.http.HttpServletResponse;
+    import java.io.IOException;
+
+    @Controller
+    public class VideoStreamController {
+
+    @Autowired
+    VideoStreamService vid;
+
+    private String bucket = "<Enter your bucket name>";
+
+    @RequestMapping(value = "/")
+    public String root() {
         return "index";
+    }
+
+    @GetMapping("/watch")
+    public String designer() {
+        return "video";
+    }
+
+    @GetMapping("/upload")
+    public String upload() {
+        return "upload";
+    }
+
+    // Upload a MP4 to an Amazon S3 bucket
+    @RequestMapping(value = "/fileupload", method = RequestMethod.POST)
+    @ResponseBody
+    public ModelAndView singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam String description) {
+
+        try {
+            byte[] bytes = file.getBytes();
+            String name =  file.getOriginalFilename() ;
+            String desc2 =  description ;
+
+            // Put the MP4 file into an Amazon S3 bucket
+            vid.putVideo(bytes, bucket, name, desc2);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ModelAndView(new RedirectView("upload"));
+     }
+
+    // Returns items to populate the Video menu
+    @RequestMapping(value = "/items", method = RequestMethod.GET)
+    @ResponseBody
+    public String getItems(HttpServletRequest request, HttpServletResponse response) {
+
+        String xml = vid.getTags(bucket);
+        return xml;
+    }
+
+    // Returns the video in the bucket specified by the ID value
+    @RequestMapping(value = "/{id}/stream", method = RequestMethod.GET)
+    public Mono<ResponseEntity<byte[]>> streamVideo(@PathVariable String id) {
+
+        String fileName = id;
+        return Mono.just(vid.getObjectBytes(bucket, fileName));
+     }
+    }
+
+**Note**: Make sure that you assign an Amazon S3 bucket name to the **bucket** variable.  
+
+### VideoStreamService class
+
+The following Java code represents the **VideoStreamService** class. This class uses the Amazon S3 Java API (V2) to interact with content located in an S3 bucket. For example, the **getTags** method returns a collection of tags that are used to create the video menu. Likewise, the **getObjectBytes** reads bytes from a MP4 video. 
+
+     package com.example;
+
+     import org.slf4j.Logger;
+     import org.slf4j.LoggerFactory;
+     import org.springframework.http.HttpStatus;
+     import org.springframework.http.ResponseEntity;
+     import org.springframework.stereotype.Service;
+     import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+     import software.amazon.awssdk.core.ResponseBytes;
+     import software.amazon.awssdk.core.sync.RequestBody;
+     import software.amazon.awssdk.regions.Region;
+     import software.amazon.awssdk.services.s3.S3Client;
+     import software.amazon.awssdk.services.s3.model.*;
+     import org.w3c.dom.Document;
+     import javax.xml.parsers.DocumentBuilder;
+     import javax.xml.parsers.DocumentBuilderFactory;
+     import org.w3c.dom.Element;
+     import javax.xml.parsers.ParserConfigurationException;
+     import javax.xml.transform.Transformer;
+     import javax.xml.transform.TransformerException;
+     import javax.xml.transform.TransformerFactory;
+     import javax.xml.transform.dom.DOMSource;
+     import javax.xml.transform.stream.StreamResult;
+     import java.io.StringWriter;
+     import java.util.*;
+
+    @Service
+    public class VideoStreamService {
+
+    public static final String VIDEO = "/video";
+
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String CONTENT_LENGTH = "Content-Length";
+    public static final String VIDEO_CONTENT = "video/";
+    public static final String CONTENT_RANGE = "Content-Range";
+    public static final String ACCEPT_RANGES = "Accept-Ranges";
+    public static final String BYTES = "bytes";
+    public static final int BYTE_RANGE = 1024;
+
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    S3Client s3 ;
+
+    private S3Client getClient() {
+        // Create the S3Client object
+        Region region = Region.US_WEST_2;
+        S3Client s3 = S3Client.builder()
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .region(region)
+                .build();
+
+        return s3;
+    }
+
+    // Places a new video into an Amazon S3 bucket
+    public void putVideo(byte[] bytes, String bucketName, String fileName, String description) {
+        s3 = getClient();
+
+        try {
+
+            // Set the tags to apply to the object
+            String theTags = "name="+fileName+"&description="+description;
+
+            PutObjectRequest putOb = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .tagging(theTags)
+                    .build();
+
+            s3.putObject(putOb, RequestBody.fromBytes(bytes));
+
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+    }
+
+    // Returns a schema that describes all tags for all videos in the given bucket
+    public String getTags(String bucketName){
+        s3 = getClient();
+
+        List tagList   ;
+
+      try {
+
+          ListObjectsRequest listObjects = ListObjectsRequest
+                  .builder()
+                  .bucket(bucketName)
+                  .build();
+
+          ListObjectsResponse res = s3.listObjects(listObjects);
+          List<S3Object> objects = res.contents();
+
+          Tags myTag ;
+          ArrayList keys = new ArrayList<String>();
+
+          for (ListIterator iterVals = objects.listIterator(); iterVals.hasNext(); ) {
+              S3Object myValue = (S3Object) iterVals.next();
+              String key = myValue.key(); // We need the key to get the tags
+
+              //Get the tags
+              GetObjectTaggingRequest getTaggingRequest = GetObjectTaggingRequest
+                      .builder()
+                      .key(key)
+                      .bucket(bucketName)
+                      .build();
+
+              GetObjectTaggingResponse tags = s3.getObjectTagging(getTaggingRequest);
+              List<Tag> tagSet= tags.tagSet();
+
+              // Write out the tags
+              Iterator<Tag> tagIterator = tagSet.iterator();
+              while(tagIterator.hasNext()) {
+                  myTag = new Tags();
+                  Tag tag = (Tag)tagIterator.next();
+                  keys.add(tag.value());
+
+                }
+          }
+
+          tagList = modList(keys);
+          return convertToString(toXml(tagList));
+
+    } catch (S3Exception e) {
+        System.err.println(e.awsErrorDetails().errorMessage());
+        System.exit(1);
+    }
+        return "";
+    }
+
+
+    // We need to modify the list
+    private List modList(List<String> myList){
+
+        // Get the elements from the collection.
+        int count = myList.size();
+        List allTags = new ArrayList<Tags>();
+        Tags myTag ;
+        ArrayList keys = new ArrayList<String>();
+        ArrayList values = new ArrayList<String>();
+
+        for ( int index=0; index < count; index++) {
+
+            if (index % 2 == 0)
+                keys.add(myList.get(index));
+            else
+                values.add(myList.get(index));
+          }
+
+           // Combine these lists.
+           int size =  keys.size();
+           for (int r=0; r<size; r++){
+
+               myTag = new Tags();
+               myTag.setName(keys.get(r).toString());
+               myTag.setDesc(values.get(r).toString());
+               allTags.add(myTag);
+           }
+
+        return allTags;
+    }
+
+
+    // Reads a video from a bucket and returns a byte streeam
+    public ResponseEntity<byte[]> getObjectBytes (String bucketName, String keyName) {
+
+        s3 = getClient();
+
+        try {
+            // create a GetObjectRequest instance
+            GetObjectRequest objectRequest = GetObjectRequest
+                    .builder()
+                    .key(keyName)
+                    .bucket(bucketName)
+                    .build();
+
+            // get the byte[] from this AWS S3 object.
+            ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .header(CONTENT_TYPE, VIDEO_CONTENT + "mp4")
+                    .header(CONTENT_LENGTH, String.valueOf(objectBytes.asByteArray().length))
+                    .body(objectBytes.asByteArray());
+
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+        return null;
+    }
+
+
+    // Convert a LIST to XML data.
+     private Document toXml(List<Tags> itemList) {
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.newDocument();
+
+            // Start building the XML
+            Element root = doc.createElement( "Tags" );
+            doc.appendChild( root );
+
+            // Get the elements from the collection
+            int count = itemList.size();
+
+            // Iterate through the list.
+            for (Tags myItem: itemList) {
+
+                Element item = doc.createElement( "Tag" );
+                root.appendChild( item );
+
+                // Set Id
+                Element id = doc.createElement( "Name" );
+                id.appendChild( doc.createTextNode(myItem.getName() ) );
+                item.appendChild( id );
+
+                // Set Name
+                Element name = doc.createElement( "Description" );
+                name.appendChild( doc.createTextNode(myItem.getDesc() ) );
+                item.appendChild( name );
+            }
+
+            return doc;
+        } catch(ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String convertToString(Document xml) {
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            StreamResult result = new StreamResult(new StringWriter());
+            DOMSource source = new DOMSource(xml);
+            transformer.transform(source, result);
+            return result.getWriter().toString();
+
+        } catch(TransformerException ex) {
+            ex.printStackTrace();
+        }
+        return null;
      }
     }
 
 
-### BotController class
-
-The following Java code represents the **BotController** class.
-
-     package com.aws.spring;
-
-    import org.springframework.stereotype.Controller;
-    import org.springframework.ui.Model;
-    import org.springframework.web.bind.annotation.GetMapping;
-
-    @Controller
-    public class BotController {
-
-     @GetMapping("/")
-     public String greetingForm(Model model) {
-        return "index";
-     }
-   }
 
 ## Create the HTML file
 
