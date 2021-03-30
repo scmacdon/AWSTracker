@@ -1,4 +1,4 @@
-#  Creating an Amazon Web Services Lambda function that tag digital assets located in Amazon S3 buckets
+#  Creating an Amazon Web Services Lambda function that tags digital assets located in Amazon S3 buckets
 
 You can invoke an AWS Lambda function by using Amazon API Gateway, which is an AWS service for creating, publishing, maintaining, monitoring, and securing REST, HTTP, and WebSocket APIs at scale. API developers can create APIs that access AWS or other web services, as well as data stored in the AWS Cloud. As an API Gateway developer, you can create APIs for use in your own client applications. For more information, see [What is Amazon API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html).
 
