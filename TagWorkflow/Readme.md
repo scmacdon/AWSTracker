@@ -64,8 +64,6 @@ This tutorial uses the Amazon Rekognition and Amazon S3 services. The **lambda-s
 
 8. Name the role **lambda-support**.
 
-![AWS Tracking Application](images/pic2.png)
-
 9. Choose **Create role**.
 
 10. Choose **lambda-support** to view the overview page.
@@ -78,15 +76,15 @@ This tutorial uses the Amazon Rekognition and Amazon S3 services. The **lambda-s
 
 ![AWS Tracking Application](images/pic3.png)
 
-## Create an IntelliJ project named LambdaCronFunctions
+## Create an IntelliJ project
 
 1. In the IntelliJ IDE, choose **File**, **New**, **Project**.
 
 2. In the **New Project** dialog box, choose **Maven**, and then choose **Next**.
 
-3. For **GroupId**, enter **LambdaCronFunctions**.
+3. For **GroupId**, enter **WorkflowTagAssets**.
 
-4. For **ArtifactId**, enter **LambdaCronFunctions**.
+4. For **ArtifactId**, enter **WorkflowTagAssets**.
 
 5. Choose **Next**.
 
@@ -94,7 +92,7 @@ This tutorial uses the Amazon Rekognition and Amazon S3 services. The **lambda-s
 
 ## Add the POM dependencies to your project
 
-At this point, you have a new project named **LambdaCronFunctions**.
+At this point, you have a new project named **WorkflowTagAssets**.
 
 ![AWS Tracking Application](images/pic4.png)
 
