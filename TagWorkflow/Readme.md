@@ -4,7 +4,7 @@ You can create an Amazon Web Services Lambda function that automatically tags di
 
 ![AWS Tracking Application](images/pic1.png)
 
-After you execute the Lambda function, it automatically create tags and applies them to this digital asset, as shown in this illustration.
+After you execute the Lambda function, it automatically create tags based on the image and applies them to the digital asset, as shown in this illustration.
 
 ![AWS Tracking Application](images/pic2.png)
 
