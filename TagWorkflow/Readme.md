@@ -406,61 +406,46 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
 
      package com.example.tags;
 
-    import org.w3c.dom.Document;
-    import org.w3c.dom.Element;
-    import software.amazon.awssdk.core.ResponseBytes;
-    import software.amazon.awssdk.regions.Region;
-    import software.amazon.awssdk.services.s3.S3Client;
-    import software.amazon.awssdk.services.s3.model.*;
-    import software.amazon.awssdk.services.s3.model.PutObjectTaggingRequest;
-    import javax.xml.parsers.DocumentBuilder;
-    import javax.xml.parsers.DocumentBuilderFactory;
-    import javax.xml.parsers.ParserConfigurationException;
-    import javax.xml.transform.Transformer;
-    import javax.xml.transform.TransformerException;
-    import javax.xml.transform.TransformerFactory;
-    import javax.xml.transform.dom.DOMSource;
-    import javax.xml.transform.stream.StreamResult;
-    import java.io.StringWriter;
-    import java.time.Instant;
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.ListIterator;
-    import software.amazon.awssdk.services.s3.model.Tagging;
-    import software.amazon.awssdk.services.s3.model.Tag;
-    import software.amazon.awssdk.services.s3.model.GetObjectTaggingRequest;
-    import software.amazon.awssdk.services.s3.model.DeleteObjectTaggingRequest;
-    import static java.util.stream.Collectors.toCollection;
+     import software.amazon.awssdk.core.ResponseBytes;
+     import software.amazon.awssdk.regions.Region;
+     import software.amazon.awssdk.services.s3.S3Client;
+     import software.amazon.awssdk.services.s3.model.*;
+     import software.amazon.awssdk.services.s3.model.PutObjectTaggingRequest;
+     import java.util.ArrayList;
+     import java.util.List;
+     import java.util.ListIterator;
+     import software.amazon.awssdk.services.s3.model.Tagging;
+     import software.amazon.awssdk.services.s3.model.Tag;
+     import software.amazon.awssdk.services.s3.model.GetObjectTaggingRequest;
+     import software.amazon.awssdk.services.s3.model.DeleteObjectTaggingRequest;
 
     public class S3Service {
 
-    private S3Client getClient() {
-    
-      // Create the S3Client object
-       Region region = Region.US_WEST_2;
-       S3Client s3 = S3Client.builder()
-               .region(region)
-               .build();
+     private S3Client getClient() {
+        // Create the S3Client object
+        Region region = Region.US_WEST_2;
+        S3Client s3 = S3Client.builder()
+                .region(region)
+                .build();
 
         return s3;
     }
 
-    public byte[] getObjectBytes (String bucketName, String keyName) {
+    public byte[] getObjectBytes(String bucketName, String keyName) {
 
         S3Client s3 = getClient();
 
         try {
-            // create a GetObjectRequest instance
+
             GetObjectRequest objectRequest = GetObjectRequest
                     .builder()
                     .key(keyName)
                     .bucket(bucketName)
                     .build();
 
-            // get the byte[] from this AWS S3 object
+            // Return the byte[] from this AWS S3 object.
             ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
-            byte[] data = objectBytes.asByteArray();
-            return data;
+            return objectBytes.asByteArray();
 
         } catch (S3Exception e) {
             System.err.println(e.awsErrorDetails().errorMessage());
@@ -473,7 +458,7 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
     public List ListBucketObjects(String bucketName) {
 
         S3Client s3 = getClient();
-        String keyName ;
+        String keyName;
 
         List keys = new ArrayList<String>();
 
@@ -498,111 +483,70 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             System.err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
         }
-        return null ;
+        return null;
     }
 
-    // Returns the names of all images and data within an XML document
-    public String ListAllObjects(String bucketName) {
+    // tag assets with labels in the given list
+    public void tagAssets(List myList, String bucketName) {
 
-        S3Client s3 = getClient();
-        long sizeLg;
-        Instant DateIn;
-        BucketItem myItem ;
-
-        List bucketItems = new ArrayList<BucketItem>();
         try {
-            ListObjectsRequest listObjects = ListObjectsRequest
-                    .builder()
-                    .bucket(bucketName)
-                    .build();
 
-            ListObjectsResponse res = s3.listObjects(listObjects);
-            List<S3Object> objects = res.contents();
+            S3Client s3 = getClient();
+            int len = myList.size();
 
-            for (ListIterator iterVals = objects.listIterator(); iterVals.hasNext(); ) {
-                S3Object myValue = (S3Object) iterVals.next();
-                myItem = new BucketItem();
-                myItem.setKey(myValue.key());
-                myItem.setOwner(myValue.owner().displayName());
-                sizeLg = myValue.size() / 1024 ;
-                myItem.setSize(String.valueOf(sizeLg));
-                DateIn = myValue.lastModified();
-                myItem.setDate(String.valueOf(DateIn));
+            String assetName = "";
+            String labelName = "";
+            String labelValue = "";
 
-                // Push the items to the list
-                bucketItems.add(myItem);
+            // tag all the assets in the list
+            for (int x = 0; x < len; x++) {
+
+                //Need to get the WorkItem from each list
+                List innerList = (List) myList.get(x);
+                int workItemListSize = innerList.size();
+
+                for (int z = 0; z < workItemListSize; z++) {
+
+                    WorkItem workItem = (WorkItem) innerList.get(z);
+                    assetName = workItem.getKey();
+                    labelName = workItem.getName();
+                    labelValue = workItem.getConfidence();
+                    tagExistingObject(s3, bucketName, assetName, labelName, labelValue);
+                }
             }
 
-            return convertToString(toXml(bucketItems));
-
-        } catch (S3Exception e) {
-            System.err.println(e.awsErrorDetails().errorMessage());
-            System.exit(1);
-        }
-        return null ;
-     }
-
-     // tag assets with labels in the given list
-     public void tagAssets(List myList, String bucketName) {
-
-       try {
-
-           S3Client s3 = getClient();
-           int len = myList.size();
-
-           String assetName = "";
-           String labelName= "";
-           String labelValue= "";
-
-           // tag all the assets in the list
-           for (int x=0; x<len; x++) {
-
-               //Need to get the WorkItem from each list
-               List innerList = (List) myList.get(x);
-               int workItemListSize = innerList.size();
-
-               for (int z = 0; z < workItemListSize; z++) {
-
-                   WorkItem workItem = (WorkItem) innerList.get(z);
-                   assetName = workItem.getKey();
-                   labelName = workItem.getName();
-                   labelValue = workItem.getConfidence();
-                   tagExistingObject(s3, bucketName, assetName, labelName, labelValue);
-               }
-           }
-
         } catch (S3Exception e) {
             System.err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
         }
     }
 
-     // This method tags an existing object
-     private void tagExistingObject(S3Client s3, String bucketName, String key, String label, String LabelValue) {
+    // This method tags an existing object.
+    private void tagExistingObject(S3Client s3, String bucketName, String key, String label, String LabelValue) {
 
         try {
 
-            // First need to get existing tag set; otherwise the existing tags get overwritten
+            // First need to get existing tag set; otherwise the existing tags are overwritten
             GetObjectTaggingRequest getObjectTaggingRequest = GetObjectTaggingRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
 
             GetObjectTaggingResponse response = s3.getObjectTagging(getObjectTaggingRequest);
 
             // Get the existing immutable list - cannot modify this list
             List<Tag> existingList = response.tagSet();
-            List<Tag> newTagList = new ArrayList(existingList.stream().collect(toCollection(ArrayList::new)));
+            ArrayList newTagList = new ArrayList(new ArrayList<>(existingList));
 
-           // Create a new tag
+            // Create a new tag.
             Tag myTag = Tag.builder()
                     .key(label)
                     .value(LabelValue)
                     .build();
 
-            // push new tag to list
+            // push new tag to list.
             newTagList.add(myTag);
-           Tagging tagging = Tagging.builder()
+            Tagging tagging = Tagging.builder()
                     .tagSet(newTagList)
                     .build();
 
@@ -612,8 +556,8 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
                     .tagging(tagging)
                     .build();
 
-            s3.putObjectTagging(taggingRequest) ;
-            System.out.println(key +" was tagged with " +label);
+            s3.putObjectTagging(taggingRequest);
+            System.out.println(key + " was tagged with " + label);
 
         } catch (S3Exception e) {
             System.err.println(e.awsErrorDetails().errorMessage());
@@ -621,92 +565,25 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
         }
     }
 
+    //Delete tags from the given object.
+    public void deleteTagFromObject(String bucketName, String key) {
 
-     //Delete tags from the given object
-     public void deleteTagFromObject(String bucketName, String key) {
+        try {
 
-      try {
+            DeleteObjectTaggingRequest deleteObjectTaggingRequest = DeleteObjectTaggingRequest.builder()
+                    .key(key)
+                    .bucket(bucketName)
+                    .build();
 
-          DeleteObjectTaggingRequest deleteObjectTaggingRequest = DeleteObjectTaggingRequest.builder()
-                  .key(key)
-                  .bucket(bucketName)
-                  .build();
+            S3Client s3 = getClient();
+            s3.deleteObjectTagging(deleteObjectTaggingRequest);
 
-          S3Client s3 = getClient();
-          s3.deleteObjectTagging(deleteObjectTaggingRequest);
-
-      } catch (S3Exception e) {
-          System.err.println(e.awsErrorDetails().errorMessage());
-          System.exit(1);
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
       }
     }
-
-     // Convert Bucket item data into XML
-     private Document toXml(List<BucketItem> itemList) {
-
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.newDocument();
-
-            // Start building the XML
-            Element root = doc.createElement( "Items" );
-            doc.appendChild( root );
-
-            // Get the elements from the collection
-            int custCount = itemList.size();
-
-            // Iterate through the collection
-            for ( int index=0; index < custCount; index++) {
-
-                // Get the WorkItem object from the collection
-                BucketItem myItem = itemList.get(index);
-
-                Element item = doc.createElement( "Item" );
-                root.appendChild( item );
-
-                // Set Key
-                Element id = doc.createElement( "Key" );
-                id.appendChild( doc.createTextNode(myItem.getKey()) );
-                item.appendChild( id );
-
-                // Set Owner
-                Element name = doc.createElement( "Owner" );
-                name.appendChild( doc.createTextNode(myItem.getOwner() ) );
-                item.appendChild( name );
-
-                // Set Date
-                Element date = doc.createElement( "Date" );
-                date.appendChild( doc.createTextNode(myItem.getDate() ) );
-                item.appendChild( date );
-
-                // Set Size
-                Element desc = doc.createElement( "Size" );
-                desc.appendChild( doc.createTextNode(myItem.getSize() ) );
-                item.appendChild( desc );
-            }
-
-            return doc;
-        } catch(ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private String convertToString(Document xml) {
-        try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            StreamResult result = new StreamResult(new StringWriter());
-            DOMSource source = new DOMSource(xml);
-            transformer.transform(source, result);
-            return result.getWriter().toString();
-
-        } catch(TransformerException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-  }
 
 ### WorkItem class
 The following Java code represents the **WorkItem** class.
