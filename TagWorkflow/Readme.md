@@ -313,7 +313,6 @@ The following Java code represents the **AnalyzePhotos** class. This class uses 
 
         Region region = Region.US_EAST_2;
         RekognitionClient rekClient = RekognitionClient.builder()
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
                 .region(region)
                 .build();
 
