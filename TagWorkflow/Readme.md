@@ -663,49 +663,7 @@ The JAR file is located in the **target** folder (which is a child folder of the
 11. Choose **Save.**
 
 
-## Configure Amazon API Gateway to invoke the Lambda function
-
-You can use the Amazon Gateway API console to create a Rest endpoint for the Lambda function. Once done, you are able to invoke the Lambda function using a Restful call.
-
-1. Sign in to the Amazon API Gateway console at https://console.aws.amazon.com/apigateway..
-
-2. Under Rest API, choose Build.
-
-![AWS Tracking Application](images/picRest.png)
-
-3. Select **New API**.
-
-![AWS Tracking Application](images/PicNewAPI.png)
-
-4. Specify **Employee** as the API name and provide a description.
-
-![AWS Tracking Application](images/picEmployeeAPI.png)
-
-5. Choose Create API. 
-
-6. Choose **Resources** under the **Employee** section. 
-
-![AWS Tracking Application](images/picResources.png)
-
-7. From the **Actions** dropdown, choose **Create Resources**. 
-
-8. In the name field, specify **employees**. 
-
-9. Choose Create Resources. 
-
-![AWS Tracking Application](images/picCreateResources.png)
-
-10. Choose /employees and then select GET from the drop down. Choose the checkmark icon. 
-
-![AWS Tracking Application](images/picGet.png)
-
-11. Choose **Lambda function** and enter **cron** as the Lambda function name. Choose **Save**.
-
-![AWS Tracking Application](images/picLambda.png)
-
-12. Choose **OK**.
-
-### Test the Amazon API Gateway method
+### Test the Lambda method
 
 At this point in the tutorial, you can test the Amazon API Gateway method that invokes the **cron** Lambda function. To test the method, choose **Test**, as shown in the following illustration. 
 
