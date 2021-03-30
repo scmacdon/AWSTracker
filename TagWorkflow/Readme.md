@@ -838,30 +838,6 @@ Once the Lambda function is invoked, you can view the log file to see a successf
 
 ![AWS Tracking Application](images/picLogs.png)
 
-### Deploying the API
-
-After the test is successful, you can deploy the method from the AWS Management Console. 
-
-1. Choose **Get**.
-
-![AWS Tracking Application](images/picGetDeploy.png)
-
-2. From the **Actions** dropdown, select **Deploy API**.
-
-3. Fill in the Deploy API form and choose **Deploy**.
-
-![AWS Tracking Application](images/picDeployMethod.png)
-
-4. Notice that a URL s displayed.
-
-![AWS Tracking Application](images/picURL.png)
-
-5.	Choose **Save Changes**.
-
-6. Choose **Get** again and notice that the URL changes. This is the invocation URL that you can use to invoke the Lambda function.
-
-![AWS Tracking Application](images/picURL2.png)
-
 ### Next steps
 Congratulations, you have created an AWS Lambda function that is invoked by using an Amazon Gateway API method. As stated at the beginning of this tutorial, be sure to terminate all of the resources you created while going through this tutorial to ensure that you’re not charged.
 
