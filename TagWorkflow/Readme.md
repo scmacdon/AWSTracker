@@ -24,12 +24,11 @@ In addition to applying tags to images, this Lambda function also supports remov
 #### Topics
 +	Prerequisites
 +	Create an AWS Identity and Access Management (IAM) role that is used to execute Lambda functions
-+	Create an IntelliJ project named **LambdaCronFunctions**
++	Create an IntelliJ project
 +	Add the POM dependencies to your project
 +	Create an AWS Lambda function by using the AWS Lambda runtime API
 +	Package the project that contains the AWS Lambda function
 +	Deploy the AWS Lambda function
-+	Configure Amazon API Gateway to invoke the Lambda function
 
 ## Prerequisites
 To follow along with this tutorial, you need the following:
@@ -37,7 +36,7 @@ To follow along with this tutorial, you need the following:
 + A Java IDE (for this tutorial, the IntelliJ IDE is used).
 + Java 1.8 JDK.
 + Maven 3.6 or higher.
-+ An Amazon DynamoDB table named **Employee** with a key named **Id** and the fields shown in the previous illustration. Make sure you enter the correct data, including a valid mobile phone that you want to test this use case with. To learn how to create a DynamoDB table, see [Create a Table](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/getting-started-step-1.html).
++ An Amazon S3 bucket with 5-7 nature images in it. These images are read by the Lambda function. 
 
 ## Create an IAM role that's used to execute Lambda functions
 
@@ -45,7 +44,7 @@ Create the following IAM role:
 
 + **lambda-support** - Used to invoke Lamdba functions.
 
-This tutorial uses the DynamoDB and Amazon SNS services. The **lambda-support** role has to have policies that enable it to invoke these services from a Lambda function.  
+This tutorial uses the Amazon Rekognition and Amazon S3 services. The **lambda-support** role has to have policies that enable it to invoke these services from a Lambda function.  
 
 #### To create an IAM role
 
@@ -54,8 +53,6 @@ This tutorial uses the DynamoDB and Amazon SNS services. The **lambda-support** 
 2. In the navigation pane, choose **Roles**, and on the **Roles** page, choose **Create Role**.
 
 3. Choose **AWS service**, and then choose **Lambda**.
-
-![AWS Tracking Application](images/pic1.png)
 
 4. Choose **Permissions**.
 
@@ -75,9 +72,9 @@ This tutorial uses the DynamoDB and Amazon SNS services. The **lambda-support** 
 
 11. Choose **Attach Policies**.
 
-12. Search for **AmazonDynamoDBFullAccess**, and then choose **Attach policy**.
+12. Search for **AmazonRekognitionFullAccess**, and then choose **Attach policy**.
 
-13. Search for **AmazonSNSFullAccess**, and then choose **Attach policy**. When you're done, you can see the permissions.
+13. Search for **AmazonS3FullAccess**, and then choose **Attach policy**. When you're done, you can see the permissions.
 
 ![AWS Tracking Application](images/pic3.png)
 
