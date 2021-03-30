@@ -222,214 +222,529 @@ Use the AWS Lambda runtime Java API to create the Java class that defines the La
 Create these Java classes:
 
 + **Handler** - used as the Lambda function that performs the use case described in this AWS tutorial. The application logic that's executed is located in the **handleRequest** method. 
-+ **ScanEmployees** - uses the Amazon DynamoDB Java V2 API to scan the **Employee** table using an **Expression** object. This class also uses the Amazon Simple Notification Service (Amazon SNS) Java V2 API to send a message to an employee.
-+ **Employee** - a Java class that is used with the DynamoDB Enhanced client. The fields in this class match the columns in the **Employee** table. 
++ **S3Service** - Uses the Amazon S3 API to perform S3 operations.
++ **AnalyzePhotos** - Uses the Amazon Rekognition API to analyze the images.
++ **BucketItem** - Used as a model that stores Amazon S3 bucket information.
++ **WorkItem** - Used as a model that stores Amazon Rekognition data.
 
 ### Handler class
 
-This Java code represents the **Handler** class. The class creates a **ScanEmployees** object and invokes the **sendEmployeMessage** method. Notice that you can log messages to Amazon CloudWatch logs by using a **LambdaLogger** object.
+This Java code represents the **Handler** class. The class reads a flag that is passed to the Lambda function. The **s3Service.ListBucketObjects** method returns a **List** object where each element is a string value that represents the object key. If the flag value is **true**, then tags are applied by iterating through the list and applying tags to each object by calling the **s3Service.tagAssets** method. If the flag value is **false**, then the **s3Service.deleteTagFromObject** method is invoked that deletes the tags. Also, notice that you can log messages to Amazon CloudWatch logs by using a **LambdaLogger** object.
 
-    package com.aws.example;
+    package com.example.tags;
 
     import com.amazonaws.services.lambda.runtime.Context;
+    import com.amazonaws.services.lambda.runtime.RequestHandler;
     import com.amazonaws.services.lambda.runtime.LambdaLogger;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.Map;
 
-    /**
-    *  This is the entry point for the Lambda function
-    */
+    public class Handler implements RequestHandler<Map<String,String>, String> {
 
-    public class Handler {
-
-     public Void handleRequest(Context context) {
+    @Override
+    public String handleRequest(Map<String, String> event, Context context) {
         LambdaLogger logger = context.getLogger();
-        ScanEmployees scanEmployees = new ScanEmployees();
-       Boolean ans =  scanEmployees.sendEmployeMessage();
-        if (ans)
-            logger.log("Messages sent: " + ans);
-        return null;
-    }
-}
+        String delFag = event.get("flag");
+        logger.log("FLAG IS: " + delFag);
+        S3Service s3Service = new S3Service();
+        AnalyzePhotos photos = new AnalyzePhotos();
 
-### ScanEmployees class
-The **ScanEmployees** class uses both Amazon DynamoDB Java V2 API and the Amazon SNS Java V2 API. In the following code example, notice the use of an **Expression** object. This object is used to return employees that have a start date one year ago. For each employee returned, a text message is sent using the **SnsClient** object's **publish** method.  
+        String bucketName = "<SPECIFY YOUR BUCKET NAME>";
+        List myKeys = s3Service.ListBucketObjects(bucketName);
+        if (delFag.compareTo("true") == 0) {
 
-     package com.aws.example;
+            // Create a List to store the data.
+            List myList = new ArrayList<List>();
 
-     import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-     import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-     import software.amazon.awssdk.enhanced.dynamodb.Expression;
-     import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
-     import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
-     import software.amazon.awssdk.regions.Region;
-     import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-     import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-     import software.amazon.awssdk.services.sns.SnsClient;
-     import software.amazon.awssdk.services.sns.model.PublishRequest;
-     import software.amazon.awssdk.services.sns.model.SnsException;
-     import java.text.DateFormat;
-     import java.text.SimpleDateFormat;
-     import java.time.LocalDateTime;
-     import java.time.ZoneId;
-     import java.time.format.DateTimeFormatter;
-     import java.util.*;
+            // loop through each element in the List and tag the assets
+            int len = myKeys.size();
+            for (int z = 0; z < len; z++) {
 
-    /*
-     Sends a text message to any employee that reached the one year anniversary mark
-    */
+                String key = (String) myKeys.get(z);
+                byte[] keyData = s3Service.getObjectBytes("scottphoto", key);
 
-    public class ScanEmployees {
+                //Analyze the photo
+                ArrayList item = photos.DetectLabels(keyData, key);
+                myList.add(item);
+            }
 
-       public Boolean sendEmployeMessage() {
+            s3Service.tagAssets(myList, bucketName);
+            logger.log("All Assets in the bucket are tagged!");
 
-         Boolean send = false;
-         String myDate = getDate();
+        } else {
 
-        Region region = Region.US_WEST_2;
-        DynamoDbClient ddb = DynamoDbClient.builder()
+            //delete all object tags
+            int len = myKeys.size();
+            for (int z = 0; z < len; z++) {
+
+                String key = (String) myKeys.get(z);
+                s3Service.deleteTagFromObject("scottphoto", key);
+                logger.log("All Assets in the bucket are deleted!");
+
+            }
+         }
+        return delFag;
+      }
+   }
+
+**Note**: Make sure that you assign your bucket name to the **bucketName** variable. 
+
+### AnalyzePhotos class
+
+The following Java code represents the **AnalyzePhotos** class. This class uses the Amazon Rekognition API to analyze the images.
+
+     package com.example.tags;
+
+    import software.amazon.awssdk.core.SdkBytes;
+    import software.amazon.awssdk.regions.Region;
+    import software.amazon.awssdk.services.rekognition.RekognitionClient;
+    import software.amazon.awssdk.services.rekognition.model.Image;
+    import software.amazon.awssdk.services.rekognition.model.DetectLabelsRequest;
+    import software.amazon.awssdk.services.rekognition.model.DetectLabelsResponse;
+    import software.amazon.awssdk.services.rekognition.model.Label;
+    import software.amazon.awssdk.services.rekognition.model.RekognitionException;
+    import java.util.ArrayList;
+    import java.util.List;
+
+    public class AnalyzePhotos {
+
+    public ArrayList DetectLabels(byte[] bytes, String key) {
+
+        Region region = Region.US_EAST_2;
+        RekognitionClient rekClient = RekognitionClient.builder()
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
                 .region(region)
                 .build();
 
-        // Create a DynamoDbEnhancedClient and use the DynamoDbClient object
-        DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
-                .dynamoDbClient(ddb)
-                .build();
-
-        // Create a DynamoDbTable object based on Employee
-        DynamoDbTable<Employee> table = enhancedClient.table("Employee", TableSchema.fromBean(Employee.class));
-
         try {
-            AttributeValue attVal = AttributeValue.builder()
-                .s(myDate)
-                .build();
 
-            // Get only items in the Employee table that match the date
-            Map<String, AttributeValue> myMap = new HashMap<>();
-            myMap.put(":val1", attVal);
+            SdkBytes sourceBytes = SdkBytes.fromByteArray(bytes);
 
-            Map<String, String> myExMap = new HashMap<>();
-            myExMap.put("#startDate", "startDate");
-
-            Expression expression = Expression.builder()
-                .expressionValues(myMap)
-                .expressionNames(myExMap)
-                .expression("#startDate = :val1")
-                .build();
-
-            ScanEnhancedRequest enhancedRequest = ScanEnhancedRequest.builder()
-                .filterExpression(expression)
-                .limit(15) // you can increase this value
-                .build();
-
-            // Get items in the Employee table
-            Iterator<Employee> employees = table.scan(enhancedRequest).items().iterator();
-
-            while (employees.hasNext()) {
-                Employee employee = employees.next();
-                String first = employee.getFirst();
-                String phone = employee.getPhone();
-
-                // Send an anniversary message!
-                sentTextMessage(first, phone);
-                send = true;
-            }
-        } catch (DynamoDbException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-        return send;
-      }
-
-
-    // Use the Amazon SNS Service to send a text message
-    private void sentTextMessage(String first, String phone) {
-
-        SnsClient snsClient = SnsClient.builder()
-                .region(Region.US_WEST_2)
-                .build();
-        String message = first +" happy one year anniversary. We are very happy that you have been working here for a year! ";
-
-        try {
-            PublishRequest request = PublishRequest.builder()
-                    .message(message)
-                    .phoneNumber(phone)
+            // Create an Image object for the source image
+            Image souImage = Image.builder()
+                    .bytes(sourceBytes)
                     .build();
 
-            snsClient.publish(request);
-        } catch (SnsException e) {
+            DetectLabelsRequest detectLabelsRequest = DetectLabelsRequest.builder()
+                    .image(souImage)
+                    .maxLabels(10)
+                    .build();
+
+            DetectLabelsResponse labelsResponse = rekClient.detectLabels(detectLabelsRequest);
+            List<Label> labels = labelsResponse.labels();
+
+            System.out.println("Detected labels for the given photo");
+            ArrayList list = new ArrayList<WorkItem>();
+            WorkItem item ;
+            for (Label label: labels) {
+                item = new WorkItem();
+                item.setKey(key); // identifies the photo
+                item.setConfidence(label.confidence().toString());
+                item.setName(label.name());
+                list.add(item);
+            }
+            return list;
+
+        } catch (RekognitionException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
+        }
+        return null ;
+      }
+    }
+
+
+### BucketItem class
+
+The following Java code represents the **BucketItem** class that stores Amazon S3 object data.
+
+    package com.example.tags;
+
+    public class BucketItem {
+
+     private String key;
+     private String owner;
+     private String date ;
+     private String size ;
+
+
+     public void setSize(String size) {
+        this.size = size ;
+     }
+
+     public String getSize() {
+        return this.size ;
+     }
+
+     public void setDate(String date) {
+        this.date = date ;
+     }
+
+     public String getDate() {
+        return this.date ;
+     }
+
+     public void setOwner(String owner) {
+        this.owner = owner ;
+     }
+
+     public String getOwner() {
+        return this.owner ;
+     }
+
+     public void setKey(String key) {
+        this.key = key ;
+     }
+
+     public String getKey() {
+        return this.key ;
+     }
+    }
+    
+ ### S3Service class
+The following class uses the Amazon S3 API to perform S3 operations. For example, the getObjectBytes method returns a byte array that represents the image. 
+
+     package com.example.tags;
+
+    import org.w3c.dom.Document;
+    import org.w3c.dom.Element;
+    import software.amazon.awssdk.core.ResponseBytes;
+    import software.amazon.awssdk.regions.Region;
+    import software.amazon.awssdk.services.s3.S3Client;
+    import software.amazon.awssdk.services.s3.model.*;
+    import software.amazon.awssdk.services.s3.model.PutObjectTaggingRequest;
+    import javax.xml.parsers.DocumentBuilder;
+    import javax.xml.parsers.DocumentBuilderFactory;
+    import javax.xml.parsers.ParserConfigurationException;
+    import javax.xml.transform.Transformer;
+    import javax.xml.transform.TransformerException;
+    import javax.xml.transform.TransformerFactory;
+    import javax.xml.transform.dom.DOMSource;
+    import javax.xml.transform.stream.StreamResult;
+    import java.io.StringWriter;
+    import java.time.Instant;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.ListIterator;
+    import software.amazon.awssdk.services.s3.model.Tagging;
+    import software.amazon.awssdk.services.s3.model.Tag;
+    import software.amazon.awssdk.services.s3.model.GetObjectTaggingRequest;
+    import software.amazon.awssdk.services.s3.model.DeleteObjectTaggingRequest;
+    import static java.util.stream.Collectors.toCollection;
+
+    public class S3Service {
+
+    private S3Client getClient() {
+    
+      // Create the S3Client object
+       Region region = Region.US_WEST_2;
+       S3Client s3 = S3Client.builder()
+               .region(region)
+               .build();
+
+        return s3;
+    }
+
+    public byte[] getObjectBytes (String bucketName, String keyName) {
+
+        S3Client s3 = getClient();
+
+        try {
+            // create a GetObjectRequest instance
+            GetObjectRequest objectRequest = GetObjectRequest
+                    .builder()
+                    .key(keyName)
+                    .bucket(bucketName)
+                    .build();
+
+            // get the byte[] from this AWS S3 object
+            ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
+            byte[] data = objectBytes.asByteArray();
+            return data;
+
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+        return null;
+    }
+
+    // Returns the names of all images in the given bucket
+    public List ListBucketObjects(String bucketName) {
+
+        S3Client s3 = getClient();
+        String keyName ;
+
+        List keys = new ArrayList<String>();
+
+        try {
+            ListObjectsRequest listObjects = ListObjectsRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .build();
+
+            ListObjectsResponse res = s3.listObjects(listObjects);
+            List<S3Object> objects = res.contents();
+
+            for (ListIterator iterVals = objects.listIterator(); iterVals.hasNext(); ) {
+                S3Object myValue = (S3Object) iterVals.next();
+                keyName = myValue.key();
+                keys.add(keyName);
+            }
+
+            return keys;
+
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+        return null ;
+    }
+
+    // Returns the names of all images and data within an XML document
+    public String ListAllObjects(String bucketName) {
+
+        S3Client s3 = getClient();
+        long sizeLg;
+        Instant DateIn;
+        BucketItem myItem ;
+
+        List bucketItems = new ArrayList<BucketItem>();
+        try {
+            ListObjectsRequest listObjects = ListObjectsRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .build();
+
+            ListObjectsResponse res = s3.listObjects(listObjects);
+            List<S3Object> objects = res.contents();
+
+            for (ListIterator iterVals = objects.listIterator(); iterVals.hasNext(); ) {
+                S3Object myValue = (S3Object) iterVals.next();
+                myItem = new BucketItem();
+                myItem.setKey(myValue.key());
+                myItem.setOwner(myValue.owner().displayName());
+                sizeLg = myValue.size() / 1024 ;
+                myItem.setSize(String.valueOf(sizeLg));
+                DateIn = myValue.lastModified();
+                myItem.setDate(String.valueOf(DateIn));
+
+                // Push the items to the list
+                bucketItems.add(myItem);
+            }
+
+            return convertToString(toXml(bucketItems));
+
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
+        return null ;
+     }
+
+     // tag assets with labels in the given list
+     public void tagAssets(List myList, String bucketName) {
+
+       try {
+
+           S3Client s3 = getClient();
+           int len = myList.size();
+
+           String assetName = "";
+           String labelName= "";
+           String labelValue= "";
+
+           // tag all the assets in the list
+           for (int x=0; x<len; x++) {
+
+               //Need to get the WorkItem from each list
+               List innerList = (List) myList.get(x);
+               int workItemListSize = innerList.size();
+
+               for (int z = 0; z < workItemListSize; z++) {
+
+                   WorkItem workItem = (WorkItem) innerList.get(z);
+                   assetName = workItem.getKey();
+                   labelName = workItem.getName();
+                   labelValue = workItem.getConfidence();
+                   tagExistingObject(s3, bucketName, assetName, labelName, labelValue);
+               }
+           }
+
+        } catch (S3Exception e) {
             System.err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
         }
     }
 
-    public String getDate() {
+     // This method tags an existing object
+     private void tagExistingObject(S3Client s3, String bucketName, String key, String label, String LabelValue) {
 
-        String DATE_FORMAT = "yyyy-MM-dd";
-        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-        DateTimeFormatter dateFormat8 = DateTimeFormatter.ofPattern(DATE_FORMAT);
+        try {
 
-        Date currentDate = new Date();
-        System.out.println("date : " + dateFormat.format(currentDate));
-        LocalDateTime localDateTime = currentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        System.out.println("localDateTime : " + dateFormat8.format(localDateTime));
+            // First need to get existing tag set; otherwise the existing tags get overwritten
+            GetObjectTaggingRequest getObjectTaggingRequest = GetObjectTaggingRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
 
-        localDateTime = localDateTime.minusYears(1);
-        String ann = dateFormat8.format(localDateTime);
-        return ann;
-     }
+            GetObjectTaggingResponse response = s3.getObjectTagging(getObjectTaggingRequest);
+
+            // Get the existing immutable list - cannot modify this list
+            List<Tag> existingList = response.tagSet();
+            List<Tag> newTagList = new ArrayList(existingList.stream().collect(toCollection(ArrayList::new)));
+
+           // Create a new tag
+            Tag myTag = Tag.builder()
+                    .key(label)
+                    .value(LabelValue)
+                    .build();
+
+            // push new tag to list
+            newTagList.add(myTag);
+           Tagging tagging = Tagging.builder()
+                    .tagSet(newTagList)
+                    .build();
+
+            PutObjectTaggingRequest taggingRequest = PutObjectTaggingRequest.builder()
+                    .key(key)
+                    .bucket(bucketName)
+                    .tagging(tagging)
+                    .build();
+
+            s3.putObjectTagging(taggingRequest) ;
+            System.out.println(key +" was tagged with " +label);
+
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        }
     }
 
-### Employee class
 
-The **Employee** class is used with the DynamoDB enhanced client and maps the **Employee** data members to items in the **Employee** table. Notice that this class uses the **@DynamoDbBean** annotation.
+     //Delete tags from the given object
+     public void deleteTagFromObject(String bucketName, String key) {
 
-     package com.aws.example;
+      try {
 
-     import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-     import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-     import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+          DeleteObjectTaggingRequest deleteObjectTaggingRequest = DeleteObjectTaggingRequest.builder()
+                  .key(key)
+                  .bucket(bucketName)
+                  .build();
 
-    @DynamoDbBean
-    public class Employee {
+          S3Client s3 = getClient();
+          s3.deleteObjectTagging(deleteObjectTaggingRequest);
 
-     private String Id;
-     private String first;
-     private String phone;
-     private String startDate;
-
-     public void setId(String id) {
-        this.Id = id;
-     }
-
-     @DynamoDbPartitionKey
-     public String getId() {
-        return this.Id;
-     }
-
-     public void setStartDate(String startDate) {
-        this.startDate = startDate;
-     }
-
-     @DynamoDbSortKey
-     public String getStartDate() {
-        return this.startDate;
-     }
-
-     public void setPhone(String phone) {
-        this.phone = phone;
-     }
-    
-    public String getPhone() {
-        return this.phone;
-     }
-   
-     public void setFirst(String first) {
-        this.first = first;
-     }
-    
-     public String getFirst() {
-        return this.first;
-     }
+      } catch (S3Exception e) {
+          System.err.println(e.awsErrorDetails().errorMessage());
+          System.exit(1);
+      }
     }
+
+     // Convert Bucket item data into XML
+     private Document toXml(List<BucketItem> itemList) {
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.newDocument();
+
+            // Start building the XML
+            Element root = doc.createElement( "Items" );
+            doc.appendChild( root );
+
+            // Get the elements from the collection
+            int custCount = itemList.size();
+
+            // Iterate through the collection
+            for ( int index=0; index < custCount; index++) {
+
+                // Get the WorkItem object from the collection
+                BucketItem myItem = itemList.get(index);
+
+                Element item = doc.createElement( "Item" );
+                root.appendChild( item );
+
+                // Set Key
+                Element id = doc.createElement( "Key" );
+                id.appendChild( doc.createTextNode(myItem.getKey()) );
+                item.appendChild( id );
+
+                // Set Owner
+                Element name = doc.createElement( "Owner" );
+                name.appendChild( doc.createTextNode(myItem.getOwner() ) );
+                item.appendChild( name );
+
+                // Set Date
+                Element date = doc.createElement( "Date" );
+                date.appendChild( doc.createTextNode(myItem.getDate() ) );
+                item.appendChild( date );
+
+                // Set Size
+                Element desc = doc.createElement( "Size" );
+                desc.appendChild( doc.createTextNode(myItem.getSize() ) );
+                item.appendChild( desc );
+            }
+
+            return doc;
+        } catch(ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String convertToString(Document xml) {
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            StreamResult result = new StreamResult(new StringWriter());
+            DOMSource source = new DOMSource(xml);
+            transformer.transform(source, result);
+            return result.getWriter().toString();
+
+        } catch(TransformerException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+  }
+
+### WorkItem class
+The following Java code represents the **WorkItem** class.
+
+     package com.example.tags;
+
+    public class WorkItem {
+
+    private String key;
+    private String name;
+    private String confidence ;
+
+    public void setKey (String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
+    }
+
+    public void setName (String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setConfidence (String confidence) {
+        this.confidence = confidence;
+    }
+
+    public String getConfidence() {
+        return this.confidence;
+    }
+   }
+
 
 ## Package the project that contains the Lambda functions
 
