@@ -8,32 +8,18 @@ After you execute the Lambda function, it automatically create tags and applies 
 
 ![AWS Tracking Application](images/pic2.png)
 
-API developers can create APIs that access AWS or other web services, as well as data stored in the AWS Cloud. As an API Gateway developer, you can create APIs for use in your own client applications. For more information, see [What is Amazon API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html).
+Tagging an object has benfits such as providing a way to categorize storage. For more information about object tagging, see [Categorizing your storage using tags](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html).
 
-Lambda is a compute service that enables you to run code without provisioning or managing servers. You can create Lambda functions in various programming languages. For more information about AWS Lambda, see
+As an Amazon Web Services API developer, you can create a Lambda function by using the AWS Lambda Java runtime API. This example invokes different AWS services to perform this specific use case. Lambda is a compute service that enables you to run code without provisioning or managing servers. You can create Lambda functions in various programming languages. For more information about AWS Lambda, see
 [What is AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html).
 
-In this tutorial, you create a Lambda function by using the AWS Lambda Java runtime API. This example invokes different AWS services to perform a specific use case. For example, assume that an organization sends a mobile text message to its employees that congratulates them at the one year anniversary date, as shown in this illustration.
-
-![AWS Tracking Application](images/picPhone.png)
-
-This tutorial shows you how to use Java logic to create a solution that performs this use case.  For example, you'll learn how to read a database to determine which employees have reached the one year anniversary date, how to process the data, and send out a text message all by using a Lambda function. Then you’ll learn how to use Amazon API Gateway to invoke this Lambda function by using a Rest endpoint. For example, you can invoke the Lambda function by using this curl command:  
+This tutorial shows you how to use the AWS SDK for Java V2 API to invoke both the Amazon S3 service along with the Amazon Rekognition service. The Lambda function reads all objects in a given Amazon S3 bucket. For each object in the bucket, it passes the image to the Amazon Rekognition service to geneate a series of labels. Each label is used to create a tag that is applied to the image.  
   
-      curl -XGET "https://xxxxqjko1o3.execute-api.us-east-1.amazonaws.com/cronstage/employee" 
-
-This AWS tutorial uses an Amazon DynamoDB table named **Employee** that contains these fields. 
--	**Id** – the key for the table.
--	**first** – the employee’s first name.
--	**phone** – the employee’s phone number.
--	**startDate** – the employee’s start date.
-
-![AWS Tracking Application](images/pic00.png)
+In addition to applying tags to images, this Lambda function also supports removing tags from images. That is, you can execute the Lambda function and set an input variable to false and the Lambda function removes all tags each image in the bucket.     
 
 **Cost to complete**: The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
 **Note**: Be sure to terminate all of the resources after you have completed this tutorial to ensure that you are not charged.
-
-**Note**: To learn how to invoke an AWS Lambda function using scheduled events, see [Creating scheduled events to invoke Lambda functions](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases/creating_scheduled_events).
 
 #### Topics
 +	Prerequisites
