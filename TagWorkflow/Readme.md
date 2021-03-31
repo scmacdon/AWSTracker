@@ -647,26 +647,26 @@ The JAR file is located in the **target** folder (which is a child folder of the
 
 6. Choose **Use an existing role**, and then choose **lambda-support** (the IAM role that you created).
 
-![AWS Tracking Application](images/pic10.png)
-
 7. Choose **Create function**.
 
 8. For **Code entry type**, choose **Upload a .zip or .jar file**.
 
 9. Choose **Upload**, and then browse to the JAR file that you created.  
 
-10. For **Handler**, enter the fully qualified name of the function, for example, **com.aws.example.Handler::handleRequest** (**com.aws.example.Handler** specifies the package and class followed by :: and method name).
-
-![AWS Tracking Application](images/pic10.png)
+10. For **Handler**, enter the fully qualified name of the function, for example, **com.example.tags.Handler:handleRequest** (**com.example.tags** specifies the package, **Handler** is the class followed by :: and method name).
 
 11. Choose **Save.**
 
 
 ### Test the Lambda method
 
-At this point in the tutorial, you can test the Amazon API Gateway method that invokes the **cron** Lambda function. To test the method, choose **Test**, as shown in the following illustration. 
+At this point in the tutorial, you can test the Lambda function. Click the **Test** tab and then enter the following JSON.
 
-![AWS Tracking Application](images/picTest.png)
+     {
+    "flag": "true"
+     }
+
+![AWS Tracking Application](images/pic7.png)
 
 Once the Lambda function is invoked, you can view the log file to see a successful message. 
 
