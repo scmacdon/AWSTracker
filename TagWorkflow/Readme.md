@@ -221,11 +221,11 @@ Use the AWS Lambda runtime Java API to create the Java class that defines the La
 
 Create these Java classes:
 
-+ **Handler** - uses as the Lambda Java run-time API and performs the use case described in this AWS tutorial. The application logic that's executed is located in the **handleRequest** method. 
-+ **S3Service** - Uses the Amazon S3 API to perform S3 operations.
-+ **AnalyzePhotos** - Uses the Amazon Rekognition API to analyze the images.
-+ **BucketItem** - Used as a model that stores Amazon S3 bucket information.
-+ **WorkItem** - Used as a model that stores Amazon Rekognition data.
++ **Handler** - uses the Lambda Java run-time API and performs the use case described in this AWS tutorial. The application logic that's executed is located in the **handleRequest** method. 
++ **S3Service** - uses the Amazon S3 API to perform S3 operations.
++ **AnalyzePhotos** - uses the Amazon Rekognition API to analyze the images.
++ **BucketItem** - defines a model that stores Amazon S3 bucket information.
++ **WorkItem** - defines a model that stores Amazon Rekognition data.
 
 ### Handler class
 
