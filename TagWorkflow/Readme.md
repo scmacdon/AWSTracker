@@ -250,22 +250,20 @@ This Java code represents the **Handler** class. The class reads a flag that is 
         S3Service s3Service = new S3Service();
         AnalyzePhotos photos = new AnalyzePhotos();
 
-        String bucketName = "<SPECIFY YOUR BUCKET NAME>";
-        List myKeys = s3Service.ListBucketObjects(bucketName);
+        String bucketName = "<Enter your bucket name>";
+        List<String> myKeys = s3Service.listBucketObjects(bucketName);
         if (delFag.compareTo("true") == 0) {
 
             // Create a List to store the data.
-            List myList = new ArrayList<List>();
+            List<ArrayList<WorkItem>> myList = new ArrayList<>();
 
-            // loop through each element in the List and tag the assets
-            int len = myKeys.size();
-            for (int z = 0; z < len; z++) {
+            // loop through each element in the List and tag the assets.
+            for (String key : myKeys) {
 
-                String key = (String) myKeys.get(z);
-                byte[] keyData = s3Service.getObjectBytes("scottphoto", key);
+                byte[] keyData = s3Service.getObjectBytes(bucketName, key);
 
-                //Analyze the photo
-                ArrayList item = photos.DetectLabels(keyData, key);
+                // Analyze the photo and return a list where each element is a WorkItem.
+                ArrayList<WorkItem> item = photos.detectLabels(keyData, key);
                 myList.add(item);
             }
 
@@ -274,19 +272,16 @@ This Java code represents the **Handler** class. The class reads a flag that is 
 
         } else {
 
-            //delete all object tags
-            int len = myKeys.size();
-            for (int z = 0; z < len; z++) {
-
-                String key = (String) myKeys.get(z);
-                s3Service.deleteTagFromObject("scottphoto", key);
+            // Delete all object tags.
+            for (String key : myKeys) {
+                s3Service.deleteTagFromObject(bucketName, key);
                 logger.log("All Assets in the bucket are deleted!");
-
             }
          }
         return delFag;
-      }
+    }
    }
+
 
 **Note**: Make sure that you assign your bucket name to the **bucketName** variable. 
 
@@ -294,8 +289,9 @@ This Java code represents the **Handler** class. The class reads a flag that is 
 
 The following Java code represents the **AnalyzePhotos** class. This class uses the Amazon Rekognition API to analyze the images.
 
-     package com.example.tags;
+    package com.example.tags;
 
+    import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
     import software.amazon.awssdk.core.SdkBytes;
     import software.amazon.awssdk.regions.Region;
     import software.amazon.awssdk.services.rekognition.RekognitionClient;
@@ -309,10 +305,12 @@ The following Java code represents the **AnalyzePhotos** class. This class uses 
 
     public class AnalyzePhotos {
 
-    public ArrayList DetectLabels(byte[] bytes, String key) {
+     // Returns a list of WorkItem objects that contains labels.
+     public ArrayList<WorkItem> detectLabels(byte[] bytes, String key) {
 
         Region region = Region.US_EAST_2;
         RekognitionClient rekClient = RekognitionClient.builder()
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
                 .region(region)
                 .build();
 
@@ -320,7 +318,7 @@ The following Java code represents the **AnalyzePhotos** class. This class uses 
 
             SdkBytes sourceBytes = SdkBytes.fromByteArray(bytes);
 
-            // Create an Image object for the source image
+            // Create an Image object for the source image.
             Image souImage = Image.builder()
                     .bytes(sourceBytes)
                     .build();
@@ -331,14 +329,14 @@ The following Java code represents the **AnalyzePhotos** class. This class uses 
                     .build();
 
             DetectLabelsResponse labelsResponse = rekClient.detectLabels(detectLabelsRequest);
-            List<Label> labels = labelsResponse.labels();
 
-            System.out.println("Detected labels for the given photo");
-            ArrayList list = new ArrayList<WorkItem>();
+            // Write the results to a WorkItem instance.
+            List<Label> labels = labelsResponse.labels();
+            ArrayList<WorkItem> list = new ArrayList<>();
             WorkItem item ;
             for (Label label: labels) {
                 item = new WorkItem();
-                item.setKey(key); // identifies the photo
+                item.setKey(key); // identifies the photo.
                 item.setConfidence(label.confidence().toString());
                 item.setName(label.name());
                 list.add(item);
@@ -352,6 +350,7 @@ The following Java code represents the **AnalyzePhotos** class. This class uses 
         return null ;
       }
     }
+
 
 
 ### BucketItem class
@@ -409,29 +408,32 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
      import software.amazon.awssdk.core.ResponseBytes;
      import software.amazon.awssdk.regions.Region;
      import software.amazon.awssdk.services.s3.S3Client;
-     import software.amazon.awssdk.services.s3.model.*;
+     import software.amazon.awssdk.services.s3.model.GetObjectRequest;
      import software.amazon.awssdk.services.s3.model.PutObjectTaggingRequest;
+     import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+     import software.amazon.awssdk.services.s3.model.S3Exception;
+     import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+     import software.amazon.awssdk.services.s3.model.S3Object;
+     import software.amazon.awssdk.services.s3.model.GetObjectTaggingResponse;
+     import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
      import java.util.ArrayList;
      import java.util.List;
-     import java.util.ListIterator;
      import software.amazon.awssdk.services.s3.model.Tagging;
      import software.amazon.awssdk.services.s3.model.Tag;
      import software.amazon.awssdk.services.s3.model.GetObjectTaggingRequest;
      import software.amazon.awssdk.services.s3.model.DeleteObjectTaggingRequest;
 
-    public class S3Service {
+     public class S3Service {
 
      private S3Client getClient() {
-        // Create the S3Client object
+
         Region region = Region.US_WEST_2;
-        S3Client s3 = S3Client.builder()
+        return S3Client.builder()
                 .region(region)
                 .build();
+     }
 
-        return s3;
-    }
-
-    public byte[] getObjectBytes(String bucketName, String keyName) {
+     public byte[] getObjectBytes(String bucketName, String keyName) {
 
         S3Client s3 = getClient();
 
@@ -443,7 +445,7 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
                     .bucket(bucketName)
                     .build();
 
-            // Return the byte[] from this AWS S3 object.
+            // Return the byte[] from this object.
             ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
             return objectBytes.asByteArray();
 
@@ -452,15 +454,15 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             System.exit(1);
         }
         return null;
-    }
+     }
 
-    // Returns the names of all images in the given bucket
-    public List ListBucketObjects(String bucketName) {
+     // Returns the names of all images in the given bucket.
+     public List<String> listBucketObjects(String bucketName) {
 
         S3Client s3 = getClient();
         String keyName;
 
-        List keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
 
         try {
             ListObjectsRequest listObjects = ListObjectsRequest
@@ -471,12 +473,10 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             ListObjectsResponse res = s3.listObjects(listObjects);
             List<S3Object> objects = res.contents();
 
-            for (ListIterator iterVals = objects.listIterator(); iterVals.hasNext(); ) {
-                S3Object myValue = (S3Object) iterVals.next();
+            for (S3Object myValue: objects) {
                 keyName = myValue.key();
                 keys.add(keyName);
             }
-
             return keys;
 
         } catch (S3Exception e) {
@@ -484,10 +484,10 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             System.exit(1);
         }
         return null;
-    }
+     }
 
-    // tag assets with labels in the given list
-    public void tagAssets(List myList, String bucketName) {
+     // tag assets with labels in the given list.
+     public void tagAssets(List myList, String bucketName) {
 
         try {
 
@@ -498,16 +498,14 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             String labelName = "";
             String labelValue = "";
 
-            // tag all the assets in the list
-            for (int x = 0; x < len; x++) {
+            // tag all the assets in the list.
+            for (Object o : myList) {
 
-                //Need to get the WorkItem from each list
-                List innerList = (List) myList.get(x);
-                int workItemListSize = innerList.size();
+                //Need to get the WorkItem from each list.
+                List innerList = (List) o;
+                for (Object value : innerList) {
 
-                for (int z = 0; z < workItemListSize; z++) {
-
-                    WorkItem workItem = (WorkItem) innerList.get(z);
+                    WorkItem workItem = (WorkItem) value;
                     assetName = workItem.getKey();
                     labelName = workItem.getName();
                     labelValue = workItem.getConfidence();
@@ -519,14 +517,14 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             System.err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
         }
-    }
+     }
 
-    // This method tags an existing object.
-    private void tagExistingObject(S3Client s3, String bucketName, String key, String label, String LabelValue) {
+     // This method tags an existing object.
+     private void tagExistingObject(S3Client s3, String bucketName, String key, String label, String LabelValue) {
 
         try {
 
-            // First need to get existing tag set; otherwise the existing tags are overwritten
+            // First need to get existing tag set; otherwise the existing tags are overwritten.
             GetObjectTaggingRequest getObjectTaggingRequest = GetObjectTaggingRequest.builder()
                     .bucket(bucketName)
                     .key(key)
@@ -534,9 +532,9 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
 
             GetObjectTaggingResponse response = s3.getObjectTagging(getObjectTaggingRequest);
 
-            // Get the existing immutable list - cannot modify this list
+            // Get the existing immutable list - cannot modify this list.
             List<Tag> existingList = response.tagSet();
-            ArrayList newTagList = new ArrayList(new ArrayList<>(existingList));
+            ArrayList<Tag> newTagList = new ArrayList(new ArrayList<>(existingList));
 
             // Create a new tag.
             Tag myTag = Tag.builder()
@@ -563,10 +561,10 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             System.err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
         }
-    }
+      }
 
-    //Delete tags from the given object.
-    public void deleteTagFromObject(String bucketName, String key) {
+     //Delete tags from the given object.
+     public void deleteTagFromObject(String bucketName, String key) {
 
         try {
 
@@ -585,16 +583,17 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
       }
     }
 
+
 ### WorkItem class
 The following Java code represents the **WorkItem** class.
 
      package com.example.tags;
 
-    public class WorkItem {
+     public class WorkItem {
 
-    private String key;
-    private String name;
-    private String confidence ;
+     private String key;
+     private String name;
+     private String confidence ;
 
     public void setKey (String key) {
         this.key = key;
