@@ -668,9 +668,11 @@ At this point in the tutorial, you can test the Lambda function. Click the **Tes
 
 ![AWS Tracking Application](images/pic7.png)
 
-Once the Lambda function is invoked, you can view the log file to see a successful message. 
+**Note**: Passing **true** tags the digital assets and passing **false** deletes the tags. 
 
-![AWS Tracking Application](images/picLogs.png)
+Choose the **Invoke** button. After the Lambda function is invoked, you see a successful message. 
+
+![AWS Tracking Application](images/pic8.png)
 
 ### Next steps
 Congratulations, you have created an AWS Lambda function that is invoked by using an Amazon Gateway API method. As stated at the beginning of this tutorial, be sure to terminate all of the resources you created while going through this tutorial to ensure that you’re not charged.
