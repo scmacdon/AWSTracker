@@ -279,8 +279,8 @@ This Java code represents the **Handler** class. The class reads a flag that is 
             }
          }
         return delFag;
-    }
-   }
+      }
+     }
 
 
 **Note**: Make sure that you assign your bucket name to the **bucketName** variable. 
