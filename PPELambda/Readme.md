@@ -4,7 +4,7 @@ You can create an Amazon Web Services Lambda function that is able to detect per
 
 ![AWS Tracking Application](images/lam.png)
 
-After you execute the Lambda function, it automatically create tags based on the image and applies them to the digital asset, as shown in this illustration.
+After you execute the Lambda function, it automatically detects the protective personal gear in this image (along with any other images) and creates a record in a DynamoDB table. as shown in this illustration.
 
 ![AWS Tracking Application](images/pic2.png)
 
