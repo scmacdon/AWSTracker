@@ -1,6 +1,6 @@
 #  Creating an Amazon Web Services Lambda function that detects images with Personal Protective Gear
 
-You can create an Amazon Web Services Lambda function that is able to detect personal protective equipment (PPE) gear located in digital assets located in an Amazon Simple Storage Service (Amazon S3) bucket. For example, assume you run the Lambda function and you have this image in an Amazon S3 bucket. 
+You can create an Amazon Web Services Lambda function that detects personal protective equipment (PPE) gear located in digital assets located in an Amazon Simple Storage Service (Amazon S3) bucket. For example, assume you run the Lambda function and you have this image in an Amazon S3 bucket. 
 
 ![AWS Tracking Application](images/lam.png)
 
