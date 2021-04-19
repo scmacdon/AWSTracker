@@ -45,6 +45,7 @@ To follow along with this tutorial, you need the following:
 + Java 1.8 JDK.
 + Maven 3.6 or higher.
 + An Amazon S3 bucket with 5-7 PPE images. These images are read by the Lambda function. 
++ An Amazon DynamoDB table named **Gear** with a key named **id**. 
 
 ## Create an IAM role that's used to execute Lambda functions
 
@@ -251,15 +252,17 @@ Make sure that your project's pom.xml file looks like the following.
 
 Use the AWS Lambda runtime Java API to create the Java class that defines the Lamdba function. In this example, there is one Java class for the Lambda function named **PPEHandler** and additional classes required for this use case. The following figure shows the Java classes in the project. Notice that all Java classes are located in a package named **com.example.ppe**. 
 
-![AWS Tracking Application](images/classes.png)
+![AWS Tracking Application](images/classesA.png)
 
 Create these Java classes:
 
-+ **Handler** - uses the Lambda Java run-time API and performs the use case described in this AWS tutorial. The application logic that's executed is located in the **handleRequest** method. 
++ **PPEHandler** - uses the Lambda Java run-time API and performs the use case described in this AWS tutorial. The application logic that's executed is located in the **handleRequest** method. 
 + **S3Service** - uses the Amazon S3 API to perform S3 operations.
-+ **AnalyzePhotos** - uses the Amazon Rekognition API to analyze the images.
-+ **BucketItem** - defines a model that stores Amazon S3 bucket information.
-+ **WorkItem** - defines a model that stores Amazon Rekognition data.
++ **AnalyzePhotos** - uses the Amazon Rekognition API to analyze the images and detect PPE images.
++ **GearItem** - defines a model that stores PPE information.
++ **Gear** - defines a model that is used with the DynamoDB enhanced client. 
++ **SendEmail** - uses the SES API to send email messages. 
++ **DynamoDBService** - uses the Amazon DynamoDB API to insert PPE records in the DynamoDB table. 
 
 ### Handler class
 
