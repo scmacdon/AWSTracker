@@ -256,13 +256,120 @@ Use the AWS Lambda runtime Java API to create the Java class that defines the La
 
 Create these Java classes:
 
++ **AnalyzePhotos** - uses the Amazon Rekognition API to analyze the images and detect PPE images.
++ **DynamoDBService** - uses the Amazon DynamoDB API to insert PPE records in the DynamoDB table. 
++ **Gear** - defines a model that is used with the DynamoDB enhanced client. 
++ **GearItem** - defines a model that stores PPE information.
 + **PPEHandler** - uses the Lambda Java run-time API and performs the use case described in this AWS tutorial. The application logic that's executed is located in the **handleRequest** method. 
 + **S3Service** - uses the Amazon S3 API to perform S3 operations.
-+ **AnalyzePhotos** - uses the Amazon Rekognition API to analyze the images and detect PPE images.
-+ **GearItem** - defines a model that stores PPE information.
-+ **Gear** - defines a model that is used with the DynamoDB enhanced client. 
 + **SendEmail** - uses the SES API to send email messages. 
-+ **DynamoDBService** - uses the Amazon DynamoDB API to insert PPE records in the DynamoDB table. 
+
+
+### AnalyzePhotos class
+
+The following Java code represents the **AnalyzePhotos** class. This class uses the Amazon Rekognition API to analyze the images and detect PPE information.
+
+    package com.example.ppe;
+
+    import software.amazon.awssdk.core.SdkBytes;
+    import software.amazon.awssdk.regions.Region;
+    import software.amazon.awssdk.services.rekognition.RekognitionClient;
+    import software.amazon.awssdk.services.rekognition.model.Image;
+    import software.amazon.awssdk.services.rekognition.model.*;
+    import software.amazon.awssdk.services.rekognition.model.RekognitionException;
+    import java.util.ArrayList;
+    import java.util.List;
+
+    public class AnalyzePhotos {
+
+    // Returns a list of GearItem objects that contains PPE information.
+    public ArrayList<GearItem> detectLabels(byte[] bytes, String key) {
+
+        Region region = Region.US_EAST_2;
+        RekognitionClient rekClient = RekognitionClient.builder()
+                .region(region)
+                .build();
+
+        ArrayList<GearItem> gearList = new ArrayList<>();
+
+        try {
+
+            SdkBytes sourceBytes = SdkBytes.fromByteArray(bytes);
+
+            // Create an Image object for the source image.
+            Image souImage = Image.builder()
+                    .bytes(sourceBytes)
+                    .build();
+
+            ProtectiveEquipmentSummarizationAttributes summarizationAttributes = ProtectiveEquipmentSummarizationAttributes.builder()
+                    .minConfidence(80F)
+                    .requiredEquipmentTypesWithStrings("FACE_COVER", "HAND_COVER", "HEAD_COVER")
+                    .build();
+
+            DetectProtectiveEquipmentRequest request = DetectProtectiveEquipmentRequest.builder()
+                    .image(souImage)
+                    .summarizationAttributes(summarizationAttributes)
+                    .build();
+
+            DetectProtectiveEquipmentResponse result = rekClient.detectProtectiveEquipment(request);
+            List<ProtectiveEquipmentPerson> persons = result.persons();
+
+            // Create a GearItem object
+            GearItem gear;
+
+            for (ProtectiveEquipmentPerson person : persons) {
+
+                System.out.println("ID: " + person.id());
+                List<ProtectiveEquipmentBodyPart> bodyParts = person.bodyParts();
+                if (bodyParts.isEmpty()) {
+                    System.out.println("\tNo body parts detected");
+                } else
+                    for (ProtectiveEquipmentBodyPart bodyPart : bodyParts) {
+
+                        List<EquipmentDetection> equipmentDetections = bodyPart.equipmentDetections();
+
+                        if (equipmentDetections.isEmpty()) {
+                            System.out.println("\t\tNo PPE Detected on " + bodyPart.name());
+                        } else {
+                            for (EquipmentDetection item : equipmentDetections) {
+
+                                // Set the objcet here
+                                gear = new GearItem();
+                                gear.setKey(key);
+
+                                String itemType = item.type().toString();
+                                String confidence = item.confidence().toString();
+                                String myDesc = "Item: " + item.type() + ". Confidence: " + item.confidence().toString();
+                                String bodyPartDes = "Covers body part: "
+                                        + item.coversBodyPart().value().toString() + ". Confidence: " + item.coversBodyPart().confidence().toString();
+
+                                gear.setName(itemType);
+                                gear.setConfidence(confidence);
+                                gear.setItemDescription(myDesc);
+                                gear.setBodyCoverDescription(bodyPartDes);
+
+                                //push the object
+                                gearList.add(gear);
+                            }
+                        }
+                    }
+            }
+
+            if (gearList.isEmpty())
+                    return null ;
+            else
+                return gearList;
+
+        } catch (RekognitionException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
+        }
+        return null;
+     }
+    }
+
+
+
 
 ### PPEHandler class
 
@@ -337,74 +444,6 @@ The following Java code represents the **PPEHandler** class.
         return uniqueKeys;
     }
    }
-
-
-### AnalyzePhotos class
-
-The following Java code represents the **AnalyzePhotos** class. This class uses the Amazon Rekognition API to analyze the images.
-
-    package com.example.tags;
-
-    import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-    import software.amazon.awssdk.core.SdkBytes;
-    import software.amazon.awssdk.regions.Region;
-    import software.amazon.awssdk.services.rekognition.RekognitionClient;
-    import software.amazon.awssdk.services.rekognition.model.Image;
-    import software.amazon.awssdk.services.rekognition.model.DetectLabelsRequest;
-    import software.amazon.awssdk.services.rekognition.model.DetectLabelsResponse;
-    import software.amazon.awssdk.services.rekognition.model.Label;
-    import software.amazon.awssdk.services.rekognition.model.RekognitionException;
-    import java.util.ArrayList;
-    import java.util.List;
-
-    public class AnalyzePhotos {
-
-     // Returns a list of WorkItem objects that contains labels.
-     public ArrayList<WorkItem> detectLabels(byte[] bytes, String key) {
-
-        Region region = Region.US_EAST_2;
-        RekognitionClient rekClient = RekognitionClient.builder()
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .region(region)
-                .build();
-
-        try {
-
-            SdkBytes sourceBytes = SdkBytes.fromByteArray(bytes);
-
-            // Create an Image object for the source image.
-            Image souImage = Image.builder()
-                    .bytes(sourceBytes)
-                    .build();
-
-            DetectLabelsRequest detectLabelsRequest = DetectLabelsRequest.builder()
-                    .image(souImage)
-                    .maxLabels(10)
-                    .build();
-
-            DetectLabelsResponse labelsResponse = rekClient.detectLabels(detectLabelsRequest);
-
-            // Write the results to a WorkItem instance.
-            List<Label> labels = labelsResponse.labels();
-            ArrayList<WorkItem> list = new ArrayList<>();
-            WorkItem item ;
-            for (Label label: labels) {
-                item = new WorkItem();
-                item.setKey(key); // identifies the photo.
-                item.setConfidence(label.confidence().toString());
-                item.setName(label.name());
-                list.add(item);
-            }
-            return list;
-
-        } catch (RekognitionException e) {
-            System.out.println(e.getMessage());
-            System.exit(1);
-        }
-        return null ;
-      }
-    }
-
 
 
 ### BucketItem class
