@@ -100,7 +100,7 @@ This tutorial uses the Amazon Rekognition and Amazon S3 services. The **lambda-s
 
 ## Add the POM dependencies to your project
 
-At this point, you have a new project named **WorkflowTagAssets**.
+At this point, you have a new project named **WorkflowPPE**.
 
 ![AWS Tracking Application](images/project.png)
 
@@ -110,30 +110,28 @@ Make sure that your project's pom.xml file looks like the following.
      <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.example</groupId>
-    <artifactId>WorkflowTagAssets</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>java-basic-function</name>
-    <properties>
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>org.example</groupId>
+      <artifactId>WorkflowPPE</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-    <dependencyManagement>
+      </properties>
+      <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-                <version>2.10.54</version>
+                <version>2.15.14</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
         </dependencies>
-    </dependencyManagement>
-    <dependencies>
-       <dependency>
+       </dependencyManagement>
+       <dependencies>
+        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-core</artifactId>
             <version>1.2.1</version>
@@ -183,10 +181,38 @@ Make sure that your project's pom.xml file looks like the following.
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>2.5.10</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb-enhanced</artifactId>
+            <version>2.11.4-PREVIEW</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
             <artifactId>rekognition</artifactId>
         </dependency>
-    </dependencies>
-    <build>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ses</artifactId>
+        </dependency>
+      </dependencies>
+      <build>
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
