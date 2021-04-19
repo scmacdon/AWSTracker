@@ -1,14 +1,16 @@
 #  Creating an Amazon Web Services Lambda function that detects images with Personal Protective Gear
 
-You can create an Amazon Web Services Lambda function that is able to detect personal protective gear located in digital assets located in an Amazon Simple Storage Service (Amazon S3) bucket. For example, assume you run the Lambda function and you have this image in an Amazon S3 bucket. 
+You can create an Amazon Web Services Lambda function that is able to detect personal protective equipment (PPE) gear located in digital assets located in an Amazon Simple Storage Service (Amazon S3) bucket. For example, assume you run the Lambda function and you have this image in an Amazon S3 bucket. 
 
 ![AWS Tracking Application](images/lam.png)
 
-After you execute the Lambda function, it automatically detects the protective personal gear in this image (along with any other images) and creates a record in a DynamoDB table. as shown in this illustration.
+After you execute the Lambda function, it automatically detects the (PPE) gear in this image (along with any other images) and creates a record in a DynamoDB table. as shown in this illustration.
 
-![AWS Tracking Application](images/pic2.png)
+![AWS Tracking Application](images/dynamodb.png)
 
-Tagging an object has benfits such as providing a way to categorize storage. For more information about object tagging, see [Categorizing your storage using tags](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html).
+In addition, this Lambda function creates a list of all images with (PPE) gear and emails the list by using the Simple Email Service, as shown in this illustration. 
+
+
 
 As an Amazon Web Services API developer, you can create a Lambda function by using the AWS Lambda Java runtime API. This example invokes different AWS services to perform this specific use case. Lambda is a compute service that enables you to run code without provisioning or managing servers. You can create Lambda functions in various programming languages. For more information about AWS Lambda, see
 [What is AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html).
