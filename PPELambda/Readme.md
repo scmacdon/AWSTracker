@@ -264,63 +264,80 @@ Create these Java classes:
 + **SendEmail** - uses the SES API to send email messages. 
 + **DynamoDBService** - uses the Amazon DynamoDB API to insert PPE records in the DynamoDB table. 
 
-### Handler class
+### PPEHandler class
 
-This Java code represents the **Handler** class. The class reads a flag that is passed to the Lambda function. The **s3Service.ListBucketObjects** method returns a **List** object where each element is a string value that represents the object key. If the flag value is **true**, then tags are applied by iterating through the list and applying tags to each object by calling the **s3Service.tagAssets** method. If the flag value is **false**, then the **s3Service.deleteTagFromObject** method is invoked that deletes the tags. Also, notice that you can log messages to Amazon CloudWatch logs by using a **LambdaLogger** object.
+This Java code represents the **PPEHandler** class. The class reads a value that specifies which Amazon S3 bucket to read the images from. The **s3Service.ListBucketObjects** method returns a **List** object where each element is a string value that represents the object key. For each image in the bucket, a byte array is obtained by calling the **s3Service.getObjectBytes** method. Then an **ArrayList** object is obtained by calling the **photos.detectLabels** method. Finally the **ArrayList** object is added to another collection. The data that specifies PPE gear is then persisted in an DynamoDB table and emailed to a user. 
 
-    package com.example.tags;
+The following Java code represents the **PPEHandler** class. 
+
+
+    package com.example.ppe;
 
     import com.amazonaws.services.lambda.runtime.Context;
     import com.amazonaws.services.lambda.runtime.RequestHandler;
     import com.amazonaws.services.lambda.runtime.LambdaLogger;
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.Map;
+    import java.util.*;
 
-    public class Handler implements RequestHandler<Map<String,String>, String> {
+    public class PPEHandler implements RequestHandler<Map<String,String>, String> {
 
     @Override
     public String handleRequest(Map<String, String> event, Context context) {
         LambdaLogger logger = context.getLogger();
-        String delFag = event.get("flag");
-        logger.log("FLAG IS: " + delFag);
-        S3Service s3Service = new S3Service();
+        String bucketName = event.get("bucketName");
+        logger.log("Bucket name is: " + bucketName);
+
+        S3Service s3Service = new S3Service() ;
+        DynamoDBService ddb = new DynamoDBService();
         AnalyzePhotos photos = new AnalyzePhotos();
+        SendEmail email = new SendEmail();
 
-        String bucketName = "<Enter your bucket name>";
-        List<String> myKeys = s3Service.listBucketObjects(bucketName);
-        if (delFag.compareTo("true") == 0) {
+        List<String> items = s3Service.listBucketObjects(bucketName);
+        List<ArrayList<GearItem>> myList = new ArrayList<>();
+        for (String item : items) {
 
-            // Create a List to store the data.
-            List<ArrayList<WorkItem>> myList = new ArrayList<>();
+            byte[] keyData = s3Service.getObjectBytes(bucketName, item);
 
-            // loop through each element in the List and tag the assets.
-            for (String key : myKeys) {
+            // Analyze the photo and return a list where each element is a GearItem.
+            ArrayList<GearItem> gearItem = photos.detectLabels(keyData, item);
 
-                byte[] keyData = s3Service.getObjectBytes(bucketName, key);
+            // Only add a list with items
+            if (gearItem != null)
+                myList.add(gearItem);
+        }
 
-                // Analyze the photo and return a list where each element is a WorkItem.
-                ArrayList<WorkItem> item = photos.detectLabels(keyData, key);
-                myList.add(item);
+        ddb.persistItem(myList);
+
+        // Create a new list with only unique keys to email.
+        Set<String> unqiueKeys = createUniqueList(myList);
+        email.sendMsg(unqiueKeys);
+        logger.log("Updated the DynamoDB table with PPE data");
+        return bucketName;
+    }
+
+    // Create a list of unique keys.
+    private static Set<String> createUniqueList(List<ArrayList<GearItem>> gearList) {
+
+
+        List<String> keys = new ArrayList<>();
+
+        // Persist the data into a DynamoDB table.
+        for (Object o : gearList) {
+
+            //Need to get the WorkItem from each list.
+            List innerList = (List) o;
+
+            for (Object value : innerList) {
+                GearItem gearItem = (GearItem) value;
+                keys.add(gearItem.getKey());
             }
+        }
 
-            s3Service.tagAssets(myList, bucketName);
-            logger.log("All Assets in the bucket are tagged!");
+        // create list without duplicates...
+        Set<String> uniqueKeys = new HashSet<String>(keys);
+        return uniqueKeys;
+    }
+   }
 
-        } else {
-
-            // Delete all object tags.
-            for (String key : myKeys) {
-                s3Service.deleteTagFromObject(bucketName, key);
-                logger.log("All Assets in the bucket are deleted!");
-            }
-         }
-        return delFag;
-      }
-     }
-
-
-**Note**: Make sure that you assign your bucket name to the **bucketName** variable. 
 
 ### AnalyzePhotos class
 
