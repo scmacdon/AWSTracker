@@ -39,11 +39,12 @@ The Lambda function reads all objects in a given Amazon S3 bucket. For each obje
 
 ## Prerequisites
 To follow along with this tutorial, you need the following:
+
 + An AWS Account with proper credentials.
 + A Java IDE (for this tutorial, the IntelliJ IDE is used).
 + Java 1.8 JDK.
 + Maven 3.6 or higher.
-+ An Amazon S3 bucket with 5-7 nature images in it. These images are read by the Lambda function. 
++ An Amazon S3 bucket with 5-7 PPE images. These images are read by the Lambda function. 
 
 ## Create an IAM role that's used to execute Lambda functions
 
@@ -89,9 +90,9 @@ This tutorial uses the Amazon Rekognition and Amazon S3 services. The **lambda-s
 
 2. In the **New Project** dialog box, choose **Maven**, and then choose **Next**.
 
-3. For **GroupId**, enter **WorkflowTagAssets**.
+3. For **GroupId**, enter **WorkflowPPE**.
 
-4. For **ArtifactId**, enter **WorkflowTagAssets**.
+4. For **ArtifactId**, enter **WorkflowPPE**.
 
 5. Choose **Next**.
 
