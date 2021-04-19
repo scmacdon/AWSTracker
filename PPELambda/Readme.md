@@ -10,7 +10,7 @@ After you execute the Lambda function, it automatically detects the (PPE) gear i
 
 In addition, this Lambda function creates a list of all images with (PPE) gear and emails the list by using the Simple Email Service, as shown in this illustration. 
 
-
+![AWS Tracking Application](images/email.png)
 
 As an Amazon Web Services API developer, you can create a Lambda function by using the AWS Lambda Java runtime API. This example invokes different AWS services to perform this specific use case. Lambda is a compute service that enables you to run code without provisioning or managing servers. You can create Lambda functions in various programming languages. For more information about AWS Lambda, see
 [What is AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html).
