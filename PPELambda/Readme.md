@@ -82,7 +82,7 @@ This tutorial uses the Amazon Rekognition and Amazon S3 services. The **lambda-s
 
 13. Search for **AmazonS3FullAccess**, and then choose **Attach policy**. When you're done, you can see the permissions.
 
-![AWS Tracking Application](images/pic3.png)
+![AWS Tracking Application](images/IAMPerm.png)
 
 ## Create an IntelliJ project
 
