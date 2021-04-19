@@ -101,7 +101,7 @@ This tutorial uses the Amazon Rekognition and Amazon S3 services. The **lambda-s
 
 At this point, you have a new project named **WorkflowTagAssets**.
 
-![AWS Tracking Application](images/pic4.png)
+![AWS Tracking Application](images/project.png)
 
 Make sure that your project's pom.xml file looks like the following.
 
