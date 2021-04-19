@@ -1,4 +1,4 @@
-#  Creating an Amazon Web Services Lambda function that detects images with Personal Protective Gear
+#  Creating an Amazon Web Services Lambda function that detects images with Personal Protective Equipment Gear
 
 You can create an Amazon Web Services Lambda function that detects personal protective equipment (PPE) gear located in digital assets located in an Amazon Simple Storage Service (Amazon S3) bucket. For example, assume you run the Lambda function and you have this image in an Amazon S3 bucket. 
 
@@ -15,9 +15,14 @@ In addition, this Lambda function creates a list of all images with (PPE) gear a
 As an Amazon Web Services API developer, you can create a Lambda function by using the AWS Lambda Java runtime API. This example invokes different AWS services to perform this specific use case. Lambda is a compute service that enables you to run code without provisioning or managing servers. You can create Lambda functions in various programming languages. For more information about AWS Lambda, see
 [What is AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html).
 
-This tutorial shows you how to use the AWS SDK for Java V2 API to invoke both the Amazon S3 service along with the Amazon Rekognition service. The Lambda function reads all objects in a given Amazon S3 bucket. For each object in the bucket, it passes the image to the Amazon Rekognition service to geneate a series of labels. Each label is used to create a tag that is applied to the image.  
-  
-In addition to applying tags to images, this Lambda function also supports removing tags from images. That is, you can execute the Lambda function and set an input variable to false and the Lambda function removes all tags each image in the bucket.     
+This tutorial shows you how to use the AWS SDK for Java V2 API to invoke these AWS Services: 
+
+- Amazon S3 service
+- Amazon Rekognition service
+- Amazon DynamoDB service
+- Amazon Simple Email service
+
+The Lambda function reads all objects in a given Amazon S3 bucket. For each object in the bucket, it passes the image to the Amazon Rekognition service to detect PPE gear. The results are stored as records in an Amazon DynamoDB table and then emailed to a recipient.     
 
 **Cost to complete**: The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
