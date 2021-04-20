@@ -1,6 +1,6 @@
 #  Creating an Amazon Web Services Lambda function that detects images with Personal Protective Equipment Equipment
 
-You can create an Amazon Web Services Lambda function that detects personal protective equipment (PPE) gear located in digital assets located in an Amazon Simple Storage Service (Amazon S3) bucket. For example, assume you run the Lambda function and you have this image in an Amazon S3 bucket. 
+You can create an Amazon Web Services Lambda function that detects personal protective equipment (PPE) in digital assets located in an Amazon Simple Storage Service (Amazon S3) bucket. For example, assume you run the Lambda function and you have this image in an Amazon S3 bucket. 
 
 ![AWS Tracking Application](images/lam.png)
 
@@ -452,10 +452,152 @@ The **DynamoDBService** class uses the AWS SDK for Java V2 DynamoDB API to add a
         }
      }
 
+### Gear class 
+
+The **Gear** class is responsible for mapping an object to the Gear table using the enhanced client. Notice the use of the **@DynamoDbBean** annotation. 
+
+       package com.example.ppe;
+       import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+       import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+
+       @DynamoDbBean
+      public class Gear {
+
+      private String id;
+      private String date;
+      private String item ;
+      private String key;
+      private String itemDescription;
+      private String coverDescription ;
+      private String confidence ;
+
+      @DynamoDbPartitionKey
+      public String getId() {
+        return this.id;
+     }
+
+     public void setId(String id) {
+
+        this.id = id;
+     }
+
+     public void setKey(String key) {
+
+        this.key = key;
+     }
+
+    public String getKey() {
+        return this.key;
+    }
+
+    public void setDate(String date) {
+
+        this.date = date;
+    }
+
+    public String getDate() {
+        return this.date;
+    }
+
+    public String getItem() {
+        return this.item;
+    }
+
+    public void setItem(String item) {
+
+        this.item = item;
+    }
+
+    public String getItemDescription() {
+        return this.itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+
+        this.itemDescription = itemDescription;
+    }
+
+    public String getCoverDescription() {
+        return this.coverDescription;
+    }
+
+    public void setCoverDescription(String coverDescription) {
+
+        this.coverDescription = coverDescription;
+    }
+
+    public String getConfidence() {
+        return this.confidence;
+    }
+
+    public void setConfidence(String confidence) {
+
+        this.confidence = confidence;
+     }
+    }
+
+### GearItem class
+
+The **GearIten** class represents the model in this use case. Its stores data retrieved from the Amazon Rekognition service. 
+
+     package com.example.ppe;
+
+     public class GearItem {
+
+     private String key;
+     private String name;
+     private String itemDescription;
+     private String bodyCoverDescription;
+     private String confidence ;
+
+     public void setItemDescription (String itemDescription) {
+
+        this.itemDescription = itemDescription;
+     }
+
+     public String getItemDescription() {
+
+        return this.itemDescription;
+     }
+
+     public void setBodyCoverDescription (String bodyCoverDescription) {
+        this.bodyCoverDescription = bodyCoverDescription;
+     }
+
+     public String getBodyCoverDescription() {
+
+        return this.bodyCoverDescription;
+    }
+
+    public void setKey (String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
+    }
+
+    public void setName (String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setConfidence (String confidence) {
+        this.confidence = confidence;
+    }
+
+    public String getConfidence() {
+        return this.confidence;
+    }
+   }
+
 
 ### PPEHandler class
 
-This Java code represents the **PPEHandler** class. The class reads a value that specifies which Amazon S3 bucket to read the images from. The **s3Service.ListBucketObjects** method returns a **List** object where each element is a string value that represents the object key. For each image in the bucket, a byte array is obtained by calling the **s3Service.getObjectBytes** method. Then an **ArrayList** object is obtained by calling the **photos.detectLabels** method. Finally the **ArrayList** object is added to another collection. The data that specifies PPE gear is then persisted in an DynamoDB table and emailed to a user. 
+This Java code represents the **PPEHandler** class. This class reads a value that specifies which Amazon S3 bucket to read the images from. The **s3Service.ListBucketObjects** method returns a **List** object where each element is a string value that represents the object key. For each image in the bucket, a byte array is obtained by calling the **s3Service.getObjectBytes** method. Then an **ArrayList** is obtained by calling the **photos.detectLabels** method. Finally the **ArrayList** object is added to another collection. The data that specifies PPE gear is then persisted in an DynamoDB table and emailed to a user. 
 
 The following Java code represents the **PPEHandler** class. 
 
@@ -527,88 +669,35 @@ The following Java code represents the **PPEHandler** class.
     }
    }
 
+### S3Service class
 
-### BucketItem class
+The following class uses the Amazon S3 API to perform S3 operations. For example, the **getObjectBytes** method returns a byte array that represents the image. Likewise, the **listBucketObjects** method returns a List object where each element is a string value that specifies the key name.
 
-The following Java code represents the **BucketItem** class that stores Amazon S3 object data.
+    package com.example.ppe;
 
-    package com.example.tags;
+    import software.amazon.awssdk.core.ResponseBytes;
+    import software.amazon.awssdk.regions.Region;
+    import software.amazon.awssdk.services.s3.S3Client;
+    import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+    import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+    import software.amazon.awssdk.services.s3.model.S3Exception;
+    import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+    import software.amazon.awssdk.services.s3.model.S3Object;
+    import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+    import java.util.ArrayList;
+    import java.util.List;
 
-    public class BucketItem {
+    public class S3Service {
 
-     private String key;
-     private String owner;
-     private String date ;
-     private String size ;
-
-
-     public void setSize(String size) {
-        this.size = size ;
-     }
-
-     public String getSize() {
-        return this.size ;
-     }
-
-     public void setDate(String date) {
-        this.date = date ;
-     }
-
-     public String getDate() {
-        return this.date ;
-     }
-
-     public void setOwner(String owner) {
-        this.owner = owner ;
-     }
-
-     public String getOwner() {
-        return this.owner ;
-     }
-
-     public void setKey(String key) {
-        this.key = key ;
-     }
-
-     public String getKey() {
-        return this.key ;
-     }
-    }
-    
- ### S3Service class
-The following class uses the Amazon S3 API to perform S3 operations. For example, the getObjectBytes method returns a byte array that represents the image. 
-
-     package com.example.tags;
-
-     import software.amazon.awssdk.core.ResponseBytes;
-     import software.amazon.awssdk.regions.Region;
-     import software.amazon.awssdk.services.s3.S3Client;
-     import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-     import software.amazon.awssdk.services.s3.model.PutObjectTaggingRequest;
-     import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-     import software.amazon.awssdk.services.s3.model.S3Exception;
-     import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
-     import software.amazon.awssdk.services.s3.model.S3Object;
-     import software.amazon.awssdk.services.s3.model.GetObjectTaggingResponse;
-     import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
-     import java.util.ArrayList;
-     import java.util.List;
-     import software.amazon.awssdk.services.s3.model.Tagging;
-     import software.amazon.awssdk.services.s3.model.Tag;
-     import software.amazon.awssdk.services.s3.model.GetObjectTaggingRequest;
-     import software.amazon.awssdk.services.s3.model.DeleteObjectTaggingRequest;
-
-     public class S3Service {
-
-     private S3Client getClient() {
+    private S3Client getClient() {
 
         Region region = Region.US_WEST_2;
         return S3Client.builder()
                 .region(region)
                 .build();
-     }
+    }
 
-     public byte[] getObjectBytes(String bucketName, String keyName) {
+    public byte[] getObjectBytes(String bucketName, String keyName) {
 
         S3Client s3 = getClient();
 
@@ -629,10 +718,10 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             System.exit(1);
         }
         return null;
-     }
+    }
 
-     // Returns the names of all images in the given bucket.
-     public List<String> listBucketObjects(String bucketName) {
+    // Returns the names of all images in the given bucket.
+    public List<String> listBucketObjects(String bucketName) {
 
         S3Client s3 = getClient();
         String keyName;
@@ -659,142 +748,83 @@ The following class uses the Amazon S3 API to perform S3 operations. For example
             System.exit(1);
         }
         return null;
+       }
      }
+    
+ ### SendEmail class
+The following class uses the Amazon SES Java API to send email messages that specify which images contain PPE. 
 
-     // tag assets with labels in the given list.
-     public void tagAssets(List myList, String bucketName) {
+    package com.example.ppe;
+
+    import software.amazon.awssdk.regions.Region;
+    import software.amazon.awssdk.services.ses.SesClient;
+    import software.amazon.awssdk.services.ses.model.*;
+    import software.amazon.awssdk.services.ses.model.Message;
+    import software.amazon.awssdk.services.ses.model.Body;
+    import java.util.Set;
+
+    public class SendEmail {
+
+    public void sendMsg(Set<String> unqiueKeys) {
+
+        Region region = Region.US_EAST_1;
+        SesClient client = SesClient.builder()
+                .region(region)
+                .build();
+
+        String sender = "<Enter the sender email address>"; 
+        String recipient = "<Enter the recipient email address>"; 
+        
+        // Set the HTML body.
+        String bodyHTML = "<html> <head></head> <body><p> The following images contains PPE gear " +
+                    "<ol> ";
+
+        // Persist the data into a DynamoDB table.
+        for (String myKey : unqiueKeys) {
+            bodyHTML = bodyHTML + "<li> " + myKey + "</li>";
+
+        }
+
+        bodyHTML = bodyHTML + "</ol></p></body></html>" ;
+        Destination destination = Destination.builder()
+                .toAddresses(recipient)
+                .build();
+
+        Content content = Content.builder()
+                .data(bodyHTML)
+                .build();
+
+        Content sub = Content.builder()
+                .data("PPE Information")
+                .build();
+
+        Body body = Body.builder()
+                .html(content)
+                .build();
+
+        Message msg = Message.builder()
+                .subject(sub)
+                .body(body)
+                .build();
+
+        SendEmailRequest emailRequest = SendEmailRequest.builder()
+                .destination(destination)
+                .message(msg)
+                .source(sender)
+                .build();
 
         try {
+            System.out.println("Attempting to send an email through Amazon SES " + "using the AWS SDK for Java...");
+            client.sendEmail(emailRequest);
 
-            S3Client s3 = getClient();
-            int len = myList.size();
-
-            String assetName = "";
-            String labelName = "";
-            String labelValue = "";
-
-            // tag all the assets in the list.
-            for (Object o : myList) {
-
-                //Need to get the WorkItem from each list.
-                List innerList = (List) o;
-                for (Object value : innerList) {
-
-                    WorkItem workItem = (WorkItem) value;
-                    assetName = workItem.getKey();
-                    labelName = workItem.getName();
-                    labelValue = workItem.getConfidence();
-                    tagExistingObject(s3, bucketName, assetName, labelName, labelValue);
-                }
-            }
-
-        } catch (S3Exception e) {
+        } catch (SesException e) {
             System.err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
         }
      }
-
-     // This method tags an existing object.
-     private void tagExistingObject(S3Client s3, String bucketName, String key, String label, String LabelValue) {
-
-        try {
-
-            // First need to get existing tag set; otherwise the existing tags are overwritten.
-            GetObjectTaggingRequest getObjectTaggingRequest = GetObjectTaggingRequest.builder()
-                    .bucket(bucketName)
-                    .key(key)
-                    .build();
-
-            GetObjectTaggingResponse response = s3.getObjectTagging(getObjectTaggingRequest);
-
-            // Get the existing immutable list - cannot modify this list.
-            List<Tag> existingList = response.tagSet();
-            ArrayList<Tag> newTagList = new ArrayList(new ArrayList<>(existingList));
-
-            // Create a new tag.
-            Tag myTag = Tag.builder()
-                    .key(label)
-                    .value(LabelValue)
-                    .build();
-
-            // push new tag to list.
-            newTagList.add(myTag);
-            Tagging tagging = Tagging.builder()
-                    .tagSet(newTagList)
-                    .build();
-
-            PutObjectTaggingRequest taggingRequest = PutObjectTaggingRequest.builder()
-                    .key(key)
-                    .bucket(bucketName)
-                    .tagging(tagging)
-                    .build();
-
-            s3.putObjectTagging(taggingRequest);
-            System.out.println(key + " was tagged with " + label);
-
-        } catch (S3Exception e) {
-            System.err.println(e.awsErrorDetails().errorMessage());
-            System.exit(1);
-        }
-      }
-
-     //Delete tags from the given object.
-     public void deleteTagFromObject(String bucketName, String key) {
-
-        try {
-
-            DeleteObjectTaggingRequest deleteObjectTaggingRequest = DeleteObjectTaggingRequest.builder()
-                    .key(key)
-                    .bucket(bucketName)
-                    .build();
-
-            S3Client s3 = getClient();
-            s3.deleteObjectTagging(deleteObjectTaggingRequest);
-
-        } catch (S3Exception e) {
-            System.err.println(e.awsErrorDetails().errorMessage());
-            System.exit(1);
-        }
-      }
     }
-
-
-### WorkItem class
-The following Java code represents the **WorkItem** class.
-
-     package com.example.tags;
-
-     public class WorkItem {
-
-     private String key;
-     private String name;
-     private String confidence ;
-
-    public void setKey (String key) {
-        this.key = key;
-    }
-
-    public String getKey() {
-        return this.key;
-    }
-
-    public void setName (String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setConfidence (String confidence) {
-        this.confidence = confidence;
-    }
-
-    public String getConfidence() {
-        return this.confidence;
-    }
-   }
-
+    
+**Note**: Set email addresses for the **sender** and **recipient** variables. 
 
 ## Package the project that contains the Lambda functions
 
@@ -804,7 +834,7 @@ Package up the project into a .jar (JAR) file that you can deploy as a Lambda fu
 
 The JAR file is located in the **target** folder (which is a child folder of the project folder).
 
-![AWS Tracking Application](images/pic6.png)
+![AWS Tracking Application](images/jar.png)
 
 **Note**: Notice the use of the **maven-shade-plugin** in the project’s POM file. This plugin is responsible for creating a JAR that contains the required dependencies. If you attempt to package up the project without this plugin, the required dependences are not included in the JAR file and you will encounter a **ClassNotFoundException**. 
 
