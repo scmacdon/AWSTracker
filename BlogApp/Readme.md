@@ -200,58 +200,124 @@ At this point, you have a new project named **Blog**. Ensure that the pom.xml fi
  
  Create these Java classes:
 
-+ **Application** - Used as the base class for the Spring Boot application.
-+ **Tags** - Used to store tag information. 
-+ **VideoStreamController** - Used as the Spring Boot controller that handles HTTP requests.
-+ **VideoStreamService** - Used as the Spring Service that uses the Amazon S3 Java API. 
++ **BlogApp** - Used as the base class for the Spring Boot application.
++ **BlogController** - Used as the Spring Boot controller that handles HTTP requests. 
++ **Post** - Used as the applications model that stores application data.
++ **RedshiftService** - Used as the Spring Service that uses the Redshift Java API V2. 
++ **WebSecurityConfig** - The role of this class is to ensure only authenticated users can view the application. 
 
-### Application class
+### BlogApp class
 
-The following Java code represents the **Application** class.
+The following Java code represents the **BlogApp** class.
 
-     package com.example;
+     package com.aws.blog;
 
-      import org.springframework.boot.SpringApplication;
-      import org.springframework.boot.autoconfigure.SpringBootApplication;
-      import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+     import org.springframework.boot.SpringApplication;
+     import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-      @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
-      public class Application {
+     @SpringBootApplication
+     public class BlogApp {
 
-      public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-      }
+     public static void main(String[] args) throws Throwable {
+        SpringApplication.run(BlogApp.class, args);
+     }
+   }
+
+
+
+### BlogController class
+
+The following Java code represents the **BlogController** class.
+
+     package com.aws.blog;
+    
+    import org.springframework.security.core.context.SecurityContextHolder;
+    import org.springframework.stereotype.Controller;
+    import org.springframework.ui.Model;
+    import org.springframework.web.bind.annotation.GetMapping;
+    import org.springframework.web.bind.annotation.RequestMapping;
+    import org.springframework.web.bind.annotation.ResponseBody;
+    import org.springframework.web.bind.annotation.RequestMethod;
+    import javax.servlet.http.HttpServletRequest;
+    import javax.servlet.http.HttpServletResponse;
+    import java.io.IOException;
+    import java.util.List;
+    import org.springframework.beans.factory.annotation.Autowired;
+
+    @Controller
+    public class BlogController {
+
+    @Autowired
+    RedshiftService rs;
+
+    @GetMapping("/")
+    public String root() {
+        return "index";
+    }
+
+    @GetMapping("/add")
+    public String add() {
+        return "add";
     }
 
 
-### Tags class
-
-The following Java code represents the **Tags** class.
-
-     package com.example;
-
-    public class Tags {
-
-     private String name;
-     private String description;
-
-     public String getDesc() {
-        return this.description ;
-     }
-
-     public void setDesc(String description){
-        this.description = description;
-     }
-
-     public String getName() {
-        return this.name ;
-     }
-
-     public void setName(String name){
-        this.name = name;
-     }
+    @GetMapping("/posts")
+    public String post() {
+        return "post";
     }
 
+    @GetMapping("/login")
+    public String login(Model model) {
+        return "login";
+    }
+
+    // Adds a new item to the database
+    @RequestMapping(value = "/addPost", method = RequestMethod.POST)
+    @ResponseBody
+    String addItems(HttpServletRequest request, HttpServletResponse response) {
+
+        //Get the Logged in User
+        String name = getLoggedUser();
+        String title = request.getParameter("title");
+        String body = request.getParameter("body");
+        String id = rs.addRecord(name, title, body) ;
+        return id;
+    }
+
+
+    // Queries five items from the Redshift database.
+    @RequestMapping(value = "/fivePost", method = RequestMethod.POST)
+    @ResponseBody
+    String getFivePosts(HttpServletRequest request, HttpServletResponse response) {
+
+        //Get the Logged in User
+        String name = getLoggedUser();
+        String lang = request.getParameter("lang");
+        String xml =  rs.getLastestFivePosts(lang,5) ;
+        return xml;
+    }
+
+
+    // Queries ten items from the Redshift database.
+    @RequestMapping(value = "/tenPost", method = RequestMethod.POST)
+    @ResponseBody
+    String getTenPosts(HttpServletRequest request, HttpServletResponse response) {
+
+        //Get the Logged in User
+        String name = getLoggedUser();
+        String lang = request.getParameter("lang");
+        String xml =  rs.getLastestFivePosts(lang,10) ;
+        return xml;
+    }
+
+    private String getLoggedUser() {
+
+        // Get the logged-in Useruser
+        org.springframework.security.core.userdetails.User user2 = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String name = user2.getUsername();
+        return name;
+    }
+}
 ### VideoStreamController class
 
 The following Java code represents the **VideoStreamController** class.
