@@ -314,8 +314,9 @@ The following Java code represents the **BlogController** class.
         org.springframework.security.core.userdetails.User user2 = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String name = user2.getUsername();
         return name;
+     }
     }
-}
+
 ### Post class
 
 The following Java code represents the **Post** class.
