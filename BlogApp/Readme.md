@@ -22,7 +22,7 @@ This example application lets you view the post by choosing the **Get Post** men
 
 ![AWS Tracking Application](images/FiveRecords.png)
 
-This example web application also supports viewing the result set in different languages. For example, if a user wants to view the result set in Spanish, they can choose Spanish from the dropdown field and the result is translated to the given language by using the Amazon Translate Service, as shown in this illustration. 
+This example web application also supports viewing the result set in different languages. For example, if a user wants to view the result set in Spanish, they can choose Spanish from the dropdown field and the data is translated to the given language by using the Amazon Translate Service, as shown in this illustration. 
 
 ![AWS Tracking Application](images/Spanish.png)
 
