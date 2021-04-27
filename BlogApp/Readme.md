@@ -4,6 +4,16 @@ You can create a web application that stores and queries data by using the Amazo
 
 ![AWS Tracking Application](images/Redshift.png)
 
+The **blog** table contains these fields: 
+
+- **idblog**- a varchar field that stores a GUID value and represents the PK.
+- **date**- a date field that represents the date when the record was added. 
+- **title**- a varchar field that represents the title. 
+- **body**- a varchar field that represents the body. 
+- **author**-a varchar field that represents the author. 
+
+**Note**: For more information about supported field data types, see [Data types](https://docs.aws.amazon.com/redshift/latest/dg/c_Supported_data_types.html). 
+
 The application you create uses Spring Boot APIs to build a model, different views, and a controller. This web application also reads the object tags to dynamically build the video menu displayed in the web application. To read the video content and object tags, the Amazon S3 Java API is used.  For more information about Spring Boot APIs, see [Spring Boot](https://www.tutorialspoint.com/spring_boot/spring_boot_securing_web_applications.htm).
 
 In the previous illustration, notice the video menu that displays video titles and descriptions. The video menu is displayed to let the user know which videos are available to view. To view a specific video, the user click the video title. A GET Request is made to a Spring Controller, the application reads the specific video in an Amazon S3 bucket, encodes the byte array and then steams the data where the video is displayed in an HTML5 Video tag. 
