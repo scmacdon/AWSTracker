@@ -18,7 +18,9 @@ The application you create uses Spring Boot APIs to build a model, different vie
 
 ![AWS Tracking Application](images/NewRecord.png)
 
-reads the object tags to dynamically build the video menu displayed in the web application. To read the video content and object tags, the Amazon S3 Java API is used.  For more information about Spring Boot APIs, see [Spring Boot](https://www.tutorialspoint.com/spring_boot/spring_boot_securing_web_applications.htm).
+This example application lets you view the post by choosing the **Get Post** menu item and choosing one of the available buttons. For example, you can view five recent posts by choosing the **Five Posts** button, as shown in the following illustration.
+
+![AWS Tracking Application](images/FiveRecords.png)
 
 In the previous illustration, notice the video menu that displays video titles and descriptions. The video menu is displayed to let the user know which videos are available to view. To view a specific video, the user click the video title. A GET Request is made to a Spring Controller, the application reads the specific video in an Amazon S3 bucket, encodes the byte array and then steams the data where the video is displayed in an HTML5 Video tag. 
 
