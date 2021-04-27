@@ -807,50 +807,50 @@ The following Java code represents the WebSecurityConfig class. The role of this
 
 ## Create the HTML file
 
-At this point, you have created all of the Java files required for this example Spring Boot application. Now you create HTML files that are required for the application's view. Under the resource folder, create a **templates** folder, and then create the following HTML files:
+At this point, you have created all of the Java files required for this example application. Now you create HTML files that are required for the application's view. Under the resource folder, create a **templates** folder, and then create the following HTML files:
 
 + index.html
 + layout.html
-+ upload.html
-+ video.html
++ post.html
++ add.html
++ login.html
 
 ### index.html
 The **index.html** file is the application's home view. The following HTML represents the **index.html** file. 
 
-     <!DOCTYPE HTML>
-     <html xmlns:th="https://www.thymeleaf.org">
+     <!DOCTYPE html>
+     <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+     <head>
      <meta charset="utf-8" />
      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
      <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
-    <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
+     <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css|"/>
+     <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+     <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
 
-    <title>AWS Item Tracker</title>
+    <title>AWS Job Posting Example</title>
     </head>
 
     <body>
-    <header th:replace="layout :: site-header"></header>
+    <header th:replace="layout :: site-header"/>
     <div class="container">
 
-    <h2>Video Stream over HTTP App</h2>
+    <h3>Welcome <span sec:authentication="principal.username">User</span> to AWS Job Posting example</h3>
+    <p>Now is: <b th:text="${execInfo.now.time}"></b></p>
 
-    <p>The AWS Item Tracker application is a sample application that uses multiple AWS Services and the Java V2 API. Collecting and working with items has never been easier! Simply perform these steps:<p>
+    <h2>AWS Job Posting Example</h2>
+
+    <p>The AWS Job Posting Example application uses multiple AWS Services and the Java V2 API. Perform these steps:<p>
 
     <ol>
-        <li>Enter work items into the system by choosing the <i>Add Items</i> menu item. Fill in the form and then choose <i>Create Item</i>.</li>
-        <li>The AWS Item Tracker application stores the data by using the Amazon Relational Database Service (Amazon RDS).</li>
-        <li>You can view all of your items by choosing the <i>Get Items</i> menu item. Next, choose <i>Get Active Items</i> in the dialog box.</li>
-        <li>You can modify an Active Item by selecting an item in the table and then choosing <i>Get Single Item</i>. The item appears in the Modify Item section where you can modify the description or status.</li>
-        <li>Modify the item and then choose <i>Update Item</i>. You cannot modify the ID value. </li>
-        <li>You can archive any item by selecting the item and choosing <i>Archive Item</i>. Notice that the table is updated with only active items.</li>
-        <li>You can display all archived items by choosing <i>Get Archived Items</i>. You cannot modify an archived item.</li>
-        <li>You can send an email recipient an email message with a report attachment by selecting the email recipient from the dialog box and then choosing <i>Send Report</i>.Only Active data is sent in a report.</li>
-        <li>The Amazon Simple Email Service is used to send an email with an Excel document to the selected email recipient.</li>
+        <li>Enter items into the system by choosing the <i>Add Posts</i> menu item. Fill in the form and then choose <i>Create Item</i>.</li>
+        <li>The sample application stores the data by using the Amazon Redshift Java API V2.</li>
+        <li>You can view the items by choosing the <i>Get Posts</i> menu item. Next, select a language.</li>
+        <li>You can view the items by chooing either <b>Five Posts</b> or <b>Ten Posts</b> button. The items appear in the page.
     </ol>
-    </div>
-
+    <div>
     </body>
     </html>
 
@@ -858,133 +858,335 @@ The **index.html** file is the application's home view. The following HTML repre
 The following code represents the **layout.html** file that represents the application's menu.
 
      <!DOCTYPE html>
-     <html xmlns:th="http://www.thymeleaf.org">
+     <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
      <head th:fragment="site-head">
      <meta charset="UTF-8" />
-     <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+     <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
      <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
      <meta th:include="this :: head" th:remove="tag"/>
-     </head>
-     <body>
+    </head>
+    <body>
      <!-- th:hef calls a controller method - which returns the view -->
-    <header th:fragment="site-header">
-    <a href="index.html" th:href="@{/}"><img src="../public/img/site-logo.png" th:src="@{/img/site-logo.png}" /></a>
-    <a href="#" style="color: white" th:href="@{/}">Home</a>
-    <a href="#" style="color: white" th:href="@{/upload}">Upload Videos</a>
-    <a href="#"  style="color: white" th:href="@{/watch}">Watch Videos</a>
-    <div id="logged-in-info">
+     <header th:fragment="site-header">
+     <a href="index.html" th:href="@{/}"><img src="../public/img/site-logo.png" th:src="@{/img/site-logo.png}" /></a>
+     <a href="#" style="color: white" th:href="@{/}">Home</a>
+     <a href="#" style="color: white" th:href="@{/add}">Add Post</a>
+     <a href="#"  style="color: white" th:href="@{/posts}">Get Posts</a>
+     <div id="logged-in-info">
+
         <form method="post" th:action="@{/logout}">
             <input type="submit"  value="Logout"/>
         </form>
     </div>
     </header>
     <h1>Welcome</h1>
-    </body>
-    </html>
-
-### upload.html
-The **upload.html** file is the application's view that lets users upload a MP4 file. 
-
-     <!DOCTYPE html>
-     <html xmlns:th="http://www.thymeleaf.org">
-     <head lang="en">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
-    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
-    <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
-    <title>Spring Framework</title>
-    </head>
     <body>
-    <header th:replace="layout :: site-header"></header>
-
-  
-    <div class="container">
-        <h2>Video Stream over HTTP App</h2>
-        <p>Upload a MP4 video to an Amazon S3 bucket</p>
-
-        <form method="POST" onsubmit="myFunction()" action="/fileupload" enctype="multipart/form-data">
-            Video Description:<input type="text" name="description" required><br>
-            <input type="file" name="file" /><br/><br/>
-            <input type="submit" value="Submit" />
-        </form>
-    </div>
+    <p>Welcome to  AWS Blog application.</p>
     </body>
     </html>
 
-### video.html
-The **video.html** file is the application's view that displays both the video menu and the video content. 
+### add.html
+The **add.html** file is the application's view that lets users post new items. 
 
      <!DOCTYPE html>
-     <html xmlns:th="http://www.thymeleaf.org">
-     <head lang="en">
-     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
-    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
-    <link rel="icon" href="../public/images/favicon.ico" th:href="@{/images/favicon.ico}" />
-    <title>Spring Framework</title>
+     <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
-    <script>
-        $(function() {
-            getItems();
-        } );
+     <head>
+     <meta charset="UTF-8" />
+     <title>Blog</title>
 
-        // Gets the MP4 tags to set in the scroll list.
-        function getItems() {
+     <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+     <script src="../public/js/contact_me.js" th:src="@{/js/contact_me.js}"></script>
+     <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css|"/>
+     <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+     <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
+     </head>
 
-            var xhr = new XMLHttpRequest();
-            xhr.addEventListener("load", loadTags, false);
-            xhr.open("GET", "../items", true);
-            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
-            xhr.send();
-        }
+    <body>
+    <header th:replace="layout :: site-header"/>
+    <div class="container">
+     <h3>Welcome <span sec:authentication="principal.username">User</span> to AWS Blog Example App</h3>
+     <p>Now is: <b th:text="${execInfo.now.time}"></b></p>
+     <p>Add a new Blog item by filling in this table and clicking <i>Create Item</i></p>
 
-        function loadTags(event) {
-
-            var xml = event.target.responseText;
-            $(xml).find('Tag').each(function () {
-
-                var $field = $(this);
-                var name = $field.find('Name').text();
-                var description = $field.find('Description').text();
-                var vv = "Prime video"
-
-                // Append this data to the main list.
-                $('.list-group').append("<className='list-group-item list-group-item-action flex-column align-items-start'>");
-                $('.list-group').append("<h5 onMouseOver=\"this.style.cursor='pointer'\" onclick=\"addVideo('" +name+"')\" class='mb-1'>"+name+"</li>");
-                $('.list-group').append("<p class='mb-1'>"+description+"</p>");
-                $('.list-group').append("<small class='text-muted'>"+vv+"</small>");
-                $('.list-group').append("<br class='row'>");
-            });
-        }
-
-        function addVideo(myVid) {
-            var myVideo = document.getElementById("video1");
-            myVideo.src = "/"+myVid+"/stream";
-        }
-      </script>
-      </head>
-      <body>
-      <header th:replace="layout :: site-header"></header>
-      <div class="container">
-      <h3>Video Stream over HTTP App</h3>
-      <p>This example reads a MP4 video located in an Amazon S3 bucket and streams over HTTP</p>
-      <div class="row">
-        <div class="col">
-            <video id="video1" width="750" height="440" controls>
-                <source type="video/mp4">
-
-                Your browser does not support HTML video.
-            </video>
-        </div>
-        <div class="col">
-            <div class="list-group">
+     <div class="row">
+        <div class="col-lg-8 mx-auto">
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>Title</label>
+                        <input class="form-control" id="title" placeholder="Title" required="required" data-validation-required-message="Please enter the AWS Guide.">
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>Body</label>
+                        <textarea class="form-control" id="body" rows="5" placeholder="Body" required="required" data-validation-required-message="Please enter a description."></textarea>
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary btn-xl" id="SendButton">Create Item</button>
             </div>
         </div>
       </div>
-    </div>
+     </body>
+     </html>
 
+### post.html
+The **post.html** file is the application's view that displays the items in the specific language. 
+
+     <!DOCTYPE html>
+     <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+     <meta charset="UTF-8" />
+     <title>Blog</title>
+
+     <script th:src="|https://code.jquery.com/jquery-1.12.4.min.js|"></script>
+     <script th:src="|https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js|"></script>
+     <script th:src="|https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js|"></script>
+     <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css|"/>
+     <script src="../public/js/contact_me.js" th:src="@{/js/contact_me.js}"></script>
+     <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+     <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
+    </head>
+
+    <body>
+    <header th:replace="layout :: site-header"/>
+
+    <div class="container">
+     <h3>Welcome <span sec:authentication="principal.username">User</span> to Example AWS Job Posting App</h3>
+     <p>Now is: <b th:text="${execInfo.now.time}"></b></p>
+
+     <div id= "progress" class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+     </div>
+
+     <div class="row">
+        <div class="col">
+            <div class="col-lg-10">
+                <div class="clearfix mt-40">
+                    <ul class="xsearch-items">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <label for="lang">Select a Language:</label>
+            <select name="lang" id="lang">
+                <option>English</option>
+                <option>French</option>
+                <option>Spanish</option>
+                <option>Russian</option>
+                <option>Chinese</option>
+                <option>Japanese</option>
+            </select>
+        </div>
+        <div>
+            <button type="button" onclick="getFivePosts()">Five Posts</button>
+            <button type="button" onclick="getTenPosts()">Ten Posts</button>
+        </div>
+       </div>
+      </div>
+     </div>
     </body>
     </html>
+
+
+### login.html
+The **login.html** file is the application's login page. 
+
+     <!DOCTYPE html>
+     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+    <head>
+     <title>AWS Blog Example</title>
+     <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+        form {border: 3px solid #f1f1f1;}
+
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .cancelbtn {
+            width: auto;
+            padding: 10px 18px;
+            background-color: #f44336;
+        }
+
+        .imgcontainer {
+            text-align: center;
+            margin: 24px 0 12px 0;
+        }
+
+        img.avatar {
+            width: 40%;
+            border-radius: 50%;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        span.psw {
+            float: right;
+            padding-top: 16px;
+        }
+
+        /* Change styles for span and cancel button on extra small screens */
+        @media screen and (max-width: 300px) {
+            span.psw {
+                display: block;
+                float: none;
+            }
+            .cancelbtn {
+                width: 100%;
+            }
+        }
+    </style>
+    </head>
+    <body>
+    <div th:if="${param.error}">
+     Invalid username and password.
+    </div>
+    <div th:if="${param.logout}">
+     You have been logged out.
+    </div>
+    <form th:action="@{/login}" method="post">
+     <div class="container">
+        <label for="username"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" id="username" name="username" value ="user" required>
+
+        <label for="password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" id ="password" name="password" value ="password" required>
+
+        <button type="submit">Login</button>
+
+     </div>
+
+     <div class="container" style="background-color:#f1f1f1">
+        <button type="button" class="cancelbtn">Cancel</button>
+        <span class="psw">Forgot <a href="#">password?</a></span>
+      </div>
+    </form>
+    </body>
+    </html>
+    
+### Create the JS File
+
+This application has a **contact_me.js** file that is used to send requests to the Spring Controller. Place this file in the resources\public\js foler. 
+
+    $(function() {
+
+    $('#progress').hide();
+
+    $("#SendButton" ).click(function($e) {
+
+        var title = $('#title').val();
+        var body = $('#body').val();
+
+        //invokes the getMyForms POST operation
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", loadNewItems, false);
+        xhr.open("POST", "../addPost", true);   //buildFormit -- a Spring MVC controller
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+        xhr.send("title=" + title + "&body=" + body);
+    } );// END of the Send button click
+
+    //Handler for the uploadSave call
+    //This will populate the Data Table widget
+    function loadNewItems(event) {
+
+        var msg = event.target.responseText;
+        alert("You have successfully added item "+msg)
+
+        $('#title').val("");
+        $('#body').val("");
+    }
+
+    } );
+
+    function getDataValue() {
+     var radioValue = $("input[name='optradio']:checked").val();
+     return radioValue;
+   }
+
+    function getFivePosts(){
+
+    $('.xsearch-items').empty()
+    $('#progress').show();
+    var lang = $('#lang option:selected').text();
+
+    //invokes the getMyForms POST operation
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", loadItems, false);
+    xhr.open("POST", "../fivePost", true);   //buildFormit -- a Spring MVC controller
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+    xhr.send("lang=" + lang );
+    }
+
+    function getTenPosts(){
+
+    $('.xsearch-items').empty()
+    $('#progress').show();
+    var lang = $('#lang option:selected').text();
+
+    //invokes the getMyForms POST operation
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", loadItems, false);
+    xhr.open("POST", "../tenPost", true);   //buildFormit -- a Spring MVC controller
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+    xhr.send("lang=" + lang );
+    }
+
+    function loadItems(event) {
+ 
+     $('#progress').hide();
+     var xml = event.target.responseText;
+     $(xml).find('Item').each(function ()  {
+
+     var $field = $(this);
+     var id = $field.find('Id').text();
+     var date = $field.find('Date').text();
+     var title = $field.find('Title').text();
+     var body = $field.find('Content').text();
+     var author = $field.find('Author').text();
+     var vv = "Prime video"
+
+     // Append this data to the main list.
+
+      $('.xsearch-items').append("<className='search-item'>");
+      $('.xsearch-items').append("<div class='search-item-content'>");
+      $('.xsearch-items').append("<h3 class='search-item-caption'><a href='#'>"+title+"</a></h3>");
+      $('.xsearch-items').append("<className='search-item-meta mb-15'>");
+      $('.xsearch-items').append("<className='list-inline'>");
+      $('.xsearch-items').append("<p><b>"+date+"</b></p>");
+      $('.xsearch-items').append("<p><b>'Posted by "+author+"</b></p>");
+      $('.xsearch-items').append("<div>");
+      $('.xsearch-items').append("<h6>"+body +"</h6>");
+      $('.xsearch-items').append("</div>");
+     });
+    }
 
 ## Create a JAR file for the application
 
