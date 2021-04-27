@@ -223,8 +223,6 @@ The following Java code represents the **BlogApp** class.
      }
    }
 
-
-
 ### BlogController class
 
 The following Java code represents the **BlogController** class.
@@ -293,7 +291,7 @@ The following Java code represents the **BlogController** class.
         //Get the Logged in User
         String name = getLoggedUser();
         String lang = request.getParameter("lang");
-        String xml =  rs.getLastestFivePosts(lang,5) ;
+        String xml =  rs.getPosts(lang,5) ;
         return xml;
     }
 
@@ -306,7 +304,7 @@ The following Java code represents the **BlogController** class.
         //Get the Logged in User
         String name = getLoggedUser();
         String lang = request.getParameter("lang");
-        String xml =  rs.getLastestFivePosts(lang,10) ;
+        String xml =  rs.getPosts(lang,10) ;
         return xml;
     }
 
@@ -318,107 +316,81 @@ The following Java code represents the **BlogController** class.
         return name;
     }
 }
-### VideoStreamController class
+### Post class
 
-The following Java code represents the **VideoStreamController** class.
+The following Java code represents the **Post** class.
 
-    package com.example;
+    package com.aws.blog;
 
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.stereotype.Controller;
-    import org.springframework.web.bind.annotation.*;
-    import org.springframework.web.multipart.MultipartFile;
-    import org.springframework.web.servlet.ModelAndView;
-    import org.springframework.web.servlet.view.RedirectView;
-    import reactor.core.publisher.Mono;
-    import javax.servlet.http.HttpServletRequest;
-    import javax.servlet.http.HttpServletResponse;
-    import java.io.IOException;
+    public class Post {
 
-    @Controller
-    public class VideoStreamController {
+    private String id;
+    private String title;
+    private String body;
+    private String author;
+    private String date ;
 
-    @Autowired
-    VideoStreamService vid;
-
-    private String bucket = "<Enter your bucket name>";
-
-    @RequestMapping(value = "/")
-    public String root() {
-        return "index";
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    @GetMapping("/watch")
-    public String designer() {
-        return "video";
+    public String getDate() {
+        return this.date ;
     }
 
-    @GetMapping("/upload")
-    public String upload() {
-        return "upload";
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
-    // Upload a MP4 to an Amazon S3 bucket
-    @RequestMapping(value = "/fileupload", method = RequestMethod.POST)
-    @ResponseBody
-    public ModelAndView singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam String description) {
-
-        try {
-            byte[] bytes = file.getBytes();
-            String name =  file.getOriginalFilename() ;
-            String desc2 =  description ;
-
-            // Put the MP4 file into an Amazon S3 bucket
-            vid.putVideo(bytes, bucket, name, desc2);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ModelAndView(new RedirectView("upload"));
-     }
-
-    // Returns items to populate the Video menu
-    @RequestMapping(value = "/items", method = RequestMethod.GET)
-    @ResponseBody
-    public String getItems(HttpServletRequest request, HttpServletResponse response) {
-
-        String xml = vid.getTags(bucket);
-        return xml;
+    public String getAuthor() {
+        return this.author ;
     }
 
-    // Returns the video in the bucket specified by the ID value
-    @RequestMapping(value = "/{id}/stream", method = RequestMethod.GET)
-    public Mono<ResponseEntity<byte[]>> streamVideo(@PathVariable String id) {
 
-        String fileName = id;
-        return Mono.just(vid.getObjectBytes(bucket, fileName));
-     }
+    public void setBody(String body) {
+        this.body = body;
     }
 
-**Note**: Make sure that you assign an Amazon S3 bucket name to the **bucket** variable.  
+    public String getBody() {
+        return this.body ;
+    }
 
-### VideoStreamService class
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-The following Java code represents the **VideoStreamService** class. This class uses the Amazon S3 Java API (V2) to interact with content located in an S3 bucket. For example, the **getTags** method returns a collection of tags that are used to create the video menu. Likewise, the **getObjectBytes** reads bytes from a MP4 video. 
+    public String getTitle() {
+        return this.title ;
+    }
 
-     package com.example;
+    public void setId(String id) {
+        this.id = id;
+    }
 
-     import org.slf4j.Logger;
-     import org.slf4j.LoggerFactory;
-     import org.springframework.http.HttpStatus;
-     import org.springframework.http.ResponseEntity;
-     import org.springframework.stereotype.Service;
-     import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-     import software.amazon.awssdk.core.ResponseBytes;
-     import software.amazon.awssdk.core.sync.RequestBody;
+    public String getId() {
+        return this.id ;
+    }
+   }
+
+### RedshiftService class
+
+The following Java code represents the **RedshiftService** class. This class uses the Amazon Redshift Java API (V2) to interact with data located the **blog** table.  For example, the **getPosts** method returns a result set that is queried from the **blog** table and displayed in the view. Likewise, the **addRecord** method adds a new record to the **blog** table. 
+
+     package com.aws.blog;
+
+     import org.springframework.stereotype.Component;
      import software.amazon.awssdk.regions.Region;
-     import software.amazon.awssdk.services.s3.S3Client;
-     import software.amazon.awssdk.services.s3.model.*;
+     import software.amazon.awssdk.services.redshiftdata.model.*;
+     import software.amazon.awssdk.services.redshiftdata.RedshiftDataClient;
      import org.w3c.dom.Document;
+     import org.w3c.dom.Element;
+     import software.amazon.awssdk.services.translate.TranslateClient;
+     import software.amazon.awssdk.services.translate.model.TranslateException;
+     import software.amazon.awssdk.services.translate.model.TranslateTextRequest;
+     import software.amazon.awssdk.services.translate.model.TranslateTextResponse;
      import javax.xml.parsers.DocumentBuilder;
      import javax.xml.parsers.DocumentBuilderFactory;
-     import org.w3c.dom.Element;
      import javax.xml.parsers.ParserConfigurationException;
      import javax.xml.transform.Transformer;
      import javax.xml.transform.TransformerException;
@@ -426,211 +398,258 @@ The following Java code represents the **VideoStreamService** class. This class 
      import javax.xml.transform.dom.DOMSource;
      import javax.xml.transform.stream.StreamResult;
      import java.io.StringWriter;
-     import java.util.*;
+     import java.text.ParseException;
+     import java.text.SimpleDateFormat;
+     import java.time.LocalDateTime;
+     import java.time.format.DateTimeFormatter;
+     import java.util.ArrayList;  
+     import java.util.Date;
+     import java.util.List;
+     import java.util.UUID;
 
-    @Service
-    public class VideoStreamService {
+    @Component
+    public class RedshiftService {
 
-    public static final String VIDEO = "/video";
+    String clusterId = "<Enter your Cluster ID>";
+    String database = "<Enter your database name>";
+    String dbUser = "<Enter your dbUser value>";
 
-    public static final String CONTENT_TYPE = "Content-Type";
-    public static final String CONTENT_LENGTH = "Content-Length";
-    public static final String VIDEO_CONTENT = "video/";
-    public static final String CONTENT_RANGE = "Content-Range";
-    public static final String ACCEPT_RANGES = "Accept-Ranges";
-    public static final String BYTES = "bytes";
-    public static final int BYTE_RANGE = 1024;
+    private RedshiftDataClient getClient() {
 
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    S3Client s3 ;
-
-    private S3Client getClient() {
-        // Create the S3Client object
         Region region = Region.US_WEST_2;
-        S3Client s3 = S3Client.builder()
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+        RedshiftDataClient redshiftDataClient = RedshiftDataClient.builder()
                 .region(region)
                 .build();
 
-        return s3;
+        return redshiftDataClient;
     }
 
-    // Places a new video into an Amazon S3 bucket
-    public void putVideo(byte[] bytes, String bucketName, String fileName, String description) {
-        s3 = getClient();
+
+    // Returns a collection that returns the latest five posts from the Redshift table.
+    public String getPosts(String lang, int num) {
 
         try {
 
-            // Set the tags to apply to the object
-            String theTags = "name="+fileName+"&description="+description;
+            RedshiftDataClient redshiftDataClient = getClient();
+            String sqlStatement="";
+            if (num ==5)
+                sqlStatement = "SELECT TOP 5 * FROM blog ORDER BY date";
+            else
+                sqlStatement = "SELECT TOP 10 * FROM blog ORDER BY date";
 
-            PutObjectRequest putOb = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .tagging(theTags)
+            ExecuteStatementRequest statementRequest = ExecuteStatementRequest.builder()
+                    .clusterIdentifier(clusterId)
+                    .database(database)
+                    .dbUser(dbUser)
+                    .sql(sqlStatement)
                     .build();
 
-            s3.putObject(putOb, RequestBody.fromBytes(bytes));
+            ExecuteStatementResponse response = redshiftDataClient.executeStatement(statementRequest);
+            String myId = response.id();
+            checkStatement(redshiftDataClient,myId );
+            List<Post> posts = getResults(redshiftDataClient, myId, lang);
+            return convertToString(toXml(posts));
 
-        } catch (S3Exception e) {
-            System.err.println(e.awsErrorDetails().errorMessage());
+        } catch (RedshiftDataException e) {
+            System.err.println(e.getMessage());
             System.exit(1);
         }
-    }
-
-    // Returns a schema that describes all tags for all videos in the given bucket
-    public String getTags(String bucketName){
-        s3 = getClient();
-
-        List tagList   ;
-
-      try {
-
-          ListObjectsRequest listObjects = ListObjectsRequest
-                  .builder()
-                  .bucket(bucketName)
-                  .build();
-
-          ListObjectsResponse res = s3.listObjects(listObjects);
-          List<S3Object> objects = res.contents();
-
-          Tags myTag ;
-          ArrayList keys = new ArrayList<String>();
-
-          for (ListIterator iterVals = objects.listIterator(); iterVals.hasNext(); ) {
-              S3Object myValue = (S3Object) iterVals.next();
-              String key = myValue.key(); // We need the key to get the tags
-
-              //Get the tags
-              GetObjectTaggingRequest getTaggingRequest = GetObjectTaggingRequest
-                      .builder()
-                      .key(key)
-                      .bucket(bucketName)
-                      .build();
-
-              GetObjectTaggingResponse tags = s3.getObjectTagging(getTaggingRequest);
-              List<Tag> tagSet= tags.tagSet();
-
-              // Write out the tags
-              Iterator<Tag> tagIterator = tagSet.iterator();
-              while(tagIterator.hasNext()) {
-                  myTag = new Tags();
-                  Tag tag = (Tag)tagIterator.next();
-                  keys.add(tag.value());
-
-                }
-          }
-
-          tagList = modList(keys);
-          return convertToString(toXml(tagList));
-
-    } catch (S3Exception e) {
-        System.err.println(e.awsErrorDetails().errorMessage());
-        System.exit(1);
-    }
         return "";
     }
 
-
-    // We need to modify the list
-    private List modList(List<String> myList){
-
-        // Get the elements from the collection.
-        int count = myList.size();
-        List allTags = new ArrayList<Tags>();
-        Tags myTag ;
-        ArrayList keys = new ArrayList<String>();
-        ArrayList values = new ArrayList<String>();
-
-        for ( int index=0; index < count; index++) {
-
-            if (index % 2 == 0)
-                keys.add(myList.get(index));
-            else
-                values.add(myList.get(index));
-          }
-
-           // Combine these lists.
-           int size =  keys.size();
-           for (int r=0; r<size; r++){
-
-               myTag = new Tags();
-               myTag.setName(keys.get(r).toString());
-               myTag.setDesc(values.get(r).toString());
-               allTags.add(myTag);
-           }
-
-        return allTags;
-    }
-
-
-    // Reads a video from a bucket and returns a byte streeam
-    public ResponseEntity<byte[]> getObjectBytes (String bucketName, String keyName) {
-
-        s3 = getClient();
+    public String addRecord(String author, String title, String body) {
 
         try {
-            // create a GetObjectRequest instance
-            GetObjectRequest objectRequest = GetObjectRequest
-                    .builder()
-                    .key(keyName)
-                    .bucket(bucketName)
+
+            RedshiftDataClient redshiftDataClient = getClient();
+            UUID uuid = UUID.randomUUID();
+            String id  = uuid.toString();
+
+            // Date conversion
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            String sDate1 = dtf.format(now);
+            Date date1 = new SimpleDateFormat("yyyy/MM/dd").parse(sDate1);
+            java.sql.Date sqlDate = new java.sql.Date( date1.getTime());
+
+
+            // Inject an item into the system.
+            String sqlStatement = "INSERT INTO blog (idblog, date, title, body, author) VALUES( '"+uuid+"' ,'"+sqlDate +"','"+title +"' , '"+body +"', '"+author +"');";
+            ExecuteStatementRequest statementRequest = ExecuteStatementRequest.builder()
+                    .clusterIdentifier(clusterId)
+                    .database(database)
+                    .dbUser(dbUser)
+                    .sql(sqlStatement)
                     .build();
 
-            // get the byte[] from this AWS S3 object.
-            ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .header(CONTENT_TYPE, VIDEO_CONTENT + "mp4")
-                    .header(CONTENT_LENGTH, String.valueOf(objectBytes.asByteArray().length))
-                    .body(objectBytes.asByteArray());
+            redshiftDataClient.executeStatement(statementRequest);
 
-        } catch (S3Exception e) {
-            System.err.println(e.awsErrorDetails().errorMessage());
+            return id;
+
+        } catch (RedshiftDataException | ParseException e) {
+            System.err.println(e.getMessage());
             System.exit(1);
         }
         return null;
     }
 
+    public void checkStatement(RedshiftDataClient redshiftDataClient,String sqlId ) {
 
-    // Convert a LIST to XML data.
-     private Document toXml(List<Tags> itemList) {
+        try {
+
+            DescribeStatementRequest statementRequest = DescribeStatementRequest.builder()
+                    .id(sqlId)
+                    .build() ;
+
+            // Wait until the sql statement processing is finished.
+            boolean finished = false;
+            String status = "";
+            while (!finished) {
+
+                DescribeStatementResponse response = redshiftDataClient.describeStatement(statementRequest);
+                status = response.statusAsString();
+                System.out.println("..."+status);
+
+                if (status.compareTo("FINISHED") == 0) {
+                    break;
+                }
+                Thread.sleep(500);
+            }
+
+            System.out.println("The statement is finished!");
+
+        } catch (RedshiftDataException | InterruptedException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+    }
+
+
+    public List<Post> getResults(RedshiftDataClient redshiftDataClient, String statementId, String lang) {
+
+        try {
+
+            List<Post>records = new ArrayList<>();
+            GetStatementResultRequest resultRequest = GetStatementResultRequest.builder()
+                    .id(statementId)
+                    .build();
+
+            GetStatementResultResponse response = redshiftDataClient.getStatementResult(resultRequest);
+
+            // Iterate through the List element where each element is a List object.
+            List<List<Field>> dataList = response.records();
+
+            Post post ;
+            int index = 0 ;
+            // Print out the records.
+            for (List list: dataList) {
+
+                // new Post object here
+                post = new Post();
+                index = 0 ;
+                for (Object myField:list) {
+
+                    Field field = (Field) myField;
+                    String value = field.stringValue();
+
+                    if (index == 0)
+                        post.setId(value);
+
+                    else if (index == 1)
+                        post.setDate(value);
+
+                    else if (index == 2) {
+
+                        if (!lang.equals("English")) {
+                            // We need to translate the text
+                            value = translateText(value, lang);
+                        }
+                        post.setTitle(value);
+                    }
+
+                    else if (index == 3) {
+                        if (!lang.equals("English")) {
+                            // We need to translate the text
+                           value = translateText(value, lang);
+                        }
+                        post.setBody(value);
+                    }
+
+                    else if (index == 4)
+                        post.setAuthor(value);
+
+                    // Increment the index.
+                    index ++;
+               }
+
+                // Push the Post object to the List
+                records.add(post);
+            }
+
+            return  records;
+
+        } catch (RedshiftDataException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
+        return null ;
+    }
+
+    // Convert Work item data into XML to pass back to the view.
+    private Document toXml(List<Post> itemsList) {
 
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.newDocument();
 
-            // Start building the XML
-            Element root = doc.createElement( "Tags" );
-            doc.appendChild( root );
+            // Start building the XML.
+            Element root = doc.createElement("Items");
+            doc.appendChild(root);
 
-            // Get the elements from the collection
-            int count = itemList.size();
+            // Iterate through the collection.
+            for (Post post : itemsList) {
 
-            // Iterate through the list.
-            for (Tags myItem: itemList) {
+                    Element item = doc.createElement("Item");
+                    root.appendChild(item);
 
-                Element item = doc.createElement( "Tag" );
-                root.appendChild( item );
+                    // Set Id.
+                    Element id = doc.createElement("Id");
+                    id.appendChild(doc.createTextNode(post.getId()));
+                    item.appendChild(id);
 
-                // Set Id
-                Element id = doc.createElement( "Name" );
-                id.appendChild( doc.createTextNode(myItem.getName() ) );
-                item.appendChild( id );
+                    // Set Date.
+                    Element name = doc.createElement("Date");
+                    name.appendChild(doc.createTextNode(post.getDate()));
+                    item.appendChild(name);
 
-                // Set Name
-                Element name = doc.createElement( "Description" );
-                name.appendChild( doc.createTextNode(myItem.getDesc() ) );
-                item.appendChild( name );
-            }
+                    // Set Title.
+                    Element date = doc.createElement("Title");
+                    date.appendChild(doc.createTextNode(post.getTitle()));
+                    item.appendChild(date);
+
+                    // Set Body.
+                    Element desc = doc.createElement("Content");
+                    desc.appendChild(doc.createTextNode(post.getBody()));
+                    item.appendChild(desc);
+
+                    // Set Author.
+                    Element guide = doc.createElement("Author");
+                    guide.appendChild(doc.createTextNode(post.getAuthor()));
+                    item.appendChild(guide);
+             }
 
             return doc;
-        } catch(ParserConfigurationException e) {
+
+        }catch(ParserConfigurationException e){
             e.printStackTrace();
         }
         return null;
     }
+
 
     private String convertToString(Document xml) {
         try {
@@ -644,10 +663,147 @@ The following Java code represents the **VideoStreamService** class. This class 
             ex.printStackTrace();
         }
         return null;
-     }
     }
 
+    private String translateText(String text, String lang) {
 
+        Region region = Region.US_WEST_2;
+        TranslateClient translateClient = TranslateClient.builder()
+                //.credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .region(region)
+                .build();
+        String transValue = "";
+        try {
+
+            if (lang.compareTo("French")==0) {
+
+                TranslateTextRequest textRequest = TranslateTextRequest.builder()
+                        .sourceLanguageCode("en")
+                        .targetLanguageCode("fr")
+                        .text(text)
+                        .build();
+
+                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
+                transValue = textResponse.translatedText();
+
+            } else if (lang.compareTo("Russian")==0) {
+
+                TranslateTextRequest textRequest = TranslateTextRequest.builder()
+                        .sourceLanguageCode("en")
+                        .targetLanguageCode("ru")
+                        .text(text)
+                        .build();
+
+                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
+                transValue = textResponse.translatedText();
+
+
+            } else if (lang.compareTo("Japanese")==0) {
+
+                TranslateTextRequest textRequest = TranslateTextRequest.builder()
+                        .sourceLanguageCode("en")
+                        .targetLanguageCode("ja")
+                        .text(text)
+                        .build();
+
+                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
+                transValue = textResponse.translatedText();
+
+
+            } else if (lang.compareTo("Spanish")==0) {
+
+                TranslateTextRequest textRequest = TranslateTextRequest.builder()
+                        .sourceLanguageCode("en")
+                        .targetLanguageCode("es")
+                        .text(text)
+                        .build();
+
+                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
+                transValue = textResponse.translatedText();
+
+            } else {
+
+                TranslateTextRequest textRequest = TranslateTextRequest.builder()
+                        .sourceLanguageCode("en")
+                        .targetLanguageCode("zh")
+                        .text(text)
+                        .build();
+
+                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
+                transValue = textResponse.translatedText();
+            }
+
+        return transValue;
+
+        } catch (TranslateException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
+        return "";
+       }
+     }
+
+### WebSecurityConfig class
+
+The following Java code represents the WebSecurityConfig class. The role of this class is to ensure only authenticated users can view the application.
+
+     package com.aws.blog;
+
+     import org.springframework.context.annotation.Bean;
+     import org.springframework.context.annotation.Configuration;
+     import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+     import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+     import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+     import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+     import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+     import org.springframework.security.crypto.password.PasswordEncoder;
+     import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+     @Configuration
+     @EnableWebSecurity
+     public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests()
+                .antMatchers(
+                        "/js/**",
+                        "/css/**",
+                        "/img/**",
+                        "/webjars/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .permitAll()
+                .and()
+                .logout()
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login?logout")
+                .permitAll();
+
+          http.csrf().disable();
+         }
+
+
+       @Override
+       protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .passwordEncoder(passwordEncoder())
+                .withUser("user")
+                .password(passwordEncoder().encode("password"))
+                .roles("USER");
+       }
+
+      @Bean
+      public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+     }
+    }
 
 ## Create the HTML file
 
