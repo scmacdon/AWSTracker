@@ -18,7 +18,7 @@ The application you create uses Spring Boot APIs to build a model, different vie
 
 ![AWS Tracking Application](images/NewRecord.png)
 
-This example application lets you view the post by choosing the **Get Post** menu item and choosing one of the available buttons. For example, you can view five recent posts by choosing the **Five Posts** button, as shown in the following illustration.
+This example application lets you view the post by choosing the **Get Posts** menu item and choosing one of the available buttons. For example, you can view five recent posts by choosing the **Five Posts** button, as shown in the following illustration.
 
 ![AWS Tracking Application](images/FiveRecords.png)
 
