@@ -50,12 +50,12 @@ To complete the tutorial, you need the following:
 + A Java IDE (this tutorial uses the IntelliJ IDE)
 + Java JDK 1.8
 + Maven 3.6 or later
-+ An Amazon Redshift table named blog that contains the fields described in this tutorial. For information about creating an Amazon Reshift table, see [Getting started using databases](https://docs.aws.amazon.com/redshift/latest/dg/c_intro_to_admin.html).
++ An Amazon Redshift table named blog that contains the fields described in this tutorial. For information about creating an Amazon Redshift table, see [Getting started using databases](https://docs.aws.amazon.com/redshift/latest/dg/c_intro_to_admin.html).
 .  
 
-## Create an IntelliJ project named SpringVideoApp
+## Create an IntelliJ project named Blog
 
-Create an IntelliJ project that is used to create the web application that streams Amazon S3 video content.
+Create an IntelliJ project that is used to create the web application.
 
 1. In the IntelliJ IDE, choose **File**, **New**, **Project**.
 
@@ -65,33 +65,33 @@ Create an IntelliJ project that is used to create the web application that strea
 
 4. In **GroupId**, enter **spring-aws**.
 
-5. In **ArtifactId**, enter **SpringVideoApp**.
+5. In **ArtifactId**, enter **Blog**.
 
-6.	Choose **Next**.
+6. Choose **Next**.
 
-7.	Choose **Finish**.
+7. Choose **Finish**.
 
 ## Add the Spring POM dependencies to your project
 
-At this point, you have a new project named **SpringVideoApp**. Ensure that the pom.xml file resembles the following code.
+At this point, you have a new project named **Blog**. Ensure that the pom.xml file resembles the following code.
 
      <?xml version="1.0" encoding="UTF-8"?>
      <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.example</groupId>
-    <artifactId>SpringVideoApp</artifactId>
+     <modelVersion>4.0.0</modelVersion>
+    <groupId>aws-spring</groupId>
+    <artifactId>Blog</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <description>Demo project for Spring Boot</description>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.0.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.0.4.RELEASE</version>
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
     </properties>
     <dependencyManagement>
@@ -99,7 +99,7 @@ At this point, you have a new project named **SpringVideoApp**. Ensure that the 
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-                <version>2.10.54</version>
+                <version>2.15.14</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -107,28 +107,69 @@ At this point, you have a new project named **SpringVideoApp**. Ensure that the 
     </dependencyManagement>
     <dependencies>
         <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ses</artifactId>
+        </dependency>
+         <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.8.0</version>
+            <scope>test</scope>
+        </dependency>
+         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
+            <artifactId>redshift</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>translate</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>redshiftdata</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>3.3.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jexcelapi</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6.10</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-           <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>3.4.4</version>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
