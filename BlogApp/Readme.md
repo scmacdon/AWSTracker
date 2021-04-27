@@ -22,17 +22,9 @@ This example application lets you view the post by choosing the **Get Post** men
 
 ![AWS Tracking Application](images/FiveRecords.png)
 
-In the previous illustration, notice the video menu that displays video titles and descriptions. The video menu is displayed to let the user know which videos are available to view. To view a specific video, the user click the video title. A GET Request is made to a Spring Controller, the application reads the specific video in an Amazon S3 bucket, encodes the byte array and then steams the data where the video is displayed in an HTML5 Video tag. 
+This example web application also supports viewing the result set in different languages. For example, if a user wants to view the result set in Spanish, they can choose Spanish from the dropdown field and the result is translated to the given language by using the Amazon Translate Service, as shown in this illustration. 
 
-This web application also supports uploading MP4 videos to an Amazon S3 bucket. For example, the following illustration shows a video named Rabbit.mp4 along with a description. 
-
-![AWS Video Analyzer](images/pic3.png)
-
-Once a video is uploaded into the Amazon S3 bucket, it is displayed in the video menu. 
-
-![AWS Video Analyzer](images/pic4.png)
-
-In this AWS tutorial, you create a Spring Boot web application. After the application is created, this tutorial shows you how to deploy the application to AWS Elastic Beanstalk. 
+![AWS Tracking Application](images/Spanish.png)
 
 **Cost to complete:** The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
