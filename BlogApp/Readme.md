@@ -54,7 +54,7 @@ To complete the tutorial, you need the following:
 + Maven 3.6 or later
 + An Amazon Redshift table named **blog** that contains the fields described in this tutorial. For information about creating an Amazon Redshift table, see [Getting started using databases](https://docs.aws.amazon.com/redshift/latest/dg/c_intro_to_admin.html).
 
-## Create an IntelliJ project named Blog
+## Create an IntelliJ project named BlogAurora
 
 Create an IntelliJ project that is used to create the web application.
 
@@ -66,7 +66,7 @@ Create an IntelliJ project that is used to create the web application.
 
 4. In **GroupId**, enter **spring-aws**.
 
-5. In **ArtifactId**, enter **AWSBlog**.
+5. In **ArtifactId**, enter **BlogAurora**.
 
 6. Choose **Next**.
 
@@ -74,7 +74,7 @@ Create an IntelliJ project that is used to create the web application.
 
 ## Add the Spring POM dependencies to your project
 
-At this point, you have a new project named **AWSBlog**. Ensure that the pom.xml file resembles the following code.
+At this point, you have a new project named **BlogAurora**. Ensure that the pom.xml file resembles the following code.
 
      <?xml version="1.0" encoding="UTF-8"?>
      <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -82,7 +82,7 @@ At this point, you have a new project named **AWSBlog**. Ensure that the pom.xml
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <modelVersion>4.0.0</modelVersion>
      <groupId>aws-spring</groupId>
-     <artifactId>AWSBlog</artifactId>
+     <artifactId>BlogAurora</artifactId>
      <version>1.0-SNAPSHOT</version>
      <packaging>jar</packaging>
      <parent>
@@ -180,7 +180,7 @@ At this point, you have a new project named **AWSBlog**. Ensure that the pom.xml
  
  Create a Java package in the main/java folder named **com.aws.blog**. This Java classes go into this package. 
  
- ![AWS Lex](images/Java.png)
+ ![AWS Lex](images/Java2.png)
  
  Create these Java classes:
 
