@@ -187,7 +187,7 @@ At this point, you have a new project named **BlogAurora**. Ensure that the pom.
 + **BlogApp** - Used as the base class for the Spring Boot application.
 + **BlogController** - Used as the Spring Boot controller that handles HTTP requests. 
 + **Post** - Used as the applications model that stores application data.
-+ **RedshiftService** - Used as the Spring Service that uses the Amazon Redshift Java API V2 and Amazon Translate Java API V2. 
++ **RetrieveDataRDS** - Used as the Spring Service that uses the Java JDBC API and the Amazon Translate Java API V2. 
 + **WebSecurityConfig** - The role of this class is to set up an in-memory user store that contains a single user (the user name is **user** and the password is **password**).
 
 ### BlogApp class
@@ -228,7 +228,7 @@ The following Java code represents the **BlogController** class.
     public class BlogController {
 
     @Autowired
-    RedshiftService rs;
+    RetrieveDataRDS rdsData;
 
     @GetMapping("/")
     public String root() {
@@ -239,7 +239,6 @@ The following Java code represents the **BlogController** class.
     public String add() {
         return "add";
     }
-
 
     @GetMapping("/posts")
     public String post() {
@@ -259,26 +258,27 @@ The following Java code represents the **BlogController** class.
         String name = getLoggedUser();
         String title = request.getParameter("title");
         String body = request.getParameter("body");
-        return rs.addRecord(name, title, body);
-    }
+        return rdsData.addRecord(name, title, body);
+     }
 
-
-    // Queries items from the Redshift database.
+    // Queries items from the Aurora database.
     @RequestMapping(value = "/getPosts", method = RequestMethod.POST)
     @ResponseBody
-    String getFivePosts(HttpServletRequest request, HttpServletResponse response) {
+    String getPosts(HttpServletRequest request, HttpServletResponse response) {
 
         String num = request.getParameter("number");
         String lang = request.getParameter("lang");
-        return rs.getPosts(lang,Integer.parseInt(num)) ;
-     }
+        return rdsData.getPosts(lang,Integer.parseInt(num));
+    }
 
     private String getLoggedUser() {
 
+        // Get the logged-in user.
         org.springframework.security.core.userdetails.User user2 = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return user2.getUsername();
      }
-     }
+    }
+
 
 
 ### Post class
@@ -338,16 +338,15 @@ The following Java code represents the **Post** class.
      }
     }
 
-### RedshiftService class
+### RetrieveDataRDS class
 
-The following Java code represents the **RedshiftService** class. This class uses the Amazon Redshift Java API (V2) to interact with data located the **blog** table.  For example, the **getPosts** method returns a result set that is queried from the **blog** table and displayed in the view. Likewise, the **addRecord** method adds a new record to the **blog** table. This class also uses the Amazon Translate Java V2 API to translation the result set if requested by the user. 
+The following Java code represents the **RetrieveDataRDS** class. This class uses the Java JDBC API (V2) to interact with data located the **jobs** table.  For example, the **getPosts** method returns a result set that is queried from the **jobs** table and displayed in the view. Likewise, the **addRecord** method adds a new record to the **jobs** table. This class also uses the Amazon Translate Java V2 API to translation the result set if requested by the user. 
 
      package com.aws.blog;
 
      import org.springframework.stereotype.Component;
+     import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
      import software.amazon.awssdk.regions.Region;
-     import software.amazon.awssdk.services.redshiftdata.model.*;
-     import software.amazon.awssdk.services.redshiftdata.RedshiftDataClient;
      import org.w3c.dom.Document;
      import org.w3c.dom.Element;
      import software.amazon.awssdk.services.translate.TranslateClient;
@@ -367,69 +366,25 @@ The following Java code represents the **RedshiftService** class. This class use
      import java.text.SimpleDateFormat;
      import java.time.LocalDateTime;
      import java.time.format.DateTimeFormatter;
-     import java.util.ArrayList;  
+     import java.util.ArrayList;
      import java.util.Date;
      import java.util.List;
      import java.util.UUID;
+     import java.sql.*;
 
-    @Component
-    public class RedshiftService {
+     @Component
+     public class RetrieveDataRDS {
 
-    String clusterId = "<Enter your Cluster ID>";
-    String database = "<Enter your database name>";
-    String dbUser = "<Enter your dbUser value>";
-
-    private RedshiftDataClient getClient() {
-
-        Region region = Region.US_WEST_2;
-        RedshiftDataClient redshiftDataClient = RedshiftDataClient.builder()
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .region(region)
-                .build();
-
-        return redshiftDataClient;
-    }
-
-    // Returns a collection from the Redshift table.
-    public String getPosts(String lang, int num) {
-
-        try {
-
-            RedshiftDataClient redshiftDataClient = getClient();
-            String sqlStatement="";
-            if (num ==5)
-                sqlStatement = "SELECT TOP 5 * FROM blog ORDER BY date DESC";
-            else if (num ==10)
-                sqlStatement = "SELECT TOP 10 * FROM blog ORDER BY date DESC";
-            else
-                sqlStatement = "SELECT * FROM blog ORDER BY date DESC" ;
-
-            ExecuteStatementRequest statementRequest = ExecuteStatementRequest.builder()
-                    .clusterIdentifier(clusterId)
-                    .database(database)
-                    .dbUser(dbUser)
-                    .sql(sqlStatement)
-                    .build();
-
-            ExecuteStatementResponse response = redshiftDataClient.executeStatement(statementRequest);
-            String myId = response.id();
-            checkStatement(redshiftDataClient,myId );
-            List<Post> posts = getResults(redshiftDataClient, myId, lang);
-            return convertToString(toXml(posts));
-
-        } catch (RedshiftDataException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-        return "";
-    }
-
-    // Add a new record to the Amazon Redshift table.
+    // Add a new record to the Amazon Aurora table.
     public String addRecord(String author, String title, String body) {
 
+        Connection c = null;
+
         try {
 
-            RedshiftDataClient redshiftDataClient = getClient();
+            // Create a Connection object
+            c = ConnectionHelper.getConnection();
+
             UUID uuid = UUID.randomUUID();
             String id = uuid.toString();
 
@@ -440,191 +395,88 @@ The following Java code represents the **RedshiftService** class. This class use
             Date date1 = new SimpleDateFormat("yyyy/MM/dd").parse(sDate1);
             java.sql.Date sqlDate = new java.sql.Date( date1.getTime());
 
+            // Use prepared statements
+            PreparedStatement ps = null;
 
-            // Inject an item into the system.
-            String sqlStatement = "INSERT INTO blog (idblog, date, title, body, author) VALUES( '"+uuid+"' ,'"+sqlDate +"','"+title +"' , '"+body +"', '"+author +"');";
-            ExecuteStatementRequest statementRequest = ExecuteStatementRequest.builder()
-                    .clusterIdentifier(clusterId)
-                    .database(database)
-                    .dbUser(dbUser)
-                    .sql(sqlStatement)
-                    .build();
+            // Inject an item into the system
+            String insert = "INSERT INTO jobs (idjobs, date,title,body, author) VALUES(?,?,?,?,?);";
+            ps = c.prepareStatement(insert);
+            ps.setString(1, id);
+            ps.setDate(2, sqlDate);
+            ps.setString(3, title);
+            ps.setString(4, body);
+            ps.setString(5, author );
+            ps.execute();
 
-            redshiftDataClient.executeStatement(statementRequest);
             return id;
 
-        } catch (RedshiftDataException | ParseException e) {
+        } catch (ParseException | SQLException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
         return null;
-    }
+      }
 
-    public void checkStatement(RedshiftDataClient redshiftDataClient,String sqlId ) {
 
-        try {
+       // Returns a collection from the Aurora table.
+       public String getPosts(String lang, int num) {
 
-            DescribeStatementRequest statementRequest = DescribeStatementRequest.builder()
-                    .id(sqlId)
-                    .build() ;
-
-            // Wait until the sql statement processing is finished.
-            boolean finished = false;
-            String status = "";
-            while (!finished) {
-
-                DescribeStatementResponse response = redshiftDataClient.describeStatement(statementRequest);
-                status = response.statusAsString();
-                System.out.println("..."+status);
-
-                if (status.compareTo("FINISHED") == 0) {
-                    break;
-                }
-                Thread.sleep(500);
-            }
-
-            System.out.println("The statement is finished!");
-
-        } catch (RedshiftDataException | InterruptedException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    public List<Post> getResults(RedshiftDataClient redshiftDataClient, String statementId, String lang) {
+        Connection c = null;
 
         try {
 
-            List<Post>records = new ArrayList<>();
-            GetStatementResultRequest resultRequest = GetStatementResultRequest.builder()
-                    .id(statementId)
-                    .build();
+            // Create a Connection object
+            c = ConnectionHelper.getConnection();
 
-            GetStatementResultResponse response = redshiftDataClient.getStatementResult(resultRequest);
+            String sqlStatement="";
+            if (num ==5)
+                sqlStatement = "Select * from jobs order by date DESC LIMIT 5 ; ";
+            else if (num ==10)
+                sqlStatement = "Select * from jobs order by date DESC LIMIT 10 ; ";
+            else
+                sqlStatement = "Select * from jobs order by date DESC" ;
 
-            // Iterate through the List element where each element is a List object.
-            List<List<Field>> dataList = response.records();
+            PreparedStatement pstmt = null;
+            ResultSet rs = null;
+            List<Post> posts = new ArrayList<>();
+            Post post = null;
 
-            Post post ;
-            int index = 0 ;
-            // Print out the records.
-            for (List list: dataList) {
+            pstmt = c.prepareStatement(sqlStatement);
+            rs = pstmt.executeQuery();
+            String title = "";
+            String body = "";
 
-                // new Post object here
+            while (rs.next()) {
+
                 post = new Post();
-                index = 0 ;
-                for (Object myField:list) {
+                post.setId(rs.getString(1));
+                post.setDate(rs.getDate(2).toString());
 
-                    Field field = (Field) myField;
-                    String value = field.stringValue();
+                title = rs.getString(3);
+                if (!lang.equals("English"))
+                    title = translateText(title, lang);
 
-                    if (index == 0)
-                        post.setId(value);
+                post.setTitle(title);
+                body= rs.getString(4);
+                if (!lang.equals("English"))
+                    body = translateText(body, lang);
 
-                    else if (index == 1)
-                        post.setDate(value);
+                post.setBody(body);
+                post.setAuthor(rs.getString(5));
 
-                    else if (index == 2) {
-
-                        if (!lang.equals("English"))
-                            value = translateText(value, lang);
-
-                        post.setTitle(value);
-                    }
-
-                    else if (index == 3) {
-                        if (!lang.equals("English"))
-                             value = translateText(value, lang);
-
-                        post.setBody(value);
-                    }
-
-                    else if (index == 4)
-                        post.setAuthor(value);
-
-                    // Increment the index.
-                    index ++;
-               }
-
-                // Push the Post object to the List.
-                records.add(post);
+                // Push post to the list
+                posts.add(post);
             }
 
-            return records;
+            return convertToString(toXml(posts));
 
-        } catch (RedshiftDataException e) {
+        } catch ( SQLException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-
-        return null ;
+        return "";
     }
 
-    // Convert the list to XML to pass back to the view.
-    private Document toXml(List<Post> itemsList) {
-
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.newDocument();
-
-            // Start building the XML.
-            Element root = doc.createElement("Items");
-            doc.appendChild(root);
-
-            // Iterate through the collection.
-            for (Post post : itemsList) {
-
-                    Element item = doc.createElement("Item");
-                    root.appendChild(item);
-
-                    // Set Id.
-                    Element id = doc.createElement("Id");
-                    id.appendChild(doc.createTextNode(post.getId()));
-                    item.appendChild(id);
-
-                    // Set Date.
-                    Element name = doc.createElement("Date");
-                    name.appendChild(doc.createTextNode(post.getDate()));
-                    item.appendChild(name);
-
-                    // Set Title.
-                    Element date = doc.createElement("Title");
-                    date.appendChild(doc.createTextNode(post.getTitle()));
-                    item.appendChild(date);
-
-                    // Set Content.
-                    Element desc = doc.createElement("Content");
-                    desc.appendChild(doc.createTextNode(post.getBody()));
-                    item.appendChild(desc);
-
-                    // Set Author.
-                    Element guide = doc.createElement("Author");
-                    guide.appendChild(doc.createTextNode(post.getAuthor()));
-                    item.appendChild(guide);
-             }
-
-            return doc;
-
-        }catch(ParserConfigurationException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private String convertToString(Document xml) {
-        try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            StreamResult result = new StreamResult(new StringWriter());
-            DOMSource source = new DOMSource(xml);
-            transformer.transform(source, result);
-            return result.getWriter().toString();
-
-        } catch(TransformerException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
 
     private String translateText(String text, String lang) {
 
@@ -694,7 +546,7 @@ The following Java code represents the **RedshiftService** class. This class use
                 transValue = textResponse.translatedText();
             }
 
-        return transValue;
+            return transValue;
 
         } catch (TranslateException e) {
             System.err.println(e.getMessage());
@@ -702,10 +554,121 @@ The following Java code represents the **RedshiftService** class. This class use
         }
 
         return "";
-       }
       }
 
-**Note**: Be sure to assign applicable values to the **clusterId**, **database**, and **dbUser** variables. Otherwise, your code does not work.
+     // Convert the list to XML to pass back to the view.
+     private Document toXml(List<Post> itemsList) {
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.newDocument();
+
+            // Start building the XML.
+            Element root = doc.createElement("Items");
+            doc.appendChild(root);
+
+            // Iterate through the collection.
+            for (Post post : itemsList) {
+
+                Element item = doc.createElement("Item");
+                root.appendChild(item);
+
+                // Set Id.
+                Element id = doc.createElement("Id");
+                id.appendChild(doc.createTextNode(post.getId()));
+                item.appendChild(id);
+
+                // Set Date.
+                Element name = doc.createElement("Date");
+                name.appendChild(doc.createTextNode(post.getDate()));
+                item.appendChild(name);
+
+                // Set Title.
+                Element date = doc.createElement("Title");
+                date.appendChild(doc.createTextNode(post.getTitle()));
+                item.appendChild(date);
+
+                // Set Content.
+                Element desc = doc.createElement("Content");
+                desc.appendChild(doc.createTextNode(post.getBody()));
+                item.appendChild(desc);
+
+                // Set Author.
+                Element guide = doc.createElement("Author");
+                guide.appendChild(doc.createTextNode(post.getAuthor()));
+                item.appendChild(guide);
+            }
+
+            return doc;
+
+        }catch(ParserConfigurationException e){
+            e.printStackTrace();
+        }
+        return null;
+    ,}
+
+     private String convertToString(Document xml) {
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            StreamResult result = new StreamResult(new StringWriter());
+            DOMSource source = new DOMSource(xml);
+            transformer.transform(source, result);
+            return result.getWriter().toString();
+
+        } catch(TransformerException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+      }
+     }
+
+### ConnectionHelper class
+
+The following Java code represents the **ConnectionHelper** class.
+
+    package com.aws.jdbc;
+
+    import java.sql.Connection;
+    import java.sql.DriverManager;
+    import java.sql.SQLException;
+
+    public class ConnectionHelper {
+
+      private String url;
+      private static ConnectionHelper instance;
+
+      private ConnectionHelper() {
+          url = "jdbc:mysql://localhost:3306/mydb?useSSL=false";
+       }
+
+      public static Connection getConnection() throws SQLException {
+         if (instance == null) {
+            instance = new ConnectionHelper();
+         }
+         try {
+
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            return DriverManager.getConnection(instance.url, "root","root");
+        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.getStackTrace();
+        }
+        return null;
+    	}
+
+       public static void close(Connection connection) {
+         try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+      }
+     }
+
+**Note:** The **URL** value is **localhost:3306**. This value is modified after the RDS instance is created. The AWS Tracker application uses this URL to communicate with the database. You must also ensure that you specify the user name and password for your RDS instance.
+
 
 ### WebSecurityConfig class
 
