@@ -1,8 +1,12 @@
-# Creating a Job Posting Site using Amazon Redshift and Amazon Translation Services
+# Creating a Job Posting Site using Amazon Aurora and Amazon Translation Services
 
-You can create a web application that stores and queries data by using the Amazon Redshift service and the Amazon Redshift Java API V2. To interact with an Amazon Redshift table, you can use a [software.amazon.awssdk.services.redshiftdata.RedshiftDataClient](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/services/redshiftdata/RedshiftDataClient.html). The application created in this AWS tutorial is a job posting web application that lets an employer, an administrator, or human resources staff alert current employees or the public about an immediate or future job opening within a company. The data is stored in a Redshift table named **blog**, as shown in this illustration. 
+You can create a web application that stores and queries data by using the Amazon Aurora service. The application created in this AWS tutorial is a job posting web application that lets an employer, an administrator, or human resources staff alert employees or the public about a job opening within a company.
 
-![AWS Tracking Application](images/Redshift.png)
+**Note**: Amazon Aurora (Aurora) is a fully managed relational database engine that's compatible with MySQL and PostgreSQL. You already know how MySQL and PostgreSQL combine the speed and reliability of high-end commercial databases with the simplicity and cost-effectiveness of open-source databases. For more information, see [What is Amazon Aurora?](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html).
+
+The data is stored in an Amazon Aurora table named **jobs**, as shown in this illustration. 
+
+![AWS Tracking Application](images/JobsTable.png)
 
 The **blog** table contains these fields: 
 
@@ -16,15 +20,15 @@ The **blog** table contains these fields:
 
 The application you create uses Spring Boot APIs to build a model, different views, and a controller. This web application also lets a user submit a new job posting that is then stored into the **blog** table, as shown in this illustation. 
 
-![AWS Tracking Application](images/NewRecord.png)
+![AWS Tracking Application](images/NewRecorda.png)
 
-This example application lets you view the post by choosing the **Get Posts** menu item and choosing one of the available buttons. For example, you can view five recent posts by choosing the **Five Posts** button, as shown in the following illustration.
+This example application lets you view the posts by choosing the **Get Posts** menu item and choosing one of the available buttons. For example, you can view five recent posts by choosing the **Five Posts** button, as shown in the following illustration.
 
-![AWS Tracking Application](images/FiveRecords.png)
+![AWS Tracking Application](images/FiveRecordsa.png)
 
-This example web application also supports viewing the result set in different languages. For example, if a user wants to view the result set in Spanish, they can choose Spanish from the dropdown field and the data is translated to the given language by using the Amazon Translate Service, as shown in this illustration. 
+This application also supports viewing the result set in different languages. For example, if a user wants to view the result set in Spanish, they can choose Spanish from the dropdown field and the data is translated to the given language by using the Amazon Translate Service, as shown in this illustration. 
 
-![AWS Tracking Application](images/Spanish.png)
+![AWS Tracking Application](images/Spanisha.png)
 
 **Cost to complete:** The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
@@ -51,7 +55,6 @@ To complete the tutorial, you need the following:
 + Java JDK 1.8
 + Maven 3.6 or later
 + An Amazon Redshift table named **blog** that contains the fields described in this tutorial. For information about creating an Amazon Redshift table, see [Getting started using databases](https://docs.aws.amazon.com/redshift/latest/dg/c_intro_to_admin.html).
-.  
 
 ## Create an IntelliJ project named Blog
 
@@ -203,8 +206,8 @@ At this point, you have a new project named **Blog**. Ensure that the pom.xml fi
 + **BlogApp** - Used as the base class for the Spring Boot application.
 + **BlogController** - Used as the Spring Boot controller that handles HTTP requests. 
 + **Post** - Used as the applications model that stores application data.
-+ **RedshiftService** - Used as the Spring Service that uses the Redshift Java API V2. 
-+ **WebSecurityConfig** - The role of this class is to ensure only authenticated users can view the application. 
++ **RedshiftService** - Used as the Spring Service that uses the Amazon Redshift Java API V2 and Amazon Translate Java API V2. 
++ **WebSecurityConfig** - The role of this class is to set up an in-memory user store that contains a single user (the user name is **user** and the password is **password**).
 
 ### BlogApp class
 
@@ -220,27 +223,25 @@ The following Java code represents the **BlogApp** class.
 
      public static void main(String[] args) throws Throwable {
         SpringApplication.run(BlogApp.class, args);
+      }
      }
-   }
 
 ### BlogController class
 
 The following Java code represents the **BlogController** class.
 
      package com.aws.blog;
-    
-    import org.springframework.security.core.context.SecurityContextHolder;
-    import org.springframework.stereotype.Controller;
-    import org.springframework.ui.Model;
-    import org.springframework.web.bind.annotation.GetMapping;
-    import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.ResponseBody;
-    import org.springframework.web.bind.annotation.RequestMethod;
-    import javax.servlet.http.HttpServletRequest;
-    import javax.servlet.http.HttpServletResponse;
-    import java.io.IOException;
-    import java.util.List;
-    import org.springframework.beans.factory.annotation.Autowired;
+
+     import org.springframework.security.core.context.SecurityContextHolder;
+     import org.springframework.stereotype.Controller;
+     import org.springframework.ui.Model;
+     import org.springframework.web.bind.annotation.GetMapping;
+     import org.springframework.web.bind.annotation.RequestMapping;
+     import org.springframework.web.bind.annotation.ResponseBody;
+     import org.springframework.web.bind.annotation.RequestMethod;
+     import javax.servlet.http.HttpServletRequest;
+     import javax.servlet.http.HttpServletResponse;
+     import org.springframework.beans.factory.annotation.Autowired;
 
     @Controller
     public class BlogController {
@@ -269,53 +270,35 @@ The following Java code represents the **BlogController** class.
         return "login";
     }
 
-    // Adds a new item to the database
+    // Adds a new item to the database.
     @RequestMapping(value = "/addPost", method = RequestMethod.POST)
     @ResponseBody
     String addItems(HttpServletRequest request, HttpServletResponse response) {
 
-        //Get the Logged in User
         String name = getLoggedUser();
         String title = request.getParameter("title");
         String body = request.getParameter("body");
-        String id = rs.addRecord(name, title, body) ;
-        return id;
+        return rs.addRecord(name, title, body);
     }
 
 
-    // Queries five items from the Redshift database.
-    @RequestMapping(value = "/fivePost", method = RequestMethod.POST)
+    // Queries items from the Redshift database.
+    @RequestMapping(value = "/getPosts", method = RequestMethod.POST)
     @ResponseBody
     String getFivePosts(HttpServletRequest request, HttpServletResponse response) {
 
-        //Get the Logged in User
-        String name = getLoggedUser();
+        String num = request.getParameter("number");
         String lang = request.getParameter("lang");
-        String xml =  rs.getPosts(lang,5) ;
-        return xml;
-    }
-
-
-    // Queries ten items from the Redshift database.
-    @RequestMapping(value = "/tenPost", method = RequestMethod.POST)
-    @ResponseBody
-    String getTenPosts(HttpServletRequest request, HttpServletResponse response) {
-
-        //Get the Logged in User
-        String name = getLoggedUser();
-        String lang = request.getParameter("lang");
-        String xml =  rs.getPosts(lang,10) ;
-        return xml;
-    }
+        return rs.getPosts(lang,Integer.parseInt(num)) ;
+     }
 
     private String getLoggedUser() {
 
-        // Get the logged-in Useruser
         org.springframework.security.core.userdetails.User user2 = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String name = user2.getUsername();
-        return name;
+        return user2.getUsername();
      }
-    }
+     }
+
 
 ### Post class
 
@@ -371,12 +354,12 @@ The following Java code represents the **Post** class.
 
     public String getId() {
         return this.id ;
+     }
     }
-   }
 
 ### RedshiftService class
 
-The following Java code represents the **RedshiftService** class. This class uses the Amazon Redshift Java API (V2) to interact with data located the **blog** table.  For example, the **getPosts** method returns a result set that is queried from the **blog** table and displayed in the view. Likewise, the **addRecord** method adds a new record to the **blog** table. 
+The following Java code represents the **RedshiftService** class. This class uses the Amazon Redshift Java API (V2) to interact with data located the **blog** table.  For example, the **getPosts** method returns a result set that is queried from the **blog** table and displayed in the view. Likewise, the **addRecord** method adds a new record to the **blog** table. This class also uses the Amazon Translate Java V2 API to translation the result set if requested by the user. 
 
      package com.aws.blog;
 
@@ -419,14 +402,14 @@ The following Java code represents the **RedshiftService** class. This class use
 
         Region region = Region.US_WEST_2;
         RedshiftDataClient redshiftDataClient = RedshiftDataClient.builder()
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
                 .region(region)
                 .build();
 
         return redshiftDataClient;
     }
 
-
-    // Returns a collection that returns the latest five posts from the Redshift table.
+    // Returns a collection from the Redshift table.
     public String getPosts(String lang, int num) {
 
         try {
@@ -434,9 +417,11 @@ The following Java code represents the **RedshiftService** class. This class use
             RedshiftDataClient redshiftDataClient = getClient();
             String sqlStatement="";
             if (num ==5)
-                sqlStatement = "SELECT TOP 5 * FROM blog ORDER BY date";
+                sqlStatement = "SELECT TOP 5 * FROM blog ORDER BY date DESC";
+            else if (num ==10)
+                sqlStatement = "SELECT TOP 10 * FROM blog ORDER BY date DESC";
             else
-                sqlStatement = "SELECT TOP 10 * FROM blog ORDER BY date";
+                sqlStatement = "SELECT * FROM blog ORDER BY date DESC" ;
 
             ExecuteStatementRequest statementRequest = ExecuteStatementRequest.builder()
                     .clusterIdentifier(clusterId)
@@ -458,17 +443,16 @@ The following Java code represents the **RedshiftService** class. This class use
         return "";
     }
 
+    // Add a new record to the Amazon Redshift table.
     public String addRecord(String author, String title, String body) {
 
         try {
 
             RedshiftDataClient redshiftDataClient = getClient();
             UUID uuid = UUID.randomUUID();
-            String id  = uuid.toString();
+            String id = uuid.toString();
 
-            // Date conversion
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
+            // Date conversion.
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
             String sDate1 = dtf.format(now);
@@ -486,7 +470,6 @@ The following Java code represents the **RedshiftService** class. This class use
                     .build();
 
             redshiftDataClient.executeStatement(statementRequest);
-
             return id;
 
         } catch (RedshiftDataException | ParseException e) {
@@ -527,7 +510,6 @@ The following Java code represents the **RedshiftService** class. This class use
         }
     }
 
-
     public List<Post> getResults(RedshiftDataClient redshiftDataClient, String statementId, String lang) {
 
         try {
@@ -563,18 +545,16 @@ The following Java code represents the **RedshiftService** class. This class use
 
                     else if (index == 2) {
 
-                        if (!lang.equals("English")) {
-                            // We need to translate the text
+                        if (!lang.equals("English"))
                             value = translateText(value, lang);
-                        }
+
                         post.setTitle(value);
                     }
 
                     else if (index == 3) {
-                        if (!lang.equals("English")) {
-                            // We need to translate the text
-                           value = translateText(value, lang);
-                        }
+                        if (!lang.equals("English"))
+                             value = translateText(value, lang);
+
                         post.setBody(value);
                     }
 
@@ -585,11 +565,11 @@ The following Java code represents the **RedshiftService** class. This class use
                     index ++;
                }
 
-                // Push the Post object to the List
+                // Push the Post object to the List.
                 records.add(post);
             }
 
-            return  records;
+            return records;
 
         } catch (RedshiftDataException e) {
             System.err.println(e.getMessage());
@@ -599,7 +579,7 @@ The following Java code represents the **RedshiftService** class. This class use
         return null ;
     }
 
-    // Convert Work item data into XML to pass back to the view.
+    // Convert the list to XML to pass back to the view.
     private Document toXml(List<Post> itemsList) {
 
         try {
@@ -632,7 +612,7 @@ The following Java code represents the **RedshiftService** class. This class use
                     date.appendChild(doc.createTextNode(post.getTitle()));
                     item.appendChild(date);
 
-                    // Set Body.
+                    // Set Content.
                     Element desc = doc.createElement("Content");
                     desc.appendChild(doc.createTextNode(post.getBody()));
                     item.appendChild(desc);
@@ -650,7 +630,6 @@ The following Java code represents the **RedshiftService** class. This class use
         }
         return null;
     }
-
 
     private String convertToString(Document xml) {
         try {
@@ -670,7 +649,7 @@ The following Java code represents the **RedshiftService** class. This class use
 
         Region region = Region.US_WEST_2;
         TranslateClient translateClient = TranslateClient.builder()
-                //.credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
                 .region(region)
                 .build();
         String transValue = "";
@@ -743,11 +722,13 @@ The following Java code represents the **RedshiftService** class. This class use
 
         return "";
        }
-     }
+      }
+
+**Note**: Be sure to assign applicable values to the **clusterId**, **database**, and **dbUser** variables. Otherwise, your code does not work.
 
 ### WebSecurityConfig class
 
-The following Java code represents the WebSecurityConfig class. The role of this class is to ensure only authenticated users can view the application.
+The following Java code represents the **WebSecurityConfig** class. The role of this class is to ensure only authenticated users can view the application.
 
      package com.aws.blog;
 
@@ -803,12 +784,14 @@ The following Java code represents the WebSecurityConfig class. The role of this
       @Bean
       public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+      }
      }
-    }
+    
+**Note**: In this example, the user credentials to log into the application are **user** and **password**.    
 
 ## Create the HTML file
 
-At this point, you have created all of the Java files required for this example application. Now you create HTML files that are required for the application's view. Under the resource folder, create a **templates** folder, and then create the following HTML files:
+At this point, you have created all of the Java files required for this example application. Now create HTML files that are required for the application's view. Under the resource folder, create a **templates** folder, and then create the following HTML files:
 
 + index.html
 + layout.html
@@ -817,19 +800,19 @@ At this point, you have created all of the Java files required for this example 
 + login.html
 
 ### index.html
-The **index.html** file is the application's home view. The following HTML represents the **index.html** file. 
+The **index.html** file is the application's home view. 
 
-     <!DOCTYPE html>
-     <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
-     <head>
-     <meta charset="utf-8" />
-     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-     <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css|"/>
-     <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
-     <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
+    <link rel="stylesheet" th:href="|https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css|"/>
+    <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
+    <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
 
     <title>AWS Job Posting Example</title>
     </head>
@@ -838,18 +821,19 @@ The **index.html** file is the application's home view. The following HTML repre
     <header th:replace="layout :: site-header"/>
     <div class="container">
 
-    <h3>Welcome <span sec:authentication="principal.username">User</span> to AWS Job Posting example</h3>
+    <h3>Welcome <span sec:authentication="principal.username">User</span> to the Amazon Redshift Job Posting example app</h3>
     <p>Now is: <b th:text="${execInfo.now.time}"></b></p>
 
-    <h2>AWS Job Posting Example</h2>
+    <h2>Amazon Redshift Job Posting Example</h2>
 
-    <p>The AWS Job Posting Example application uses multiple AWS Services and the Java V2 API. Perform these steps:<p>
+    <p>The Amazon Redshift Job Posting Example application uses multiple AWS Services and the Java V2 API. Perform these steps:<p>
 
     <ol>
-        <li>Enter items into the system by choosing the <i>Add Posts</i> menu item. Fill in the form and then choose <i>Create Item</i>.</li>
+        <li>Enter work items into the system by choosing the <i>Add Posts</i> menu item. Fill in the form and then choose <i>Create Item</i>.</li>
         <li>The sample application stores the data by using the Amazon Redshift Java API V2.</li>
         <li>You can view the items by choosing the <i>Get Posts</i> menu item. Next, select a language.</li>
-        <li>You can view the items by chooing either <b>Five Posts</b> or <b>Ten Posts</b> button. The items appear in the page.
+        <li>You can view the items by chooing either the <b>Five Posts</b>, <b>Ten Posts</b>, or <b>All Posts</b> button. </li>
+        <li>The items appear in the page from newest to oldest.</li>
     </ol>
     <div>
     </body>
@@ -889,8 +873,8 @@ The following code represents the **layout.html** file that represents the appli
 ### add.html
 The **add.html** file is the application's view that lets users post new items. 
 
-     <!DOCTYPE html>
-     <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+      <!DOCTYPE html>
+      <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
      <head>
      <meta charset="UTF-8" />
@@ -903,12 +887,12 @@ The **add.html** file is the application's view that lets users post new items.
      <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
      </head>
 
-    <body>
-    <header th:replace="layout :: site-header"/>
-    <div class="container">
-     <h3>Welcome <span sec:authentication="principal.username">User</span> to AWS Blog Example App</h3>
+     <body>
+     <header th:replace="layout :: site-header"/>
+     <div class="container">
+     <h3>Welcome <span sec:authentication="principal.username">User</span> to the Amazon Redshift Job Posting example app</h3>
      <p>Now is: <b th:text="${execInfo.now.time}"></b></p>
-     <p>Add a new Blog item by filling in this table and clicking <i>Create Item</i></p>
+     <p>Add a new job posting by filling in this table and clicking <i>Create Item</i></p>
 
      <div class="row">
         <div class="col-lg-8 mx-auto">
@@ -929,17 +913,18 @@ The **add.html** file is the application's view that lets users post new items.
                 <br>
                 <button type="submit" class="btn btn-primary btn-xl" id="SendButton">Create Item</button>
             </div>
-        </div>
-      </div>
-     </body>
+       </div>
+       </div>
+      </body>
      </html>
 
 ### post.html
 The **post.html** file is the application's view that displays the items in the specific language. 
 
-     <!DOCTYPE html>
+    <!DOCTYPE html>
      <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-    <head>
+
+     <head>
      <meta charset="UTF-8" />
      <title>Blog</title>
 
@@ -950,20 +935,20 @@ The **post.html** file is the application's view that displays the items in the 
      <script src="../public/js/contact_me.js" th:src="@{/js/contact_me.js}"></script>
      <link rel="stylesheet" href="../public/css/styles.css" th:href="@{/css/styles.css}" />
      <link rel="icon" href="../public/img/favicon.ico" th:href="@{/img/favicon.ico}" />
-    </head>
+     </head>
 
-    <body>
-    <header th:replace="layout :: site-header"/>
+     <body>
+     <header th:replace="layout :: site-header"/>
 
     <div class="container">
-     <h3>Welcome <span sec:authentication="principal.username">User</span> to Example AWS Job Posting App</h3>
+     <h3>Welcome <span sec:authentication="principal.username">User</span> to the Amazon Redshift Job Posting example app</h3>
      <p>Now is: <b th:text="${execInfo.now.time}"></b></p>
 
      <div id= "progress" class="progress">
         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
      </div>
 
-     <div class="row">
+    <div class="row">
         <div class="col">
             <div class="col-lg-10">
                 <div class="clearfix mt-40">
@@ -984,15 +969,15 @@ The **post.html** file is the application's view that displays the items in the 
             </select>
         </div>
         <div>
-            <button type="button" onclick="getFivePosts()">Five Posts</button>
-            <button type="button" onclick="getTenPosts()">Ten Posts</button>
+            <button type="button" onclick="getPosts(5)">Five Posts</button>
+            <button type="button" onclick="getPosts(10)">Ten Posts</button>
+            <button type="button" onclick="getPosts(0)">All Posts</button>
         </div>
-       </div>
-      </div>
      </div>
-    </body>
+     </div>
+     </div>
+     </body>
     </html>
-
 
 ### login.html
 The **login.html** file is the application's login page. 
@@ -1095,86 +1080,70 @@ The **login.html** file is the application's login page.
     
 ### Create the JS File
 
-This application has a **contact_me.js** file that is used to send requests to the Spring Controller. Place this file in the resources\public\js foler. 
+This application has a **contact_me.js** file that is used to send requests to the Spring Controller. Place this file in the **resources\public\js** folder. 
 
       $(function() {
 
-      $('#progress').hide();
+       $('#progress').hide();
 
         $("#SendButton" ).click(function($e) {
+
          var title = $('#title').val();
          var body = $('#body').val();
-         var xhr = new XMLHttpRequest();
-         xhr.addEventListener("load", loadNewItems, false);
-         xhr.open("POST", "../addPost", true);   //buildFormit -- a Spring MVC controller
-         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
-         xhr.send("title=" + title + "&body=" + body);
+        
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", loadNewItems, false);
+        xhr.open("POST", "../addPost", true);   //buildFormit -- a Spring MVC controller
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+        xhr.send("title=" + title + "&body=" + body);
         } );// END of the Send button click
 
-      function loadNewItems(event) {
-
+       function loadNewItems(event) {
         var msg = event.target.responseText;
         alert("You have successfully added item "+msg)
 
         $('#title').val("");
         $('#body').val("");
-       }
+        }
        } );
 
-      function getDataValue() {
-      var radioValue = $("input[name='optradio']:checked").val();
-      return radioValue;
-      }
-
-      function getFivePosts(){
-
-      $('.xsearch-items').empty()
-      $('#progress').show();
-      var lang = $('#lang option:selected').text();
-      var xhr = new XMLHttpRequest();
-      xhr.addEventListener("load", loadItems, false);
-      xhr.open("POST", "../fivePost", true);   //buildFormit -- a Spring MVC controller
-      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
-      xhr.send("lang=" + lang );
-      }
-
-     function getTenPosts(){
+    function getPosts(num){
 
      $('.xsearch-items').empty()
      $('#progress').show();
      var lang = $('#lang option:selected').text();
     
-     var xhr = new XMLHttpRequest();
-     xhr.addEventListener("load", loadItems, false);
-      xhr.open("POST", "../tenPost", true);   //buildFormit -- a Spring MVC controller
-      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
-      xhr.send("lang=" + lang );
-      }
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", loadItems, false);
+    xhr.open("POST", "../getPosts", true);   //buildFormit -- a Spring MVC controller
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//necessary
+    xhr.send("lang=" + lang +"&number=" + num );
+    }
 
-      function loadItems(event) {
- 
-      $('#progress').hide();
-      var xml = event.target.responseText;
-      $(xml).find('Item').each(function ()  {
+    function loadItems(event) {
 
-      var $field = $(this);
-      var id = $field.find('Id').text();
-      var date = $field.find('Date').text();
-      var title = $field.find('Title').text();
-      var body = $field.find('Content').text();
-      var author = $field.find('Author').text();
-     
-       // Append this data to the main list.
-       $('.xsearch-items').append("<className='search-item'>");
-       $('.xsearch-items').append("<div class='search-item-content'>");
-       $('.xsearch-items').append("<h3 class='search-item-caption'><a href='#'>"+title+"</a></h3>");
-       $('.xsearch-items').append("<className='search-item-meta mb-15'>");
-       $('.xsearch-items').append("<className='list-inline'>");
-       $('.xsearch-items').append("<p><b>"+date+"</b></p>");
-       $('.xsearch-items').append("<p><b>'Posted by "+author+"</b></p>");
-       $('.xsearch-items').append("<div>");
-       $('.xsearch-items').append("<h6>"+body +"</h6>");
-       $('.xsearch-items').append("</div>");
+    $('#progress').hide();
+    var xml = event.target.responseText;
+    $(xml).find('Item').each(function ()  {
+
+        var $field = $(this);
+        var id = $field.find('Id').text();
+        var date = $field.find('Date').text();
+        var title = $field.find('Title').text();
+        var body = $field.find('Content').text();
+        var author = $field.find('Author').text();
+        
+        // Append this data to the main list.
+        $('.xsearch-items').append("<className='search-item'>");
+        $('.xsearch-items').append("<div class='search-item-content'>");
+        $('.xsearch-items').append("<h3 class='search-item-caption'><a href='#'>"+title+"</a></h3>");
+        $('.xsearch-items').append("<className='search-item-meta mb-15'>");
+        $('.xsearch-items').append("<className='list-inline'>");
+        $('.xsearch-items').append("<p><b>"+date+"</b></p>");
+        $('.xsearch-items').append("<p><b>'Posted by "+author+"</b></p>");
+        $('.xsearch-items').append("<div>");
+        $('.xsearch-items').append("<h6>"+body +"</h6>");
+        $('.xsearch-items').append("</div>");
        });
       }
 
@@ -1186,7 +1155,7 @@ Package up the project into a .jar (JAR) file that you can deploy to Elastic Bea
 
 The JAR file is located in the target folder.
 
-![AWS Tracking Application](images/pic5.png)
+![AWS Tracking Application](images/Target.png)
 
 The POM file contains the **spring-boot-maven-plugin** that builds an executable JAR file that includes the dependencies. Without the dependencies, the application does not run on Elastic Beanstalk. For more information, see [Spring Boot Maven Plugin](https://www.baeldung.com/executable-jar-with-maven).
 
@@ -1201,7 +1170,7 @@ If this is your first time accessing this service, you will see a **Welcome to A
 1. Open the Elastic Beanstalk console at https://console.aws.amazon.com/elasticbeanstalk/home.
 2. In the navigation pane, choose  **Applications**, and then choose **Create a new application**. This opens a wizard that creates your application and launches an appropriate environment.
 3. On the **Create New Application** page, enter the following values:
-   + **Application Name** - Spring Video App
+   + **Application Name** - Redshift App
    + **Description** - A description for the application
 4. Choose **Create**.
 5. Choose **Create a new environment**.
@@ -1212,24 +1181,19 @@ If this is your first time accessing this service, you will see a **Welcome to A
 10. For **Platform**, choose **Java** (accept the default values for the other fields).
 11. In the **Application code** section, choose **Upload your code**.
 12. Choose **Local file**, and then select **Choose file**. Browse to the JAR file that you created.  
-13. Choose **Create environment**. You'll see the application being created.
-
-![AWS Tracking Application](images/pic6.png)
-
-When you’re done, you will see the application state the **Health** is **Ok** .
-
+13. Choose **Create environment**. You'll see the application being created. When you’re done, you will see the application state the **Health** is **Ok** .
 14. To change the port that Spring Boot listens on, add an environment variable named **SERVER_PORT**, with the value **5000**.
 11. Add a variable named **AWS_ACCESS_KEY_ID**, and then specify your access key value.
 12. Add a variable named **AWS_SECRET_ACCESS_KEY**, and then specify your secret key value. After the variables are configured, you'll see the URL for accessing the application.
 
-![AWS Tracking Application](images/pic7.png)
+![AWS Tracking Application](images/Beanstalk.png)
 
 **Note:** If you don't know how to set variables, see [Environment properties and other software settings](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-softwaresettings.html).
 
 To access the application, open your browser and enter the URL for your application. You will see the Home page for your application.
 
 ### Next steps
-Congratulations! You have created a Spring Boot application that uses Amazon Lex to create an interactive user experience. As stated at the beginning of this tutorial, be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re not charged.
+Congratulations! You have created a Spring Boot application that uses the Amazon Redshift data client to create an example job posting application. As stated at the beginning of this tutorial, be sure to terminate all of the resources you create while going through this tutorial to ensure that you’re not charged.
 
 For more AWS multiservice examples, see
 [usecases](https://github.com/awsdocs/aws-doc-sdk-examples/tree/master/javav2/usecases).
