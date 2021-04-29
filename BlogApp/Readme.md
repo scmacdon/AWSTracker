@@ -8,19 +8,17 @@ The data is stored in an Amazon Aurora table named **jobs**, as shown in this il
 
 ![AWS Tracking Application](images/JobsTable.png)
 
-The **blog** table contains these fields: 
+The **jobs** table contains these fields: 
 
-- **idblog**- a varchar field that stores a GUID value and represents the PK.
+- **idjobs**- a varchar field that stores a GUID value and represents the PK.
 - **date**- a date field that represents the date when the record was added. 
 - **title**- a varchar field that represents the title. 
 - **body**- a varchar field that represents the body. 
 - **author**-a varchar field that represents the author. 
 
-**Note**: For more information about supported field data types, see [Data types](https://docs.aws.amazon.com/redshift/latest/dg/c_Supported_data_types.html). 
+The application you create uses Spring Boot APIs to build a model, different views, and a controller. This web application also lets a user submit a new job posting that is then stored into the **jobs** table, as shown in this illustation. 
 
-The application you create uses Spring Boot APIs to build a model, different views, and a controller. This web application also lets a user submit a new job posting that is then stored into the **blog** table, as shown in this illustation. 
-
-![AWS Tracking Application](images/NewRecorda.png)
+![AWS Tracking Application](images/Post.png.png)
 
 This example application lets you view the posts by choosing the **Get Posts** menu item and choosing one of the available buttons. For example, you can view five recent posts by choosing the **Five Posts** button, as shown in the following illustration.
 
