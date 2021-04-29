@@ -66,7 +66,7 @@ Create an IntelliJ project that is used to create the web application.
 
 4. In **GroupId**, enter **spring-aws**.
 
-5. In **ArtifactId**, enter **Blog**.
+5. In **ArtifactId**, enter **AWSBlog**.
 
 6. Choose **Next**.
 
@@ -74,28 +74,28 @@ Create an IntelliJ project that is used to create the web application.
 
 ## Add the Spring POM dependencies to your project
 
-At this point, you have a new project named **Blog**. Ensure that the pom.xml file resembles the following code.
+At this point, you have a new project named **AWSBlog**. Ensure that the pom.xml file resembles the following code.
 
      <?xml version="1.0" encoding="UTF-8"?>
      <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <modelVersion>4.0.0</modelVersion>
-    <groupId>aws-spring</groupId>
-    <artifactId>Blog</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <parent>
+     <groupId>aws-spring</groupId>
+     <artifactId>AWSBlog</artifactId>
+     <version>1.0-SNAPSHOT</version>
+     <packaging>jar</packaging>
+     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.4.RELEASE</version>
         <relativePath /> <!-- lookup parent from repository -->
-    </parent>
-    <properties>
+     </parent>
+     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-    </properties>
-    <dependencyManagement>
+     </properties>
+     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
@@ -105,33 +105,26 @@ At this point, you have a new project named **Blog**. Ensure that the pom.xml fi
                 <scope>import</scope>
             </dependency>
         </dependencies>
-    </dependencyManagement>
-    <dependencies>
+     </dependencyManagement>
+     <dependencies>
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>ses</artifactId>
-        </dependency>
-         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>redshift</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.21</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>translate</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>redshiftdata</artifactId>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -142,16 +135,6 @@ At this point, you have a new project named **Blog**. Ensure that the pom.xml fi
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
             <version>3.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.jexcelapi</groupId>
-            <artifactId>jxl</artifactId>
-            <version>2.6.10</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -182,16 +165,16 @@ At this point, you have a new project named **Blog**. Ensure that the pom.xml fi
                 </exclusion>
             </exclusions>
         </dependency>
-    </dependencies>
-    <build>
+     </dependencies>
+     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-    </build>
-</project>
+     </build>
+    </project>
      
  ## Create the Java classes
  
