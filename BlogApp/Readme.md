@@ -18,7 +18,7 @@ The **jobs** table contains these fields:
 
 The application you create uses Spring Boot APIs to build a model, different views, and a controller. This web application also lets a user submit a new job posting that is then stored into the **jobs** table, as shown in this illustation. 
 
-![AWS Tracking Application](images/Post.png.png)
+![AWS Tracking Application](images/Post.png)
 
 This example application lets you view the posts by choosing the **Get Posts** menu item and choosing one of the available buttons. For example, you can view five recent posts by choosing the **Five Posts** button, as shown in the following illustration.
 
