@@ -188,6 +188,7 @@ At this point, you have a new project named **BlogAurora**. Ensure that the pom.
 
 + **BlogApp** - Used as the base class for the Spring Boot application.
 + **BlogController** - Used as the Spring Boot controller that handles HTTP requests. 
++ **ConnectionHelper** - Used to open a connection to the Aurora database. 
 + **Post** - Used as the applications model that stores application data.
 + **RetrieveDataRDS** - Used as the Spring Service that uses the Java JDBC API and the Amazon Translate Java API V2. 
 + **WebSecurityConfig** - The role of this class is to set up an in-memory user store that contains a single user (the user name is **user** and the password is **password**).
