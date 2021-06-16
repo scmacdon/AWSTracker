@@ -1,6 +1,6 @@
 # Creating an ETL job by using AWS Step Functions and the AWS SDK for Java
 
-You can create an Extract, Transform, and Load (ETL) job by using AWS Step Functions and the AWS SDK for Java V2. An ETL job can retrieve data from a data source, applies various transformations to it, and then writes the results to a specified location where the data is stored. In this AWS tutorial, population data is stored in an Amazon S3 bucket is retrieved, then it is transformed to another formation and finally stored in an Amazon DyanmoDB table. 
+You can create an Extract, Transform, and Load (ETL) operation by using AWS Step Functions and the AWS SDK for Java V2. An ETL job can retrieve data from a data source, applies various transformations to it, and then writes the results to a specified location where the data is stored. In this AWS tutorial, population data is stored in an Amazon S3 bucket is retrieved, then it is transformed to another formation and finally stored in an Amazon DyanmoDB table. 
 
 ![AWS Tracking Application](images/overview.png)
 
