@@ -1,6 +1,6 @@
 # Creating an ETL job by using AWS Step Functions and the AWS SDK for Java
 
-You can create a web application that stores and queries data by using Amazon Aurora. The application created in this AWS tutorial is a job posting web application that lets an employer, an administrator, or human resources staff alert employees or the public about a job opening within a company.
+You can create an Extract, Transform, and Load (ETL) job by using AWS Step Functions and the AWS SDK for Java V2. An ETL job can retrieve data from a data source, applies various transformations to it, and then writes the results to a specified location where the data is stored. In this AWS tutorial, population data is stored in an Amazon S3 bucket is retrieved, then it is transformed to another formation and finally stored in an Amazon DyanmoDB table. 
 
 **Note**: Amazon Aurora (Aurora) is a fully managed relational database engine that's compatible with MySQL and PostgreSQL. For more information, see [What is Amazon Aurora?](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html).
 
