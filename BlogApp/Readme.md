@@ -8,9 +8,9 @@ The following illustration shows the population data located in a Microsoft Exce
 
 ![AWS Tracking Application](images/popDate.png)
 
-The data is stored in an Amazon Aurora table named **jobs**, as shown in this illustration. 
+AFter the workflow successfully runs the ETL job, the population data is stored in an Amazon DynamoDB table, as shown in this illustation. 
 
-![AWS Tracking Application](images/JobsTable.png)
+![AWS Tracking Application](images/DynTable.png)
 
 The **jobs** table contains these fields: 
 
