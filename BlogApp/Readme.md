@@ -12,25 +12,15 @@ AFter the workflow successfully runs the ETL job, the population data is stored 
 
 ![AWS Tracking Application](images/DynTable.png)
 
-The **jobs** table contains these fields: 
+The AWS Services used in this AWS tutorial are:
 
-- **idjobs**- a varchar field that stores a GUID value and represents the PK.
-- **date**- a date field that represents the date when the record was added. 
-- **title**- a varchar field that represents the title. 
-- **body**- a varchar field that represents the body. 
-- **author**-a varchar field that represents the author. 
+ - Amazon S3 Service
+ - Amazon DynamoDB
+ = AWS Step Functions
+ 
+Each workflow step is implemented by using an AWS Lambda function. Lambda is a compute service that enables you to run code without provisioning or managing servers.
 
-The application you create uses Spring Boot APIs to build a model, different views, and a controller. This web application also lets a user submit a new job posting that is then stored into the **jobs** table, as shown in this illustation. 
-
-![AWS Tracking Application](images/Post.png)
-
-This example application lets you view the posts by choosing the **Get Posts** menu item and choosing one of the available buttons. For example, you can view five recent posts by choosing the **Five Posts** button, as shown in the following illustration.
-
-![AWS Tracking Application](images/Posts.png)
-
-This application also supports viewing the result set in different languages. For example, if a user wants to view the result set in French, they can choose French from the dropdown field and the data is translated to the given language by using the Amazon Translate Service, as shown in this illustration. 
-
-![AWS Tracking Application](images/French.png)
+**Note**: You can create Lambda functions in various programming languages. For this tutorial, Lambda functions are implemented by using the Lambda Java API. For more information about Lambda, see  [What is AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html). 
 
 **Cost to complete:** The AWS services included in this document are included in the [AWS Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc).
 
