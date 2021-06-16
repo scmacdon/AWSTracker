@@ -1,10 +1,12 @@
 # Creating an ETL job by using AWS Step Functions and the AWS SDK for Java
 
-You can create an Extract, Transform, and Load (ETL) operation by using AWS Step Functions and the AWS SDK for Java V2. An ETL operation retrieves data from a given data source, applies various transformations to it, and then writes the results to a specified location where the data is stored. In this AWS tutorial, population data located in an Excel spreadsheet is stored in an Amazon S3 bucket is retrieved, then it is transformed to another formation and finally stored in an Amazon DyanmoDB table. 
+You can create an Extract, Transform, and Load (ETL) operation by using AWS Step Functions and the AWS SDK for Java V2. An ETL operation retrieves data from a given data source, applies various transformations to it, and then writes the results to a specified location where the data is stored. In this AWS tutorial, population data located in a Microsoft Excel spreadsheet and stored in an Amazon Simple Storage Service (Amazon S3) bucket is retrieved, transformed to another formation. and stored in an Amazon DyanmoDB table. 
 
 ![AWS Tracking Application](images/overview.png)
 
-**Note**: Amazon Aurora (Aurora) is a fully managed relational database engine that's compatible with MySQL and PostgreSQL. For more information, see [What is Amazon Aurora?](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html).
+The following illustration shows the population data located in a Microsoft Excel spreadsheet. 
+
+![AWS Tracking Application](images/popDate.png)
 
 The data is stored in an Amazon Aurora table named **jobs**, as shown in this illustration. 
 
