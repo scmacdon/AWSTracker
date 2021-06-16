@@ -29,13 +29,17 @@ Each workflow step is implemented by using an AWS Lambda function. Lambda is a c
 #### Topics
 
 + Prerequisites
-+ Create an IntelliJ project 
++ Understand the workflow
++ Create an IAM role that is used to execute Lambda functions
++ Create a workflow by using AWS Step functions
++ Create an IntelliJ project named LambdaFunctions
 + Add the POM dependencies to your project
-+ Set up the Java packages in your project
-+ Create the Java classes
-+ Create the HTML files
-+ Package the application into a JAR file
-+ Deploy the application to Elastic Beanstalk
++ Create Lambda functions by using the Lambda API in the AWS SDK for Java
++ Package the project that contains Lambda functions
++ Deploy Lambda functions
++ Add Lambda functions to workflows
++ Invoke the workflow from the AWS Console
+
 
 
 ## Prerequisites
