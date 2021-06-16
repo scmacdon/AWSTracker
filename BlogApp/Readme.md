@@ -1,4 +1,4 @@
-# Creating a Job Posting Site using Amazon Aurora and Amazon Translation Services
+# Creating an ETL job by using AWS Step Functions and the AWS SDK for Java
 
 You can create a web application that stores and queries data by using Amazon Aurora. The application created in this AWS tutorial is a job posting web application that lets an employer, an administrator, or human resources staff alert employees or the public about a job opening within a company.
 
