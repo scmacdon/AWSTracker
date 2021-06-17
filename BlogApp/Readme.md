@@ -1065,13 +1065,6 @@ Package up the project into a .jar (JAR) file that you can deploy as a Lambda fu
 
 The JAR file is located in the **target** folder (which is a child folder of the project folder).
 
-
-## Deploy the application to Elastic Beanstalk
-
-Sign in to the AWS Management Console, and then open the Elastic Beanstalk console. An application is the top-level container in Elastic Beanstalk that contains one or more application environments (for example prod, qa, and dev, or prod-web, prod-worker, qa-web, qa-worker).
-
-If this is your first time accessing this service, you will see a **Welcome to AWS Elastic Beanstalk** page. Otherwise, you’ll see the Elastic Beanstalk Dashboard, which lists all of your applications.
-
 ## Deploy the Lambda functions
 
 1. Open the Lambda console at https://us-west-2.console.aws.amazon.com/lambda/home.
@@ -1080,13 +1073,13 @@ If this is your first time accessing this service, you will see a **Welcome to A
 
 3. Choose **Author from scratch**.
 
-4. In the **Basic** information section, enter **TicStep1** as the name.
+4. In the **Basic** information section, enter **ETL** as the name.
 
 5. In the **Runtime**, choose **Java 8**.
 
 6. Choose **Use an existing role**, and then choose **lambda-support** (the IAM role that you created).
 
-![AWS Tracking Application](images/lambda20.png)
+![AWS Tracking Application](images/LamDeploy.png)
 
 7. Choose **Create function**.
 
