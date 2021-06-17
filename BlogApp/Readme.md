@@ -59,9 +59,9 @@ The following figure shows the workflow you'll create with this tutorial, which 
 ![AWS Tracking Application](images/workflow.png)
 
 The following describes each step in the workflow:
-+ **Start** - Initiates the workflow and passes in a date value.
-+ **Determines the missing students** – Determines the students that are absent for the given day. For this AWS tutorial, a MySQL database is queried to track the students that are absent. This workflow step dynamically creates XML that contains the students queried from the database and passes the XML to the next step. This example shows how a Lambda function can query data from an Amazon RDS table.
-+ **Send all notifications** – Parses the XML that contains all absent students. For each student, this step invokes the Amazon SNS to send a mobile text message, Amazon Pinpoint to send a voice message, and Amazon SES to send an email message.  
++ **Start** - Initiates the workflow.
++ **Get Excel Data** – Retrieves an Excel file from an Amazon S3 bucket by using the Amazon S3 Java API. This step dynamically creates XML that contains the population data and passes the XML to the next step. This example shows how a Lambda function can retrieve data from an Amazon S3 bucket and transform the data.
++ **Store Data** – Parses the XML that contains the population data. For each item in the XML, this step adds a record to an Amazon DynamoDB table by using the Amazon DynamoDB Java API. .  
 + **End** - Stops the workflow.
 
 
