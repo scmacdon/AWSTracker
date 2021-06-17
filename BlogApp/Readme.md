@@ -315,7 +315,7 @@ At this point, you have a new project named **ETL_Lambda**. Ensure that the pom.
  
  Create a Java package in the main/java folder named **com.etl.example**. This Java classes go into this package. 
  
- ![AWS Lex](images/Java2.png)
+ ![AWS Lex](images/Java.png)
  
  Create these Java classes:
 
