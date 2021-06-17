@@ -319,14 +319,14 @@ At this point, you have a new project named **ETL_Lambda**. Ensure that the pom.
  
  Create these Java classes:
 
-+ **BlogApp** - Used as the base class for the Spring Boot application.
-+ **BlogController** - Used as the Spring Boot controller that handles HTTP requests. 
-+ **ConnectionHelper** - Used to open a connection to the Aurora database. 
-+ **Post** - Used as the applications model that stores application data.
-+ **RetrieveDataRDS** - Used as the Spring Service that uses the Java JDBC API and the Amazon Translate Java API V2. 
-+ **WebSecurityConfig** - The role of this class is to set up an in-memory user store that contains a single user (the user name is **user** and the password is **password**).
-
-### BlogApp class
++ **DocumentHandler** - Used as the first step in the workflow that retrieves the Microsoft Excel document and dynamically creates XML that contains the data.
++ **DynamoDBService** - Uses the Amazon DynamoDB Java V2 API to store population data into a DynamoDB table.  
++ **ExcelService** - Uses the **jxl.Workbook** (not an AWS Java API) to read data from a Microsoft Excel spreadsheet. 
++ **HandlerStoreData** - Used as the second step in the workflow. 
++ **PopData** - Used as a model that stores population data. 
++ **Population** - Used as the data mapping class for the Amazon DynamoDB Java API (V2) Enchanced Client. For more information about the Enhanced Client, see [Map items in DynamoDB tables](https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/examples-dynamodb-enhanced.html).
++ 
+### BDocumentHandler class
 
 The following Java code represents the **BlogApp** class.
 
@@ -414,8 +414,6 @@ The following Java code represents the **BlogController** class.
         return user2.getUsername();
      }
     }
-
-
 
 ### Post class
 
