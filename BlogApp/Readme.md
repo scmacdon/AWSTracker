@@ -54,6 +54,19 @@ To complete the tutorial, you need the following:
 
 **Note**: You must set up inbound rules for the security group to connect to the database. You can set up one inbound rule for your development environment and another for Elastic Beanstalk (which will host the application). Setting up an inbound rule essentially means enabling an IP address to use the database. Once you set up the inbound rules, you can connect to the database from a client such as MySQL Workbench. For information about setting up security group inbound rules, see [Controlling Access with Security Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html).
 
+## Understand the workflow
+
+The following figure shows the workflow you'll create with this tutorial, which performs the ETL operation.  
+
+![AWS Tracking Application](images/workflow.png)
+
+The following describes each step in the workflow:
++ **Start** - Initiates the workflow and passes in a date value.
++ **Determines the missing students** – Determines the students that are absent for the given day. For this AWS tutorial, a MySQL database is queried to track the students that are absent. This workflow step dynamically creates XML that contains the students queried from the database and passes the XML to the next step. This example shows how a Lambda function can query data from an Amazon RDS table.
++ **Send all notifications** – Parses the XML that contains all absent students. For each student, this step invokes the Amazon SNS to send a mobile text message, Amazon Pinpoint to send a voice message, and Amazon SES to send an email message.  
++ **End** - Stops the workflow.
+
+
 ## Create an IntelliJ project named BlogAurora
 
 Create an IntelliJ project that is used to create the web application.
