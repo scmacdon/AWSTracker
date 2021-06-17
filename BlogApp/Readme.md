@@ -93,7 +93,7 @@ This tutorial uses the Amazon S3 and Amazon DynamoDB. The **lambda-support** rol
 
 8. Name the role **lambda-support**.
 
-![AWS Tracking Application](images/LambdaName.png)
+![AWS Tracking Application](images/Lam2.png)
 
 9. Choose **Create role**.
 
