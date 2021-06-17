@@ -81,7 +81,7 @@ This tutorial uses the Amazon S3 and Amazon DynamoDB. The **lambda-support** rol
 
 3. Choose **AWS service**, and then choose **Lambda**.
 
-![AWS Tracking Application](images/Lambda1.png)
+![AWS Tracking Application](images/Lam1.png)
 
 4. Choose **Permissions**.
 
