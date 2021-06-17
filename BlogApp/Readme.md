@@ -40,8 +40,6 @@ Each workflow step is implemented by using an AWS Lambda function. Lambda is a c
 + Add Lambda functions to workflows
 + Invoke the workflow from the AWS Console
 
-
-
 ## Prerequisites
 
 To complete the tutorial, you need the following:
@@ -101,13 +99,62 @@ This tutorial uses the Amazon S3 and Amazon DynamoDB. The **lambda-support** rol
 
 11. Choose **Attach Policies**.
 
-12. Search for **AmazonSESFullAccess**, and then choose **Attach policy**.
+12. Search for **AmazonS3FullAccess**, and then choose **Attach policy**.
 
-13. Search for **AmazonSNSFullAccess**, and then choose **Attach policy**. When you're done, you can see the permissions.
-
-![AWS Tracking Application](images/Policies2.png)
+13. Search for **AmazonDynamoDBFullAccess**, and then choose **Attach policy**. When you're done, you can see the permissions.
 
 **Note**: Repeat this process to create **workflow-support**. For step three, instead of choosing **Lambda**, choose **Step Functions**. You don't need to perform steps 11-13.  
+## Create a serverless workflow by using AWS Step functions
+
+To define a workflow that performs an ETL operation by using AWS Step Functions, you create an Amazon States Language (JSON-based) document to define your state machine. An Amazon States Language document describes each step. After you define the document, AWS Step Functions provides a visual representation of the workflow. The following figure shows a visual representation of the workflow.
+
+![AWS Tracking Application](images/workflow.png)
+
+Workflows can pass data between steps. For example, the **Get Excel Data** dynamically creates XML and passes the XML to the **Store Data** step. 
+
+**Note**: Later in this tutorial, you'll create application logic in the Lambda function to read data from the Amazon S3 bucket.  
+
+#### To create a workflow
+
+1. Open the Step Functions console at https://us-west-2.console.aws.amazon.com/states/home.
+
+2. Choose **Create State Machine**.
+
+3. Choose **Author with code snippets**. In the **Type** area, choose **Standard**.
+
+![AWS Tracking Application](images/StepFunctions.png)
+
+4. Specify the Amazon States Language document by entering the following code.
+
+       {
+        "Comment": "An AWS Step Functions state machine that performs an ETL job.",
+        "StartAt": "Get Excel Data",
+        "States": {
+           "Get Excel Data": {
+           "Type": "Task",
+           "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
+           "Next": "Store Data"
+          },
+           "Store Data": {
+           "Type": "Task",
+           "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
+           "End": true
+           }
+          }
+        }
+
+**Note:** Don't worry about the errors related to the Lambda resource values. You update these values later in this tutorial.
+
+5. Choose **Next**.
+
+6. In the name field, enter **ETLStateMachine**.
+
+7. In the **Permission** section, choose **Choose an existing role**.  
+
+8. Choose **workflow-support** (the IAM role that you created).
+
+9. Choose **Create state machine**. A message appears that states the state machine was successfully created.
+
 
 ## Create an IntelliJ project named BlogAurora
 
