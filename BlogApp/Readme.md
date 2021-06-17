@@ -720,400 +720,342 @@ The following Java code represents the **ExcelService** class that uses the **jx
         }
   }
 
-### RetrieveDataRDS class
+### HandlerStoreData class
 
-The following Java code represents the **RetrieveDataRDS** class. This class uses the Java JDBC API (V2) to interact with data located the **jobs** table.  For example, the **getPosts** method returns a result set that is queried from the **jobs** table and displayed in the view. Likewise, the **addRecord** method adds a new record to the **jobs** table. This class also uses the Amazon Translate Java V2 API to translation the result set if requested by the user. 
+The following Java code represents the **HandlerStoreData** class. This class represents the second step in the workflow. 
 
-     package com.aws.blog;
+    package com.etl.example;
 
-     import org.springframework.stereotype.Component;
-     import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-     import software.amazon.awssdk.regions.Region;
-     import org.w3c.dom.Document;
-     import org.w3c.dom.Element;
-     import software.amazon.awssdk.services.translate.TranslateClient;
-     import software.amazon.awssdk.services.translate.model.TranslateException;
-     import software.amazon.awssdk.services.translate.model.TranslateTextRequest;
-     import software.amazon.awssdk.services.translate.model.TranslateTextResponse;
-     import javax.xml.parsers.DocumentBuilder;
-     import javax.xml.parsers.DocumentBuilderFactory;
-     import javax.xml.parsers.ParserConfigurationException;
-     import javax.xml.transform.Transformer;
-     import javax.xml.transform.TransformerException;
-     import javax.xml.transform.TransformerFactory;
-     import javax.xml.transform.dom.DOMSource;
-     import javax.xml.transform.stream.StreamResult;
-     import java.io.StringWriter;
-     import java.text.ParseException;
-     import java.text.SimpleDateFormat;
-     import java.time.LocalDateTime;
-     import java.time.format.DateTimeFormatter;
-     import java.util.ArrayList;
-     import java.util.Date;
-     import java.util.List;
-     import java.util.UUID;
-     import java.sql.*;
+    import com.amazonaws.services.lambda.runtime.Context;
+    import com.amazonaws.services.lambda.runtime.RequestHandler;
+    import com.amazonaws.services.lambda.runtime.LambdaLogger;
+    import org.jdom2.JDOMException;
+    import java.io.IOException;
 
-     @Component
-     public class RetrieveDataRDS {
+    public class HandlerStoreData  implements RequestHandler<String, String>{
 
-    // Add a new record to the Amazon Aurora table.
-    public String addRecord(String author, String title, String body) {
+     @Override
+     public String handleRequest(String event, Context context) {
 
-        Connection c = null;
-
+        LambdaLogger logger = context.getLogger();
+        String xml = event ;
+        DynamoDBService storeData = new DynamoDBService();
         try {
 
-            // Create a Connection object
-            c = ConnectionHelper.getConnection();
-
-            UUID uuid = UUID.randomUUID();
-            String id = uuid.toString();
-
-            // Date conversion.
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
-            String sDate1 = dtf.format(now);
-            Date date1 = new SimpleDateFormat("yyyy/MM/dd").parse(sDate1);
-            java.sql.Date sqlDate = new java.sql.Date( date1.getTime());
-
-            // Use prepared statements
-            PreparedStatement ps = null;
-
-            // Inject an item into the system
-            String insert = "INSERT INTO jobs (idjobs, date,title,body, author) VALUES(?,?,?,?,?);";
-            ps = c.prepareStatement(insert);
-            ps.setString(1, id);
-            ps.setDate(2, sqlDate);
-            ps.setString(3, title);
-            ps.setString(4, body);
-            ps.setString(5, author );
-            ps.execute();
-
-            return id;
-
-        } catch (ParseException | SQLException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+            storeData.injectETLData(xml);
+            logger.log("data stored:");
+        } catch (JDOMException | IOException e) {
+            e.printStackTrace();
         }
-        return null;
+        return "Data is stored successfully";
       }
+     }
+
+### PopData class
+
+The following Java code represents the **PopData** class.
+
+    package com.etl.example;
+
+    //Stores the data model for this use case.
+    public class PopData {
+
+    private String countryName;
+    private String countryCode;
+    private String pop2010;
+    private String pop2011;
+    private String pop2012;
+    private String pop2013;
+    private String pop2014;
+    private String pop2015;
+    private String pop2016;
+    private String pop2017;
+    private String pop2018;
+    private String pop2019;
 
 
-       // Returns a collection from the Aurora table.
-       public String getPosts(String lang, int num) {
+    public void set2019(String num) {
+        this.pop2019 = num;
+    }
 
-        Connection c = null;
+    public String get2019() {
+        return this.pop2019;
+    }
 
-        try {
+    public void set2018(String num) {
+        this.pop2018 = num;
+    }
 
-            // Create a Connection object
-            c = ConnectionHelper.getConnection();
-
-            String sqlStatement="";
-            if (num ==5)
-                sqlStatement = "Select * from jobs order by date DESC LIMIT 5 ; ";
-            else if (num ==10)
-                sqlStatement = "Select * from jobs order by date DESC LIMIT 10 ; ";
-            else
-                sqlStatement = "Select * from jobs order by date DESC" ;
-
-            PreparedStatement pstmt = null;
-            ResultSet rs = null;
-            List<Post> posts = new ArrayList<>();
-            Post post = null;
-
-            pstmt = c.prepareStatement(sqlStatement);
-            rs = pstmt.executeQuery();
-            String title = "";
-            String body = "";
-
-            while (rs.next()) {
-
-                post = new Post();
-                post.setId(rs.getString(1));
-                post.setDate(rs.getDate(2).toString());
-
-                title = rs.getString(3);
-                if (!lang.equals("English"))
-                    title = translateText(title, lang);
-
-                post.setTitle(title);
-                body= rs.getString(4);
-                if (!lang.equals("English"))
-                    body = translateText(body, lang);
-
-                post.setBody(body);
-                post.setAuthor(rs.getString(5));
-
-                // Push post to the list
-                posts.add(post);
-            }
-
-            return convertToString(toXml(posts));
-
-        } catch ( SQLException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
-        return "";
+    public String get2018() {
+        return this.pop2018;
     }
 
 
-    private String translateText(String text, String lang) {
+    public void set2017(String num) {
+        this.pop2017 = num;
+    }
 
-        Region region = Region.US_WEST_2;
-        TranslateClient translateClient = TranslateClient.builder()
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+    public String get2017() {
+        return this.pop2017;
+    }
+
+
+    public void set2016(String num) {
+        this.pop2016 = num;
+    }
+
+    public String get2016() {
+        return this.pop2016;
+    }
+
+    public void set2015(String num) {
+        this.pop2015 = num;
+    }
+
+    public String get2015() {
+        return this.pop2015;
+    }
+
+
+    public void set2014(String num) {
+        this.pop2014 = num;
+    }
+
+    public String get2014() {
+        return this.pop2014;
+    }
+
+
+    public void set2013(String num) {
+        this.pop2013 = num;
+    }
+
+    public String get2013() {
+        return this.pop2013;
+    }
+
+
+    public void set2012(String num) {
+        this.pop2012 = num;
+    }
+
+    public String get2012() {
+        return this.pop2012;
+    }
+
+    public void set2011(String num) {
+        this.pop2011 = num;
+    }
+
+    public String get2011() {
+        return this.pop2011;
+    }
+
+
+    public void set2010(String num) {
+        this.pop2010 = num;
+    }
+
+    public String get2010() {
+        return this.pop2010;
+    }
+
+    public void setCode(String code) {
+        this.countryCode = code;
+    }
+
+    public String getCode() {
+        return this.countryCode;
+    }
+
+    public void setName(String name) {
+        this.countryName = name;
+    }
+
+    public String getName() {
+        return this.countryName ;
+    }
+   }
+
+### Population class
+
+The following Java code represents the **Population** class. The class is used for data mapping for the Amazon DynamoDB Java API Enhanced Client. 
+
+     package com.etl.example;
+
+     import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+     import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+
+     @DynamoDbBean
+     public class Population {
+
+     public String id;
+     public String code;
+     public String pop2010;
+     public String pop2011;
+     public String pop2012;
+     public String pop2013;
+     public String pop2014;
+     public String pop2015;
+     public String pop2016;
+     public String pop2017;
+     public String pop2018;
+     public String pop2019;
+
+
+     public void setId(String name) {
+        this.id = name;
+     }
+
+     @DynamoDbPartitionKey
+     public String getId() {
+        return this.id ;
+    }
+
+
+    public void set2019(String num) {
+        this.pop2019 = num;
+    }
+
+    public String get2019() {
+        return this.pop2019;
+    }
+
+    public void set2018(String num) {
+        this.pop2018 = num;
+    }
+
+    public String get2018() {
+        return this.pop2018;
+    }
+
+
+    public void set2017(String num) {
+        this.pop2017 = num;
+    }
+
+    public String get2017() {
+        return this.pop2017;
+    }
+
+
+    public void set2016(String num) {
+        this.pop2016 = num;
+    }
+
+    public String get2016() {
+        return this.pop2016;
+    }
+
+    public void set2015(String num) {
+        this.pop2015 = num;
+    }
+
+    public String get2015() {
+        return this.pop2015;
+    }
+
+
+    public void set2014(String num) {
+        this.pop2014 = num;
+    }
+
+    public String get2014() {
+        return this.pop2014;
+    }
+
+
+    public void set2013(String num) {
+        this.pop2013 = num;
+    }
+
+    public String get2013() {
+        return this.pop2013;
+    }
+
+
+    public void set2012(String num) {
+        this.pop2012 = num;
+    }
+
+    public String get2012() {
+        return this.pop2012;
+    }
+
+    public void set2011(String num) {
+        this.pop2011 = num;
+    }
+
+    public String get2011() {
+        return this.pop2011;
+    }
+
+
+    public void set2010(String num) {
+        this.pop2010 = num;
+    }
+
+    public String get2010() {
+        return this.pop2010;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+}
+    
+### S3Service class
+
+The following Java code represents the **S3Service** class.
+
+    package com.etl.example;
+
+    import software.amazon.awssdk.core.ResponseBytes;
+    import software.amazon.awssdk.regions.Region;
+    import software.amazon.awssdk.services.s3.S3Client;
+    import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+    import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+    import software.amazon.awssdk.services.s3.model.S3Exception;
+
+    public class S3Service {
+
+    private S3Client getClient() {
+
+        Region region = Region.US_EAST_1;
+        S3Client s3 = S3Client.builder()
                 .region(region)
                 .build();
-        String transValue = "";
+
+        return s3;
+      }
+
+     public byte[] getObjectBytes (String bucketName, String keyName) {
+
         try {
+            S3Client s3 = getClient();
+            GetObjectRequest objectRequest = GetObjectRequest
+                    .builder()
+                    .key(keyName)
+                    .bucket(bucketName)
+                    .build();
 
-            if (lang.compareTo("French")==0) {
+            ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
+            byte[] data = objectBytes.asByteArray();
+            return data;
 
-                TranslateTextRequest textRequest = TranslateTextRequest.builder()
-                        .sourceLanguageCode("en")
-                        .targetLanguageCode("fr")
-                        .text(text)
-                        .build();
-
-                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
-                transValue = textResponse.translatedText();
-
-            } else if (lang.compareTo("Russian")==0) {
-
-                TranslateTextRequest textRequest = TranslateTextRequest.builder()
-                        .sourceLanguageCode("en")
-                        .targetLanguageCode("ru")
-                        .text(text)
-                        .build();
-
-                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
-                transValue = textResponse.translatedText();
-
-
-            } else if (lang.compareTo("Japanese")==0) {
-
-                TranslateTextRequest textRequest = TranslateTextRequest.builder()
-                        .sourceLanguageCode("en")
-                        .targetLanguageCode("ja")
-                        .text(text)
-                        .build();
-
-                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
-                transValue = textResponse.translatedText();
-
-
-            } else if (lang.compareTo("Spanish")==0) {
-
-                TranslateTextRequest textRequest = TranslateTextRequest.builder()
-                        .sourceLanguageCode("en")
-                        .targetLanguageCode("es")
-                        .text(text)
-                        .build();
-
-                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
-                transValue = textResponse.translatedText();
-
-            } else {
-
-                TranslateTextRequest textRequest = TranslateTextRequest.builder()
-                        .sourceLanguageCode("en")
-                        .targetLanguageCode("zh")
-                        .text(text)
-                        .build();
-
-                TranslateTextResponse textResponse = translateClient.translateText(textRequest);
-                transValue = textResponse.translatedText();
-            }
-
-            return transValue;
-
-        } catch (TranslateException e) {
-            System.err.println(e.getMessage());
+         } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
         }
-
-        return "";
-      }
-
-     // Convert the list to XML to pass back to the view.
-     private Document toXml(List<Post> itemsList) {
-
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.newDocument();
-
-            // Start building the XML.
-            Element root = doc.createElement("Items");
-            doc.appendChild(root);
-
-            // Iterate through the collection.
-            for (Post post : itemsList) {
-
-                Element item = doc.createElement("Item");
-                root.appendChild(item);
-
-                // Set Id.
-                Element id = doc.createElement("Id");
-                id.appendChild(doc.createTextNode(post.getId()));
-                item.appendChild(id);
-
-                // Set Date.
-                Element name = doc.createElement("Date");
-                name.appendChild(doc.createTextNode(post.getDate()));
-                item.appendChild(name);
-
-                // Set Title.
-                Element date = doc.createElement("Title");
-                date.appendChild(doc.createTextNode(post.getTitle()));
-                item.appendChild(date);
-
-                // Set Content.
-                Element desc = doc.createElement("Content");
-                desc.appendChild(doc.createTextNode(post.getBody()));
-                item.appendChild(desc);
-
-                // Set Author.
-                Element guide = doc.createElement("Author");
-                guide.appendChild(doc.createTextNode(post.getAuthor()));
-                item.appendChild(guide);
-            }
-
-            return doc;
-
-        }catch(ParserConfigurationException e){
-            e.printStackTrace();
-        }
-        return null;
-    ,}
-
-     private String convertToString(Document xml) {
-        try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            StreamResult result = new StreamResult(new StringWriter());
-            DOMSource source = new DOMSource(xml);
-            transformer.transform(source, result);
-            return result.getWriter().toString();
-
-        } catch(TransformerException ex) {
-            ex.printStackTrace();
-        }
         return null;
       }
-     }
+    }
 
-### ConnectionHelper class
-
-The following Java code represents the **ConnectionHelper** class.
-
-    package com.aws.jdbc;
-
-    import java.sql.Connection;
-    import java.sql.DriverManager;
-    import java.sql.SQLException;
-
-    public class ConnectionHelper {
-
-      private String url;
-      private static ConnectionHelper instance;
-
-      private ConnectionHelper() {
-          url = "jdbc:mysql://localhost:3306/mydb?useSSL=false";
-       }
-
-      public static Connection getConnection() throws SQLException {
-         if (instance == null) {
-            instance = new ConnectionHelper();
-         }
-         try {
-
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            return DriverManager.getConnection(instance.url, "root","root");
-        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.getStackTrace();
-        }
-        return null;
-    	}
-
-       public static void close(Connection connection) {
-         try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-      }
-     }
-
-**Note:** The **URL** value is **localhost:3306**. Replace this value is modified with the endpoint of the Aurora database. You must also ensure that you specify the user name and password for your Aurora instance; otherwise your connection does not work.
-
-
-### WebSecurityConfig class
-
-The following Java code represents the **WebSecurityConfig** class. The role of this class is to ensure only authenticated users can view the application.
-
-     package com.aws.blog;
-
-     import org.springframework.context.annotation.Bean;
-     import org.springframework.context.annotation.Configuration;
-     import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-     import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-     import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-     import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-     import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-     import org.springframework.security.crypto.password.PasswordEncoder;
-     import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-     @Configuration
-     @EnableWebSecurity
-     public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers(
-                        "/js/**",
-                        "/css/**",
-                        "/img/**",
-                        "/webjars/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .and()
-                .logout()
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login?logout")
-                .permitAll();
-
-          http.csrf().disable();
-         }
-
-
-       @Override
-       protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .passwordEncoder(passwordEncoder())
-                .withUser("user")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER");
-       }
-
-      @Bean
-      public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-      }
-     }
-    
-**Note**: In this example, the user credentials to log into the application are **user** and **password**.    
 
 ## Create the HTML file
 
