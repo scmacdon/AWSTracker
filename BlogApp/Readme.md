@@ -120,7 +120,7 @@ Workflows can pass data between steps. For example, the **Get Excel Data** dynam
 
 2. Choose **Create State Machine**.
 
-3. Under **Choose authoring method**, select **Write your workflow in code**. In the **Type** area, choose **Standard**.
+3. Select **Write your workflow in code**. In the **Type** area, choose **Standard**.
 
 ![AWS Tracking Application](images/workflow1.png)
 
