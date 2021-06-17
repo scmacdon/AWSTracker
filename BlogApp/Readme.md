@@ -64,6 +64,50 @@ The following describes each step in the workflow:
 + **Store Data** – Parses the XML that contains the population data. For each item in the XML, this step adds a record to an Amazon DynamoDB table by using the Amazon DynamoDB Java API. .  
 + **End** - Stops the workflow.
 
+## Create an IAM role that's used to execute Lambda functions
+
+Create the following two IAM roles:
+
++ **lambda-support** - Used to invoke Lamdba functions.
++ **workflow-support** - Used to enable Step Functions to invoke the workflow.
+
+This tutorial uses the Amazon S3 and Amazon DynamoDB. The **lambda-support** role has to have policies that enable it to invoke these Amazon services from a Lambda function.
+
+#### To create an IAM role
+
+1. Open the AWS Management Console. When the page loads, enter **IAM** in the search box, and then choose **IAM** to open the IAM console.
+
+2. In the navigation pane, choose **Roles**, and on the **Roles** page, choose **Create Role**.
+
+3. Choose **AWS service**, and then choose **Lambda**.
+
+![AWS Tracking Application](images/Lambda1.png)
+
+4. Choose **Permissions**.
+
+5. Search for **AWSLambdaBasicExecutionRole**.
+
+6. Choose **Next Tags**.
+
+7. Choose **Review**.
+
+8. Name the role **lambda-support**.
+
+![AWS Tracking Application](images/LambdaName.png)
+
+9. Choose **Create role**.
+
+10. Choose **lambda-support** to view the overview page.
+
+11. Choose **Attach Policies**.
+
+12. Search for **AmazonSESFullAccess**, and then choose **Attach policy**.
+
+13. Search for **AmazonSNSFullAccess**, and then choose **Attach policy**. When you're done, you can see the permissions.
+
+![AWS Tracking Application](images/Policies2.png)
+
+**Note**: Repeat this process to create **workflow-support**. For step three, instead of choosing **Lambda**, choose **Step Functions**. You don't need to perform steps 11-13.  
 
 ## Create an IntelliJ project named BlogAurora
 
